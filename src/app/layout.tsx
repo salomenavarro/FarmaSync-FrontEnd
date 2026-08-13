@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Poppins } from "next/font/google";
 
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
   title: "FarmaSync",
   description: "Reserva tus medicamentos a tiempo",
 };
-
 
 export default function RootLayout({
   children,
@@ -21,7 +25,10 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body>{children}</body>
+
+      <body className={poppins.className}>
+        {children}
+      </body>
     </html>
   );
 }

@@ -2,7 +2,7 @@
 
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 import {
@@ -56,6 +56,19 @@ const faqs = [
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
 
   return (
@@ -63,115 +76,114 @@ export default function Home() {
 
 
       {/* =====================================================
-          NAVBAR
-      ===================================================== */}
+    NAVBAR
+===================================================== */}
+
+<nav
+  className={`fixed left-0 right-0 top-0 z-50 transition-all duration-100 ${
+    scrolled
+      ? "bg-transparent"
+      : "border-t-[3px] border-[#3F4150] bg-white"
+  }`}
+>
+
+ <div
+  className={`flex h-[78px] items-center justify-between px-8 lg:px-10 ${
+    scrolled
+      ? "mx-4 mt-3 rounded-full bg-white shadow-md lg:mx-8"
+      : "w-full"
+  }`}
+>
+
+    {/* LOGO */}
+
+    <a
+      href="#hero"
+      className="flex shrink-0 items-center gap-3"
+    >
+
+      <Image
+        src="/images/logo1.jpeg"
+        alt="FarmaSync"
+        width={52}
+        height={52}
+        className="h-[52px] w-[52px] object-contain"
+      />
+
+      <span className="text-[21px] font-bold text-[#171717]">
+        FarmaSync
+      </span>
+
+    </a>
 
 
-      <nav className="sticky top-0 z-50 border-t-[3px] border-[#3F4150] bg-white">
+{/* MENÚ */}
+
+<div className="hidden items-center gap-8 lg:flex">
+
+  <a
+    href="#propuesta"
+    className="nav-link text-[16px] font-medium text-[#171717] transition-colors hover:text-[#00A8A8]"
+  >
+    Propuesta
+  </a>
+
+  <a
+    href="#beneficios"
+    className="nav-link text-[16px] font-medium text-[#171717] transition-colors hover:text-[#00A8A8]"
+  >
+    Beneficios
+  </a>
+
+  <a
+    href="#como_funciona"
+    className="nav-link text-[16px] font-medium text-[#171717] transition-colors hover:text-[#00A8A8]"
+  >
+    Cómo funciona
+  </a>
+
+  <a
+    href="#prueba_social"
+    className="nav-link text-[16px] font-medium text-[#171717] transition-colors hover:text-[#00A8A8]"
+  >
+    Testimonios
+  </a>
+
+  <a
+    href="#faq"
+    className="nav-link text-[16px] font-medium text-[#171717] transition-colors hover:text-[#00A8A8]"
+  >
+    FAQ
+  </a>
+
+</div>
 
 
-        <div className="mx-auto flex h-[74px] max-w-[1200px] items-center justify-between px-6">
+    {/* BOTONES */}
 
+    <div className="flex shrink-0 items-center gap-6">
 
-          <a
-            href="#hero"
-            className="flex items-center gap-3"
-          >
+   {/* Iniciar Sesión */}
+<a
+  href="#"
+  className="rounded-full bg-[#f5f5f5] px-3.5 py-2 text-[14px] font-medium text-[#171717] transition-shadow duration-300 hover:shadow-md"
+>
+  Iniciar Sesión
+</a>
 
+{/* Registrarse */}
+<a
+  href="#"
+  className="rounded-full bg-[#00A8A8] px-4 py-2 text-[14px] font-semibold text-white transition-colors duration-300 hover:bg-[#009999]"
+>
+  Registrarse
+</a>
 
-            <Image
-              src="/images/logo.png"
-              alt="FarmaSync"
-              width={55}
-              height={55}
-              className="h-[52px] w-[52px] object-contain"
-            />
+    </div>
 
+  </div>
 
-            <span className="text-[22px] font-bold text-[#171717]">
-              FarmaSync
-            </span>
-
-
-          </a>
-
-
-
-
-          <div className="hidden items-center gap-8 lg:flex">
-
-
-            <a
-              href="#propuesta"
-              className="font-medium transition-colors hover:text-[#00A8A8]"
-            >
-              Propuesta
-            </a>
-
-
-            <a
-              href="#beneficios"
-              className="font-medium transition-colors hover:text-[#00A8A8]"
-            >
-              Beneficios
-            </a>
-
-
-            <a
-              href="#como_funciona"
-              className="font-medium transition-colors hover:text-[#00A8A8]"
-            >
-              Cómo funciona
-            </a>
-
-
-            <a
-              href="#prueba_social"
-              className="font-medium transition-colors hover:text-[#00A8A8]"
-            >
-              Testimonios
-            </a>
-
-
-            <a
-              href="#faq"
-              className="font-medium transition-colors hover:text-[#00A8A8]"
-            >
-              FAQ
-            </a>
-
-
-          </div>
-
-
-
-
-          <div className="flex items-center gap-5">
-
-
-            <a
-              href="#"
-              className="hidden font-semibold transition-all hover:-translate-y-1 hover:text-[#00A8A8] sm:block"
-            >
-              Iniciar Sesión
-            </a>
-
-
-            <a
-              href="#"
-              className="rounded-full bg-[#00A8A8] px-7 py-3.5 font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-[#009494] hover:shadow-lg"
-            >
-              Registrarse
-            </a>
-
-
-          </div>
-
-
-        </div>
-
-
-      </nav>
+</nav>
 
 
 
@@ -182,9 +194,9 @@ export default function Home() {
 
 
       <section
-        id="hero"
-        className="relative overflow-hidden bg-[#FCFBDC]"
-      >
+  id="hero"
+  className="relative overflow-hidden bg-[#FCFBDC] pt-[78px]"
+>
 
 
         <div className="relative mx-auto flex min-h-[695px] max-w-[1200px] items-center px-6">
@@ -254,7 +266,7 @@ export default function Home() {
 
               <a
                 href="#como_funciona"
-                className="rounded-full border border-[#D9D7B8] px-8 py-4 text-[17px] font-semibold transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-md"
+                className="rounded-full border bg-white px-8 py-4 text-[17px] font-semibold transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-md"
               >
                 Ver cómo funciona
               </a>
@@ -281,7 +293,7 @@ export default function Home() {
 
 
             <Image
-              src="/images/doctora.png"
+              src="/images/doctora"
               alt="Profesional de salud"
               width={520}
               height={650}
@@ -1204,232 +1216,213 @@ export default function Home() {
 
 
       {/* =====================================================
-          FOOTER
-      ===================================================== */}
+    FOOTER
+===================================================== */}
+
+<footer
+  id="footer"
+  className="border-t border-[#E5E7EB] bg-[#FCFBDC] px-5 pb-5 pt-[60px]"
+>
+  <div className="mx-auto grid max-w-[1200px] gap-10 md:grid-cols-2 lg:grid-cols-4">
+
+    {/* =================================================
+        BRAND
+    ================================================= */}
+
+    <div>
+      <Image
+        src="/images/logo2.jpeg"
+        alt="FarmaSync Logo"
+        width={230}
+        height={230}
+        className="mb-4 h-[220px] w-[220px] object-contain"
+      />
+
+      <p className="max-w-[280px] text-[15px] italic leading-6 text-[#6B7280]">
+        "Inspirados en tu salud,
+        <br />
+        enfocados en tu bienestar."
+      </p>
+    </div>
 
 
-      <footer
-        id="footer"
-        className="border-t border-[#E5E7EB] bg-[#FCFBDC] px-5 pb-5 pt-[60px]"
-      >
+    {/* =================================================
+        REDES SOCIALES
+    ================================================= */}
 
+    <div>
+      <h3 className="mb-5 text-[17px] font-semibold text-[#171717]">
+        Síguenos
+      </h3>
 
-        <div className="mx-auto grid max-w-[1200px] gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <ul className="space-y-3">
 
-
-          {/* BRAND */}
-
-
-          <div>
-
-
-            <Image
-              src="/images/logo2.jpeg"
-              alt="FarmaSync Logo"
-              width={180}
-              height={60}
-              className="mb-4 h-auto max-w-[180px] object-contain"
+        <li>
+          <a
+            href="#"
+            className="flex items-center gap-3 text-[15px] text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            <FaFacebookF
+              size={17}
+              className="text-[#00A8A8]"
             />
+            Facebook
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="#"
+            className="flex items-center gap-3 text-[15px] text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            <FaInstagram
+              size={18}
+              className="text-[#00A8A8]"
+            />
+            Instagram
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="#"
+            className="flex items-center gap-3 text-[15px] text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            <FaLinkedinIn
+              size={18}
+              className="text-[#00A8A8]"
+            />
+            LinkedIn
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="#"
+            className="flex items-center gap-3 text-[15px] text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            <FaXTwitter
+              size={17}
+              className="text-[#00A8A8]"
+            />
+            X (Twitter)
+          </a>
+        </li>
+
+      </ul>
+    </div>
+
+
+    {/* =================================================
+        SOPORTE
+    ================================================= */}
+
+    <div>
+      <h3 className="mb-5 text-[17px] font-semibold text-[#171717]">
+        Soporte y Ayuda
+      </h3>
+
+      <ul className="space-y-3">
+
+        <li>
+          <a
+            href="#faq"
+            className="text-[15px] leading-6 text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            Preguntas Frecuentes
+            <br />
+            (FAQ)
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="#"
+            className="text-[15px] text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            Reportar un Problema
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="#"
+            className="text-[15px] text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            Contacto de Soporte
+          </a>
+        </li>
+
+      </ul>
+    </div>
+
+
+    {/* =================================================
+        LEGAL
+    ================================================= */}
+
+    <div>
+      <h3 className="mb-5 text-[17px] font-semibold text-[#171717]">
+        Legal
+      </h3>
+
+      <ul className="space-y-3">
 
+        <li>
+          <a
+            href="#"
+            className="text-[15px] text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            Términos y Condiciones
+          </a>
+        </li>
 
-            <p className="text-[15px] italic leading-6">
-              "Inspirados en tu salud, enfocados en tu bienestar"
-            </p>
+        <li>
+          <a
+            href="#"
+            className="text-[15px] text-[#536078] transition-colors hover:text-[#00A8A8]"
+          >
+            Política de Privacidad
+          </a>
+        </li>
 
+      </ul>
 
-          </div>
 
+      {/* AVISO LEGAL */}
 
+      <div className="mt-8 rounded-[10px] border border-[#E5E7EB] bg-[#FCFBDC] px-5 py-5">
+        <p className="text-xs leading-5 text-[#9AA3B5]">
+          FarmaSync es una plataforma
+          <br />
+          informativa y de reserva. La entrega final
+          <br />
+          está sujeta a validación en el punto físico.
+        </p>
+      </div>
 
+    </div>
 
-          {/* REDES */}
+  </div>
 
 
-          <div>
+  {/* =================================================
+      PARTE INFERIOR
+  ================================================= */}
 
+  <div className="mx-auto mt-10 max-w-[1200px] border-t border-[#E5E7EB] pt-5 text-center text-sm text-[#6B7280]">
 
-            <h3 className="mb-5 text-[17px] font-semibold text-[#004B87]">
-              Síguenos
-            </h3>
+    <p>
+      © 2026 FarmaSync. Todos los derechos reservados.
+    </p>
 
+    <p className="mt-1 text-xs">
+      Hecho con ♥ para optimizar tu bienestar.
+    </p>
 
-            <ul className="space-y-3">
+  </div>
 
-
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-3 text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  <FaFacebookF size={17} />
-                  Facebook
-                </a>
-              </li>
-
-
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-3 text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  <FaInstagram size={18} />
-                  Instagram
-                </a>
-              </li>
-
-
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-3 text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  <FaLinkedinIn size={18} />
-                  LinkedIn
-                </a>
-              </li>
-
-
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-3 text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  <FaXTwitter size={17} />
-                  X (Twitter)
-                </a>
-              </li>
-
-
-            </ul>
-
-
-          </div>
-
-
-
-
-          {/* SOPORTE */}
-
-
-          <div>
-
-
-            <h3 className="mb-5 text-[17px] font-semibold text-[#004B87]">
-              Soporte y Ayuda
-            </h3>
-
-
-            <ul className="space-y-3">
-
-
-              <li>
-                <a
-                  href="#faq"
-                  className="text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  Preguntas Frecuentes (FAQ)
-                </a>
-              </li>
-
-
-              <li>
-                <a
-                  href="#"
-                  className="text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  Reportar un Problema
-                </a>
-              </li>
-
-
-              <li>
-                <a
-                  href="#"
-                  className="text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  Contacto de Soporte
-                </a>
-              </li>
-
-
-            </ul>
-
-
-          </div>
-
-
-
-
-          {/* LEGAL */}
-
-
-          <div>
-
-
-            <h3 className="mb-5 text-[17px] font-semibold text-[#004B87]">
-              Legal
-            </h3>
-
-
-            <ul className="space-y-3">
-
-
-              <li>
-                <a
-                  href="#"
-                  className="text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  Términos y Condiciones
-                </a>
-              </li>
-
-
-              <li>
-                <a
-                  href="#"
-                  className="text-[15px] transition-colors hover:text-[#00A8A8]"
-                >
-                  Política de Privacidad y Datos
-                </a>
-              </li>
-
-
-            </ul>
-
-
-
-
-            <p className="mt-4 text-xs leading-5 text-[#374151]/70">
-              FarmaSync es una plataforma informativa y de reserva. La entrega
-              final está sujeta a validación en el punto físico.
-            </p>
-
-
-          </div>
-
-
-        </div>
-
-
-
-
-        <div className="mx-auto mt-10 max-w-[1200px] border-t border-[#E5E7EB] pt-5 text-center text-sm text-[#374151]/80">
-
-
-          <p>
-            © 2026 FarmaSync. Todos los derechos reservados.
-          </p>
-
-
-          <p className="mt-1 text-xs">
-            Hecho con ♥ para optimizar tu bienestar.
-          </p>
-
-
-        </div>
-
-
-      </footer>
+</footer>
 
 
     </main>

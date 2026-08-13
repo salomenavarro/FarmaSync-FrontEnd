@@ -9,3 +9,29 @@ html {
 body {
   margin: 0;
 }
+
+/* Animación del menú de navegación */
+
+.nav-link {
+  position: relative;
+  text-decoration: none;
+}
+
+/* Línea debajo del enlace */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 0;
+  height: 3px;
+  background-color: #00A8A8;
+  border-radius: 10px;
+  transform: translateX(-50%);
+  transition: width 0.25s ease-in-out;
+}
+
+/* Al pasar el mouse */
+.nav-link:hover::after {
+  width: 70%;
+}
