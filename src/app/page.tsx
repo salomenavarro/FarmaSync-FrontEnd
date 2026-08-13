@@ -952,137 +952,86 @@ export default function Home() {
 
 
 
-      {/* =====================================================
-          PRUEBA SOCIAL
-      ===================================================== */}
+     {/* =====================================================
+    PRUEBA SOCIAL
+===================================================== */}
+<section
+  id="prueba_social"
+  className="bg-[#FCFBDC] px-6 py-24"
+>
+  <div className="mx-auto max-w-[1200px]">
+    <div className="mb-12 text-center">
+      <span className="inline-block rounded-full bg-[#00A8A8]/10 px-4 py-2 font-semibold text-[#00A8A8]">
+        PRUEBA SOCIAL
+      </span>
+      <h2 className="mt-4 text-4xl font-extrabold text-[#171717]">
+        Confianza respaldada por resultados
+      </h2>
+      <div className="mx-auto mt-4 h-[4px] w-12 rounded-full bg-[#00A8A8]" />
+    </div>
 
-
-      <section
-        id="prueba_social"
-        className="bg-[#FCFBDC] px-6 py-24"
-      >
-
-
-        <div className="mx-auto max-w-[1200px]">
-
-
-          <div className="mb-12 text-center">
-
-
-            <span className="inline-block rounded-full bg-[#00A8A8]/10 px-4 py-2 font-semibold text-[#00A8A8]">
-              Prueba Social
-            </span>
-
-
-            <h2 className="mt-4 text-4xl font-extrabold">
-              Confianza respaldada por resultados
-            </h2>
-
-
+    {/* BARRA UNIFICADA DE MÉTRICAS */}
+    <div className="mx-auto max-w-[900px] rounded-full bg-white px-8 py-8 shadow-sm">
+      <div className="grid grid-cols-1 items-center divide-y divide-[#E5E7EB] md:grid-cols-3 md:divide-x md:divide-y-0">
+        
+        {/* MÉTRICA 1 */}
+        <div className="px-4 py-2 text-center">
+          <div className="text-4xl font-extrabold text-[#00A8A8]">
+            +1,000
           </div>
-
-
-
-
-          <div className="grid gap-5 md:grid-cols-3">
-
-
-            <div className="inline-block rounded-full bg-white p-7 text-center">
-
-
-              <div className="text-4xl font-extrabold text-[#00A8A8]">
-                +1,000
-              </div>
-
-
-              <p className="mt-2 font-semibold">
-                Usuarios Satisfechos
-              </p>
-
-
-            </div>
-
-
-
-
-            <div className="inline-block rounded-full bg-white p-7 text-center">
-
-
-              <div className="text-4xl font-extrabold text-[#00A8A8]">
-                98%
-              </div>
-
-
-              <p className="mt-2 font-semibold">
-                Menos Filas
-              </p>
-
-
-            </div>
-
-
-
-
-            <div className="inline-block rounded-full bg-white p-7 text-center">
-
-
-              <div className="text-4xl font-extrabold text-[#00A8A8]">
-                24/7
-              </div>
-
-
-              <p className="mt-2 font-semibold">
-                Consultas Disponibles
-              </p>
-
-
-            </div>
-
-
-          </div>
-
-
-
-
-          <p className="mx-auto mt-10 max-w-[760px] text-center leading-8 text-[#6B7280]">
-            Lee las experiencias reales de pacientes y profesionales de la
-            salud que ya transformaron su acceso a medicamentos con FarmaSync.
+          <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#6B7280]">
+            Usuarios Satisfechos
           </p>
-
-
-
-
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-
-
-            <Testimonial
-              text="Excelente plataforma. Antes perdía horas haciendo filas en la farmacia solo para que me dijeran que no había stock. Ahora reservo desde casa."
-              name="Carlos Mendoza"
-              role="Paciente EPS"
-            />
-
-
-            <Testimonial
-              text="Como regente de farmacia, FarmaSync nos ha ayudado a organizar mejor el inventario y reducir las aglomeraciones. El flujo de trabajo mejoró un 100%."
-              name="Diana Restrepo"
-              role="Regente de Farmacia"
-            />
-
-
-            <Testimonial
-              text="Me encanta la sección de notificaciones. Me avisa exactamente cuándo puedo ir a recoger mis medicamentos crónicos sin contratiempos."
-              name="Andrés Felipe G."
-              role="Usuario Frecuente"
-            />
-
-
-          </div>
-
-
         </div>
 
+        {/* MÉTRICA 2 */}
+        <div className="px-4 py-2 text-center">
+          <div className="text-4xl font-extrabold text-[#00A8A8]">
+            98%
+          </div>
+          <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#6B7280]">
+            Menos Filas
+          </p>
+        </div>
 
-      </section>
+        {/* MÉTRICA 3 */}
+        <div className="px-4 py-2 text-center">
+          <div className="text-4xl font-extrabold text-[#00A8A8]">
+            24/7
+          </div>
+          <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#6B7280]">
+            Consultas Disponibles
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    {/* SUBTÍTULO */}
+    <p className="mx-auto mt-12 max-w-[760px] text-center text-[17px] leading-8 text-[#6B7280]">
+      Lee las experiencias reales de pacientes y profesionales de la salud que ya transformaron su acceso a medicamentos con FarmaSync.
+    </p>
+
+    {/* TARJETAS DE TESTIMONIO */}
+    <div className="mt-12 grid items-stretch gap-6 md:grid-cols-3">
+      <Testimonial
+        text="Excelente plataforma. Antes perdía horas haciendo filas en la farmacia solo para que me dijeran que no había stock. Ahora reservo desde casa."
+        name="Carlos Mendoza"
+        role="Paciente EPS"
+      />
+      <Testimonial
+        text="Como regente de farmacia, FarmaSync nos ha ayudado a organizar mejor el inventario y reducir las aglomeraciones. El flujo de trabajo mejoró un 100%."
+        name="Diana Restrepo"
+        role="Regente de Farmacia"
+      />
+      <Testimonial
+        text="Me encanta la sección de notificaciones. Me avisa exactamente cuándo puedo ir a recoger mis medicamentos crónicos sin contratiempos."
+        name="Andrés Felipe G."
+        role="Usuario Frecuente"
+      />
+    </div>
+  </div>
+</section>
 
 
 
@@ -1681,45 +1630,59 @@ function WorkflowBenefit({
 ===================================================== */
 
 
+/* =====================================================
+   TESTIMONIO
+===================================================== */
 function Testimonial({
   text,
   name,
   role,
+  image,
 }: {
   text: string;
   name: string;
   role: string;
+  image?: string;
 }) {
+  // Obtener la inicial para el avatar si no hay imagen
+  const initial = name.charAt(0).toUpperCase();
+
   return (
-    <article className="rounded-2xl border border-[#E5E7EB] bg-white p-7 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+    <article className="flex h-full flex-col justify-between rounded-[20px] border border-[#E5E7EB] bg-white p-7 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(0,168,168,0.12)]">
+      <div>
+        {/* Estrellas en turquesa */}
+        <div className="mb-4 text-2xl tracking-widest text-[#00A8A8]">
+          ★★★★★
+        </div>
 
-
-      <div className="mb-5 text-3xl text-[#00A8A8]">
-        ★★★★★
-      </div>
-
-
-      <p className="leading-7 text-[#6B7280]">
-        {text}
-      </p>
-
-
-      <div className="mt-6 border-t border-[#E5E7EB] pt-5">
-
-
-        <h3 className="font-bold">
-          {name}
-        </h3>
-
-
-        <p className="text-sm text-[#00A8A8]">
-          {role}
+        {/* Texto del testimonio */}
+        <p className="text-[15px] leading-relaxed text-[#555555]">
+          "{text}"
         </p>
-
-
       </div>
 
+      {/* Pie de tarjeta / Autor */}
+      <div className="mt-6 flex items-center gap-4 border-t border-[#F0F0F0] pt-5">
+        {image ? (
+          <Image
+            src={image}
+            alt={name}
+            width={48}
+            height={48}
+            className="h-12 w-12 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#00A8A8]/10 text-base font-bold text-[#00A8A8]">
+            {initial}
+          </div>
+        )}
 
+        <div>
+          <h3 className="text-[16px] font-bold text-[#171717]">{name}</h3>
+          <p className="text-[13px] font-medium text-[#6B7280]">{role}</p>
+        </div>
+      </div>
     </article>
   );
 }
+
