@@ -317,31 +317,25 @@ export default function Home() {
     PROPUESTA DE VALOR
 ===================================================== */}
 
-
 <section
   id="propuesta"
   className="bg-white px-6 py-24 lg:py-28"
 >
   <div className="mx-auto grid max-w-[1200px] items-center gap-16 lg:grid-cols-2">
 
-
     {/* =================================================
         COLUMNA IZQUIERDA
     ================================================= */}
 
-
     <div className="max-w-[570px]">
-
 
       <span className="text-sm font-bold uppercase tracking-[1px] text-[#00A8A8]">
         El efecto FarmaSync
       </span>
 
-
       <h2 className="mt-7 text-[44px] font-extrabold leading-[1.12] tracking-[-1.5px] text-[#171717] sm:text-[50px]">
         Tu tratamiento no debería depender de la suerte
       </h2>
-
 
       <p className="mt-8 text-[18px] leading-[1.85] text-[#6B625B]">
         Miles de pacientes en Colombia se desplazan a su farmacia EPS
@@ -351,59 +345,74 @@ export default function Home() {
         la claridad y el respeto por tu tiempo.
       </p>
 
-
     </div>
-
-
 
 
     {/* =================================================
         COLUMNA DERECHA — LÍNEA DE PASOS
     ================================================= */}
 
-
     <div className="relative">
-
 
       {/* Línea vertical */}
 
+      <div
+        className="
+          absolute
+          left-[33px]
+          top-[40px]
+          bottom-[40px]
+          w-[2px]
+          bg-[#A8E3E3]
+        "
+      />
 
-      <div className="absolute left-[31px] top-[45px] bottom-[45px] w-[2px] bg-[#A8E3E3]" />
 
+      {/* =================================================
+          PASO 1
+      ================================================= */}
 
-
-
-      {/* PASO 1 */}
-
-
-      <div className="relative flex gap-8 pb-24">
-
+      <div className="group relative flex gap-8 pb-24">
 
         {/* Número */}
 
-
-        <div className="relative z-10 flex h-[66px] w-[66px] shrink-0 items-center justify-center rounded-full border-2 border-[#E5E7EB] bg-white text-[20px] font-bold text-[#8A8A8A] shadow-sm">
+        <div
+          className="
+            relative z-10
+            flex h-[66px] w-[66px] shrink-0
+            items-center justify-center
+            rounded-full
+            border-2 border-[#E5E7EB]
+            bg-white
+            text-[20px] font-bold text-[#8A8A8A]
+            shadow-sm
+            transition-all duration-300
+            group-hover:border-[#00A8A8]
+            group-hover:bg-[#00A8A8]
+            group-hover:text-white
+          "
+        >
           1
         </div>
 
 
-
-
         {/* Contenido */}
 
-
-        <div className="pt-3">
-
+        <div
+          className="
+            pt-3
+            transition-transform duration-300
+            group-hover:translate-x-2
+          "
+        >
 
           <span className="text-sm font-bold uppercase tracking-[1px] text-[#00A8A8]">
             Sin desplazamientos en vano
           </span>
 
-
           <h3 className="mt-4 text-[27px] font-bold leading-tight text-[#171717]">
             Consulta antes de salir
           </h3>
-
 
           <p className="mt-4 max-w-[560px] text-[18px] leading-[1.8] text-[#6B625B]">
             Verifica en tiempo real si tu medicamento está disponible
@@ -411,46 +420,56 @@ export default function Home() {
             sin viajes innecesarios.
           </p>
 
-
         </div>
-
 
       </div>
 
 
+      {/* =================================================
+          PASO 2
+      ================================================= */}
 
-
-      {/* PASO 2 */}
-
-
-      <div className="relative flex gap-8 pb-24">
-
+      <div className="group relative flex gap-8 pb-24">
 
         {/* Número */}
 
-
-        <div className="relative z-10 flex h-[66px] w-[66px] shrink-0 items-center justify-center rounded-full border-2 border-[#E5E7EB] bg-white text-[20px] font-bold text-[#8A8A8A] shadow-sm">
+        <div
+          className="
+            relative z-10
+            flex h-[66px] w-[66px] shrink-0
+            items-center justify-center
+            rounded-full
+            border-2 border-[#E5E7EB]
+            bg-white
+            text-[20px] font-bold text-[#8A8A8A]
+            shadow-sm
+            transition-all duration-300
+            group-hover:border-[#00A8A8]
+            group-hover:bg-[#00A8A8]
+            group-hover:text-white
+          "
+        >
           2
         </div>
 
 
-
-
         {/* Contenido */}
 
-
-        <div className="pt-3">
-
+        <div
+          className="
+            pt-3
+            transition-transform duration-300
+            group-hover:translate-x-2
+          "
+        >
 
           <span className="text-sm font-bold uppercase tracking-[1px] text-[#00A8A8]">
             Para pacientes crónicos y cuidadores
           </span>
 
-
           <h3 className="mt-4 text-[27px] font-bold leading-tight text-[#171717]">
             Reserva con hasta 5 días de anticipación
           </h3>
-
 
           <p className="mt-4 max-w-[560px] text-[18px] leading-[1.8] text-[#6B625B]">
             Aparta tu medicamento antes de que se agote. Si eres cuidador,
@@ -458,46 +477,56 @@ export default function Home() {
             necesitar que esté presente.
           </p>
 
-
         </div>
-
 
       </div>
 
 
+      {/* =================================================
+          PASO 3
+      ================================================= */}
 
-
-      {/* PASO 3 */}
-
-
-      <div className="relative flex gap-8">
-
+      <div className="group relative flex gap-8">
 
         {/* Número */}
 
-
-        <div className="relative z-10 flex h-[66px] w-[66px] shrink-0 items-center justify-center rounded-full border-2 border-[#E5E7EB] bg-white text-[20px] font-bold text-[#8A8A8A] shadow-sm">
+        <div
+          className="
+            relative z-10
+            flex h-[66px] w-[66px] shrink-0
+            items-center justify-center
+            rounded-full
+            border-2 border-[#E5E7EB]
+            bg-white
+            text-[20px] font-bold text-[#8A8A8A]
+            shadow-sm
+            transition-all duration-300
+            group-hover:border-[#00A8A8]
+            group-hover:bg-[#00A8A8]
+            group-hover:text-white
+          "
+        >
           3
         </div>
 
 
-
-
         {/* Contenido */}
 
-
-        <div className="pt-3">
-
+        <div
+          className="
+            pt-3
+            transition-transform duration-300
+            group-hover:translate-x-2
+          "
+        >
 
           <span className="text-sm font-bold uppercase tracking-[1px] text-[#00A8A8]">
             Tranquilidad garantizada
           </span>
 
-
           <h3 className="mt-4 text-[27px] font-bold leading-tight text-[#171717]">
             Tu código, tu medicamento
           </h3>
-
 
           <p className="mt-4 max-w-[560px] text-[18px] leading-[1.8] text-[#6B625B]">
             Al confirmar tu reserva recibes un código único. Llévalo a
@@ -505,21 +534,14 @@ export default function Home() {
             continúa sin interrupciones.
           </p>
 
-
         </div>
-
 
       </div>
 
-
     </div>
-
 
   </div>
 </section>
-
-
-
 
       {/* =====================================================
     BENEFICIOS
@@ -729,134 +751,111 @@ export default function Home() {
 
       {/* TELÉFONO */}
 
+<div className="flex justify-center">
 
-      <div className="flex justify-center">
+  <div
+    className="
+      w-full
+      max-w-[400px]
+      rounded-[32px]
+      border
+      border-[#E5E7EB]
+      bg-white
+      p-8
+      shadow-[0_25px_60px_rgba(0,0,0,0.08)]
+    "
+  >
 
-
-        <div
-          className="
-            w-full
-            max-w-[320px]
-            rounded-[32px]
-            border
-            border-[#E5E7EB]
-            bg-white
-            p-6
-            shadow-[0_25px_60px_rgba(0,0,0,0.08)]
-          "
-        >
-
-
-          <div
-            className="
-              mb-8
-              text-center
-              font-bold
-              text-[#171717]
-            "
-          >
-            FarmaSync
-          </div>
+    <div
+      className="
+        mb-8
+        text-center
+        text-xl
+        font-bold
+        text-[#171717]
+      "
+    >
+      FarmaSync
+    </div>
 
 
+    {/* BUSCADOR */}
+
+    <div
+      className="
+        mb-5
+        flex
+        items-center
+        gap-3
+        rounded-[14px]
+        bg-[#FCFBDC]
+        p-5
+      "
+    >
+
+      <Search
+        size={22}
+        className="text-[#00A8A8]"
+      />
+
+      <span className="text-base">
+        Paracetamol
+      </span>
+
+    </div>
 
 
-          {/* BUSCADOR */}
+    {/* DISPONIBILIDAD */}
+
+    <div
+      className="
+        mb-5
+        rounded-[14px]
+        border
+        border-[#E5E7EB]
+        p-5
+      "
+    >
+
+      <h4 className="text-lg font-bold">
+        Disponible
+      </h4>
+
+      <p className="mt-1">
+        Farmacia Central
+      </p>
+
+      <span className="mt-3 block text-green-600">
+        ✓ En stock
+      </span>
+
+    </div>
 
 
-          <div
-            className="
-              mb-4
-              flex
-              items-center
-              gap-3
-              rounded-[14px]
-              bg-[#FCFBDC]
-              p-4
-            "
-          >
+    {/* RESERVA */}
 
+    <div
+      className="
+        rounded-[14px]
+        border
+        border-[#E5E7EB]
+        p-5
+      "
+    >
 
-            <Search
-              size={20}
-              className="text-[#00A8A8]"
-            />
+      <h4 className="text-lg font-bold">
+        Reserva creada
+      </h4>
 
+      <p className="mt-1">
+        Código: FS-2481
+      </p>
 
-            <span>
-              Paracetamol
-            </span>
+    </div>
 
+  </div>
 
-          </div>
-
-
-
-
-          {/* DISPONIBILIDAD */}
-
-
-          <div
-            className="
-              mb-4
-              rounded-[14px]
-              border
-              border-[#E5E7EB]
-              p-4
-            "
-          >
-
-
-            <h4 className="font-bold">
-              Disponible
-            </h4>
-
-
-            <p className="mt-1">
-              Farmacia Central
-            </p>
-
-
-            <span className="mt-3 block text-green-600">
-              ✓ En stock
-            </span>
-
-
-          </div>
-
-
-
-
-          {/* RESERVA */}
-
-
-          <div
-            className="
-              rounded-[14px]
-              border
-              border-[#E5E7EB]
-              p-4
-            "
-          >
-
-
-            <h4 className="font-bold">
-              Reserva creada
-            </h4>
-
-
-            <p className="mt-1">
-              Código: FS-2481
-            </p>
-
-
-          </div>
-
-
-        </div>
-
-
-      </div>
+</div>
 
 
 
@@ -872,35 +871,35 @@ export default function Home() {
         <Step
           number="01"
           title="Busca tu medicamento"
-          text="Consulta disponibilidad antes de salir de casa."
+          text="Consulta la disponibilidad exacta en tiempo real antes de salir de tu hogar."
         />
 
 
         <Step
           number="02"
           title="Encuentra una farmacia"
-          text="Visualiza las farmacias donde está disponible."
+          text="Visualiza los puntos de distribución de tu EPS que cuentan con el stock necesario."
         />
 
 
         <Step
           number="03"
           title="Realiza tu reserva"
-          text="Reserva tu medicamento en pocos segundos."
+          text="Aparta tus fármacos de forma digital con un solo toque de manera inmediata."
         />
 
 
         <Step
           number="04"
           title="Recibe confirmación"
-          text="Obtén notificaciones automáticas."
+          text="Obtén un código QR único de reserva y alertas automáticas sobre su estado."
         />
 
 
         <Step
           number="05"
           title="Recoge tu medicamento"
-          text="Presenta tu comprobante y reclama tu reserva."
+          text="Presenta tu comprobante digital en la ventanilla rápida y retira sin filas."
         />
 
 
@@ -1396,7 +1395,6 @@ export default function Home() {
           FarmaSync es una plataforma
           <br />
           informativa y de reserva. La entrega final
-          <br />
           está sujeta a validación en el punto físico.
         </p>
       </div>
@@ -1428,6 +1426,9 @@ export default function Home() {
     </main>
   );
 }
+
+
+
 
 
 
@@ -1541,9 +1542,34 @@ function Step({
   title: string;
   text: string;
 }) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.3,
+      }
+    );
+
+    const element = document.getElementById(`step-${number}`);
+
+    if (element) {
+      observer.observe(element);
+    }
+
+    return () => observer.disconnect();
+  }, [number]);
+
   return (
     <div
-      className="
+      id={`step-${number}`}
+      className={`
         group
         relative
         overflow-hidden
@@ -1555,16 +1581,19 @@ function Step({
         bg-white
         p-6
         transition-all
-        duration-300
-        hover:translate-x-3
+        duration-1000
+        ease-out
         hover:border-[#00A8A8]
         hover:shadow-[0_10px_25px_rgba(0,168,168,0.15)]
-      "
+        ${
+          isVisible
+            ? "translate-x-0 opacity-100"
+            : "translate-x-8 opacity-0"
+        }
+      `}
     >
 
-
       {/* LÍNEA TURQUESA */}
-
 
       <span
         className="
@@ -1582,9 +1611,7 @@ function Step({
         "
       />
 
-
       {/* NÚMERO */}
-
 
       <div
         className="
@@ -1597,25 +1624,17 @@ function Step({
         {number}
       </div>
 
-
       {/* TEXTO */}
 
-
       <div>
-
-
         <h3 className="mb-2 text-xl font-bold">
           {title}
         </h3>
 
-
         <p>
           {text}
         </p>
-
-
       </div>
-
 
     </div>
   );
@@ -1676,7 +1695,7 @@ function Testimonial({
 
 
       <div className="mb-5 text-3xl text-[#00A8A8]">
-        “
+        ★★★★★
       </div>
 
 
