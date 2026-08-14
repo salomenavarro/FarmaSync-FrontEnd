@@ -193,123 +193,86 @@ export default function Home() {
       ===================================================== */}
 
 
-      <section
-  id="hero"
-  className="relative overflow-hidden bg-[#FCFBDC] pt-[78px]"
->
-
-
-        <div className="relative mx-auto flex min-h-[695px] max-w-[1200px] items-center px-6">
-
-
-          <div className="z-10 w-full pb-16 pt-10 lg:w-[58%]">
-
-
-            <div className="mb-7 inline-flex rounded-full border border-[#BFE8D4] bg-[#EDF9E9] px-4 py-2">
-
-
-              <span className="font-semibold text-[#00A8A8]">
-                Inspirados en tu salud, enfocados en tu bienestar.
-              </span>
-
-
-            </div>
-
-
-
-
-            <h1 className="max-w-[720px] text-[42px] font-extrabold leading-[1.08] tracking-[-2px] text-[#171717] sm:text-[50px] lg:text-[56px]">
-
-
-              Reserva tus medicamentos
-
-
-              <br />
-
-
-              <span className="text-[#00A8A8]">
-                a tiempo
-              </span>{" "}
-
-
-              con FarmaSync
-
-
-            </h1>
-
-
-
-
-            <p className="mt-7 max-w-[650px] text-lg leading-8 text-[#555]">
-
-
-              Evita filas, consulta la disponibilidad en tiempo real y asegura
-              tus medicamentos en las farmacias más cercanas de forma rápida y
-              segura.
-
-
-            </p>
-
-
-
-
-            <div className="mt-10 flex flex-wrap gap-5">
-
-
-              <a
-                href="#"
-                className="rounded-full bg-[#00A8A8] px-8 py-4 text-[17px] font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-[#009494] hover:shadow-lg"
-              >
-                Reservar Ahora
-              </a>
-
-
-              <a
-                href="#como_funciona"
-                className="rounded-full border bg-white px-8 py-4 text-[17px] font-semibold transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-md"
-              >
-                Ver cómo funciona
-              </a>
-
-
-            </div>
-
-
+    <section id="hero" className="relative overflow-hidden bg-[#FCFBDC] py-12 lg:py-16">
+      <div className="mx-auto max-w-[1100px] px-6 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        {/* COLUMNA IZQUIERDA: Texto y Acciones */}
+        <div className="lg:col-span-7 flex flex-col items-start text-left z-10">
+          
+          {/* Badge */}
+          <div className="mb-5 inline-flex items-center rounded-full border border-[rgba(0,168,168,0.2)] bg-[rgba(0,168,168,0.08)] px-4 py-1.5">
+            <span className="text-xs sm:text-sm font-semibold text-[#00A8A8] tracking-wide">
+              Inspirados en tu salud, enfocados en tu bienestar.
+            </span>
           </div>
 
+          {/* Título Principal */}
+          <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#171717] leading-[1.18] tracking-tight">
+            Reserva tus medicamentos{" "}
+            <span className="bg-gradient-to-r from-[#00A8A8] to-[#006666] bg-clip-text text-transparent">
+              a tiempo
+            </span>{" "}
+            con FarmaSync
+          </h1>
 
+          {/* Subtítulo */}
+          <p className="mt-4 max-w-[540px] text-base text-[#4A423A] leading-relaxed">
+            Evita filas, consulta la disponibilidad en tiempo real y asegura
+            tus medicamentos en las farmacias más cercanas de forma rápida y segura.
+          </p>
 
+          {/* Botones de Acción */}
+          <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <a
+              href="#formulario"
+              className="w-full sm:w-auto text-center rounded-full bg-[#00A8A8] px-7 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#009292] shadow-sm hover:shadow-md"
+            >
+              Reservar Ahora
+            </a>
+            <a
+              href="#como-funciona"
+              className="w-full sm:w-auto text-center rounded-full border border-neutral-300 bg-white/80 backdrop-blur-sm px-7 py-3.5 text-base font-semibold text-[#171717] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white shadow-sm"
+            >
+              Ver cómo funciona
+            </a>
+          </div>
+        </div>
 
-          {/* DOCTORA */}
+        {/* COLUMNA DERECHA: Imagen con Alta Nitidez y Animación */}
+        <div className="lg:col-span-5 relative flex items-center justify-center w-full">
+          {/* Luces de fondo suave (Glows) */}
+          <div className="absolute top-0 right-0 -z-0 h-64 w-64 rounded-full bg-[#00A8A8] opacity-15 blur-[90px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -z-0 h-56 w-56 rounded-full bg-[#FF9F43] opacity-20 blur-[80px] pointer-events-none" />
 
-
-          <div className="pointer-events-none absolute bottom-0 right-[5%] hidden h-[650px] w-[520px] items-end justify-center lg:flex">
-
-
-            <div className="absolute right-[-20px] top-[20px] h-[470px] w-[470px] rounded-full bg-[#DDF5D6] opacity-80 blur-[80px]" />
-
-
-            <div className="absolute bottom-[-80px] right-[80px] h-[300px] w-[350px] rounded-full bg-[#FFF2B8] opacity-60 blur-[70px]" />
-
-
+          {/* Contenedor Flotante de la Imagen */}
+          <div className="relative z-10 w-full max-w-[380px] sm:max-w-[440px] animate-[float_5s_ease-in-out_infinite]">
             <Image
-              src="/images/doctora"
-              alt="Profesional de salud"
+              src="/images/hero-mockup.png"
+              alt="Profesional de salud de FarmaSync"
               width={520}
               height={650}
               priority
-              className="relative z-10 h-[650px] w-[520px] scale-110 object-contain object-bottom mix-blend-multiply"
+              quality={100}
+              className="w-full h-auto object-contain drop-shadow-[0_20px_30px_rgba(26,22,18,0.1)]"
             />
-
-
           </div>
-
-
         </div>
 
+      </div>
 
-      </section>
-
+      {/* Definición de la animación de levitación en CSS inline para JSX */}
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-12px);
+          }
+        }
+      `}</style>
+    </section>
+  
 
 
 
