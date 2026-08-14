@@ -247,12 +247,12 @@ export default function Home() {
                 tus medicamentos en las farmacias más cercanas de forma rápida y segura.
               </p>
               <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 sm:gap-4">
-                <a
-                  href="#"
+                <Link
+                  href="/login"
                   className="w-full sm:w-auto text-center rounded-full bg-[#00A8A8] px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-[#009494] shadow-sm hover:shadow-lg"
                 >
                   Reservar Ahora
-                </a>
+                </Link>
                 <a
                   href="#como_funciona"
                   className="w-full sm:w-auto text-center rounded-full border border-gray-300 bg-white/80 backdrop-blur-sm px-8 py-3.5 sm:py-4 text-sm sm:text-base font-semibold text-[#171717] transition-all duration-300 hover:-translate-y-1 hover:bg-white shadow-sm"
