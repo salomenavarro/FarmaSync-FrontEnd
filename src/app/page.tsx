@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
@@ -132,18 +133,18 @@ export default function Home() {
 
           {/* BOTONES ESCRITORIO */}
           <div className="hidden shrink-0 items-center gap-3 sm:gap-6 md:flex">
-            <a
-              href="#"
+            <Link
+              href="/login"
               className="rounded-full bg-[#f5f5f5] px-3.5 py-2 text-sm font-medium text-[#171717] transition-shadow duration-300 hover:shadow-md"
             >
               Iniciar Sesión
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="/registro"
               className="rounded-full bg-[#00A8A8] px-4 py-2 text-sm font-semibold text-white transition-colors duration-300 hover:bg-[#009999]"
             >
               Registrarse
-            </a>
+            </Link>
           </div>
 
           {/* BOTÓN MÓVIL TOGGLE */}
@@ -199,18 +200,20 @@ export default function Home() {
               </a>
               <hr className="my-1 border-gray-100" />
               <div className="flex flex-col gap-2.5">
-                <a
-                  href="#"
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center rounded-full bg-[#f5f5f5] py-2.5 text-sm font-medium text-[#171717]"
                 >
                   Iniciar Sesión
-                </a>
-                <a
-                  href="#"
+                </Link>
+                <Link
+                  href="/registro"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center rounded-full bg-[#00A8A8] py-2.5 text-sm font-semibold text-white"
                 >
                   Registrarse
-                </a>
+                </Link>
               </div>
             </div>
           </div>
