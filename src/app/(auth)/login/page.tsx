@@ -1,33 +1,56 @@
-// src/app/(auth)/login/page.tsx
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, CreditCard, Lock } from "lucide-react";
+import { Eye, EyeOff, CreditCard, Lock, UserCheck } from "lucide-react";
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    documento: "",
+    password: "",
+    remember: false,
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // AQUÍ iría la lógica de autenticación o llamada a API
+    console.log("Datos de inicio de sesión:", formData);
+  };
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#FCFBDC] p-6">
       
-      {/* PATRÓN DE CÁPSULAS Y PASTILLAS */}
-      <div className="absolute -left-12 -top-12 h-72 w-28 rotate-45 rounded-full border-12 border-[#00A8A8]/20 bg-[#00A8A8]/10 backdrop-blur-sm" />
+      {/* PATRÓN DE CÁPSULAS Y PASTILLAS DE FONDO */}
+      <div className="absolute -left-12 -top-12 h-72 w-28 rotate-45 rounded-full border-[12px] border-[#00A8A8]/20 bg-[#00A8A8]/10 backdrop-blur-sm" />
       <div className="absolute top-8 left-1/4 h-36 w-14 -rotate-12 rounded-full border-4 border-[#00A8A8]/25 bg-white/40" />
       <div className="absolute top-12 right-1/3 h-16 w-16 rounded-full border-4 border-[#00A8A8]/20 bg-[#00A8A8]/15" />
       <div className="absolute -right-8 top-16 h-56 w-24 -rotate-45 rounded-full border-8 border-[#00A8A8]/20 bg-[#00A8A8]/10" />
       <div className="absolute left-6 top-1/2 h-20 w-44 -translate-y-1/2 rotate-12 rounded-full border-4 border-[#00A8A8]/20 bg-white/50" />
-      <div className="absolute bottom-8 left-12 h-48 w-20 rotate-45 rounded-full border-10 border-[#00A8A8]/20 bg-[#00A8A8]/10" />
+      <div className="absolute bottom-8 left-12 h-48 w-20 rotate-45 rounded-full border-[10px] border-[#00A8A8]/20 bg-[#00A8A8]/10" />
       <div className="absolute bottom-10 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full border-4 border-[#00A8A8]/25 bg-white/60" />
-      <div className="absolute -bottom-16 -right-10 h-80 w-36 -rotate-45 rounded-full border-16 border-[#00A8A8]/25 bg-[#00A8A8]/15" />
+      <div className="absolute -bottom-16 -right-10 h-80 w-36 -rotate-45 rounded-full border-[16px] border-[#00A8A8]/25 bg-[#00A8A8]/15" />
 
       {/* Halos verdes */}
-      <div className="absolute left-1/4 top-1/3 h-96 w-96 rounded-full bg-[#00A8A8]/15 blur-3xl pointer-events-none" />
-      <div className="absolute right-1/4 bottom-1/3 h-80 w-80 rounded-full bg-[#00A8A8]/15 blur-3xl pointer-events-none" />
+      <div className="pointer-events-none absolute left-1/4 top-1/3 h-96 w-96 rounded-full bg-[#00A8A8]/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-1/3 right-1/4 h-80 w-80 rounded-full bg-[#00A8A8]/15 blur-3xl" />
 
       {/* CONTENEDOR PRINCIPAL */}
-      <div className="relative z-10 flex w-full max-w-4xl overflow-hidden rounded-3xl bg-[#00A8A8]/10 p-4 backdrop-blur-md md:p-8 border border-[#00A8A8]/20 shadow-xl">
+      <div className="relative z-10 flex w-full max-w-4xl overflow-hidden rounded-3xl border border-[#00A8A8]/20 bg-[#00A8A8]/10 p-4 shadow-xl backdrop-blur-md md:p-8">
         
         {/* COLUMNA IZQUIERDA - BIENVENIDA */}
         <div className="hidden flex-1 flex-col justify-between p-8 md:flex">
           
-          {/* LOGO MÁS GRANDE*/}
+          {/* LOGO MÁS GRANDE */}
           <div className="flex items-center gap-4">
             <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-[#00A8A8]/40 bg-white p-1 shadow-lg">
               <Image
@@ -35,9 +58,12 @@ export default function LoginPage() {
                 alt="FarmaSync Logo"
                 fill
                 className="rounded-full object-cover"
+                priority
               />
             </div>
-            <span className="text-3xl font-black text-[#171717] tracking-tight">FarmaSync</span>
+            <span className="text-3xl font-black tracking-tight text-[#171717]">
+              FarmaSync
+            </span>
           </div>
 
           <div className="my-auto space-y-4 pr-6">
@@ -56,9 +82,9 @@ export default function LoginPage() {
         </div>
 
         {/* COLUMNA DERECHA - TARJETA DE LOGIN */}
-        <div className="w-full rounded-2xl border-2 border-[#00A8A8]/30 bg-linear-to-b from-white via-white to-[#00A8A8]/10 p-8 shadow-2xl backdrop-blur-xl md:w-[420px]">
+        <div className="w-full rounded-2xl border-2 border-[#00A8A8]/30 bg-gradient-to-b from-white via-white to-[#00A8A8]/10 p-8 shadow-2xl backdrop-blur-xl md:w-[420px]">
           
-          {/* Logo móvil también más grande */}
+          {/* Logo móvil */}
           <div className="mb-6 flex items-center justify-center gap-3 md:hidden">
             <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-[#00A8A8]/40 bg-white p-0.5 shadow-md">
               <Image
@@ -66,6 +92,7 @@ export default function LoginPage() {
                 alt="FarmaSync Logo"
                 fill
                 className="rounded-full object-cover"
+                priority
               />
             </div>
             <span className="text-2xl font-extrabold text-[#171717]">FarmaSync</span>
@@ -78,7 +105,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-[#171717]">
                 Número de Cédula (CC)
@@ -86,8 +113,11 @@ export default function LoginPage() {
               <div className="relative mt-2">
                 <input
                   type="text"
+                  name="documento"
+                  value={formData.documento}
+                  onChange={handleChange}
                   placeholder="Ej: 1017123456"
-                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 pl-11 pr-4 py-3 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30"
+                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-3 pl-11 pr-4 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30"
                   required
                 />
                 <CreditCard className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00A8A8]" />
@@ -100,17 +130,26 @@ export default function LoginPage() {
               </label>
               <div className="relative mt-2">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 pl-11 pr-11 py-3 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30"
+                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-3 pl-11 pr-11 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30"
                   required
                 />
                 <Lock className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00A8A8]" />
                 <button
                   type="button"
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
-                  <Eye className="h-4 w-4" />
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -119,6 +158,9 @@ export default function LoginPage() {
               <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-[#6B7280]">
                 <input
                   type="checkbox"
+                  name="remember"
+                  checked={formData.remember}
+                  onChange={handleChange}
                   className="h-4 w-4 rounded border-gray-300 text-[#00A8A8] focus:ring-[#00A8A8]"
                 />
                 Recordarme
@@ -132,6 +174,20 @@ export default function LoginPage() {
               INGRESAR
             </button>
           </form>
+
+          {/* OPCIÓN EMPLEADO */}
+          <div className="mt-5 rounded-xl border border-[#00A8A8]/30 bg-[#00A8A8]/10 p-3 text-center">
+            <p className="text-xs font-semibold text-[#171717]">
+              ¿Eres empleado autorizado?
+            </p>
+            <Link
+              href="/registro-cuidador"
+              className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-extrabold text-[#00A8A8] hover:underline"
+            >
+              <UserCheck className="h-4 w-4" />
+              Ingresa como empleado aquí
+            </Link>
+          </div>
 
           <div className="mt-8 space-y-2 text-center text-xs">
             <p className="text-[#6B7280]">
