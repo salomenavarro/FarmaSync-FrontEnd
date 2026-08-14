@@ -113,9 +113,13 @@ export default function Home() {
 
           {/* =================================================
               MENÚ ESCRITORIO
+              
+              CAMBIO:
+              xl:flex en lugar de lg:flex.
+              Así tablets también usan hamburguesa.
           ================================================= */}
 
-          <div className="hidden items-center gap-6 lg:flex xl:gap-8">
+          <div className="hidden items-center gap-6 xl:flex xl:gap-8">
 
             {[
               ["#propuesta", "Propuesta"],
@@ -131,7 +135,7 @@ export default function Home() {
               >
                 {text}
 
-                {/* LÍNEA QUE APARECE AL PASAR EL MOUSE */}
+                {/* LÍNEA AL PASAR EL MOUSE */}
 
                 <span
                   className="
@@ -154,9 +158,13 @@ export default function Home() {
 
           {/* =================================================
               BOTONES ESCRITORIO
+
+              CAMBIO:
+              También pasan a xl:flex.
+              Por lo tanto NO aparecen en tablets.
           ================================================= */}
 
-          <div className="hidden shrink-0 items-center gap-3 md:flex sm:gap-6">
+          <div className="hidden shrink-0 items-center gap-3 xl:flex xl:gap-6">
 
             <Link
               href="/login"
@@ -177,9 +185,13 @@ export default function Home() {
 
           {/* =================================================
               BOTÓN HAMBURGUESA
+
+              CAMBIO:
+              xl:hidden.
+              Así aparece tanto en celulares como en tablets.
           ================================================= */}
 
-          <div className="flex items-center lg:hidden">
+          <div className="flex items-center xl:hidden">
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -199,11 +211,11 @@ export default function Home() {
 
 
         {/* =================================================
-            MENÚ MÓVIL
+            MENÚ MÓVIL / TABLET
         ================================================= */}
 
         {mobileMenuOpen && (
-          <div className="animate-in slide-in-from-top border-b border-[#E5E7EB] bg-white px-6 py-6 shadow-lg duration-200 lg:hidden">
+          <div className="animate-in slide-in-from-top border-b border-[#E5E7EB] bg-white px-6 py-6 shadow-lg duration-200 xl:hidden">
 
             <div className="flex flex-col gap-4">
 
@@ -302,7 +314,9 @@ export default function Home() {
 
               </div>
 
-              <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-[#171717] sm:text-5xl lg:text-6xl">
+              {/* CAMBIO:
+                  Hero un poco más pequeño */}
+              <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-[#171717] sm:text-4xl lg:text-5xl">
 
                 Reserva tus medicamentos{" "}
 
@@ -355,14 +369,14 @@ export default function Home() {
                 <div className="relative z-10 w-full animate-[float_5s_ease-in-out_infinite]">
 
                   <Image
-                    src="/images/doctora.png"
-                    alt="Profesional de salud de FarmaSync"
-                    width={520}
-                    height={650}
-                    priority
-                    quality={100}
-                    className="relative z-10 h-auto max-h-[380px] w-full object-contain mix-blend-multiply drop-shadow-[0_20px_30px_rgba(26,22,18,0.1)] sm:max-h-[500px] lg:max-h-[600px]"
-                  />
+  src="/images/doc1.png"
+  alt="Profesional de salud de FarmaSync"
+  width={520}
+  height={650}
+  priority
+  quality={75}
+  className="relative z-10 h-auto max-h-[380px] w-full object-contain mix-blend-multiply drop-shadow-[0_20px_30px_rgba(26,22,18,0.1)] sm:max-h-[500px] lg:max-h-[600px]"
+/>
 
                 </div>
 
@@ -408,9 +422,11 @@ export default function Home() {
               El efecto FarmaSync
             </span>
 
-            <h2 className="mt-6 text-[38px] font-extrabold leading-[1.12] tracking-[-1px] text-[#171717] sm:text-[44px]">
-              Tu tratamiento no debería depender de la suerte
-            </h2>
+            {/* CAMBIO: mismo tamaño que títulos principales */}
+
+            <h2 className="mt-6 text-2xl font-extrabold leading-tight tracking-tight text-[#171717] sm:text-4xl lg:text-5xl">
+  Tu tratamiento no debería depender de la suerte
+</h2>
 
             <p className="mt-7 text-[16px] leading-[1.8] text-[#6B625B]">
               Miles de pacientes en Colombia se desplazan a su farmacia EPS
@@ -426,8 +442,6 @@ export default function Home() {
           {/* COLUMNA DERECHA */}
 
           <div className="relative">
-
-            {/* Línea vertical */}
 
             <div className="absolute bottom-[40px] left-[30px] top-[40px] w-[2px] bg-[#A8E3E3]" />
 
@@ -601,6 +615,8 @@ export default function Home() {
 
           <div className="mb-12 text-center sm:mb-16">
 
+            {/* TÍTULO DE REFERENCIA */}
+
             <h2 className="text-2xl font-extrabold tracking-tight text-[#171717] sm:text-4xl lg:text-5xl">
               Beneficios de FarmaSync
             </h2>
@@ -677,7 +693,9 @@ export default function Home() {
               ¿Cómo funciona?
             </span>
 
-            <h2 className="mb-3 text-2xl font-extrabold text-[#374151] sm:mb-4 sm:text-4xl">
+            {/* CAMBIO */}
+
+            <h2 className="mb-3 text-2xl font-extrabold tracking-tight text-[#374151] sm:mb-4 sm:text-4xl lg:text-5xl">
               Tu medicamento en solo 5 pasos
             </h2>
 
@@ -834,7 +852,9 @@ export default function Home() {
               PRUEBA SOCIAL
             </span>
 
-            <h2 className="mt-3 text-2xl font-extrabold text-[#171717] sm:mt-4 sm:text-4xl">
+            {/* CAMBIO */}
+
+            <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-[#171717] sm:mt-4 sm:text-4xl lg:text-5xl">
               Confianza respaldada por resultados
             </h2>
 
@@ -938,7 +958,9 @@ export default function Home() {
               FAQ
             </span>
 
-            <h2 className="mt-3 text-2xl font-extrabold sm:mt-4 sm:text-4xl">
+            {/* CAMBIO */}
+
+            <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-[#171717] sm:mt-4 sm:text-4xl lg:text-5xl">
               Resolvemos tus dudas
             </h2>
 
