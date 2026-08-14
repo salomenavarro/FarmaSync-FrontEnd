@@ -178,20 +178,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* OPCIÓN EMPLEADO */}
-          <div className="mt-4 rounded-xl border border-[#00A8A8]/30 bg-[#00A8A8]/10 p-2.5 text-center sm:p-3 lg:mt-5">
-            <p className="text-xs font-semibold text-[#171717]">
-              ¿Eres empleado autorizado?
-            </p>
-            <Link
-              href="/registro-cuidador"
-              className="mt-1 inline-flex items-center gap-1.5 text-xs font-extrabold text-[#00A8A8] hover:underline"
-            >
-              <UserCheck className="h-4 w-4" />
-              Ingresa como empleado aquí
-            </Link>
-          </div>
-
           <div className="mt-5 space-y-2 text-center text-xs sm:mt-6 lg:mt-8">
             <p className="text-[#6B7280]">
               ¿No tienes una cuenta?{" "}
