@@ -23,12 +23,12 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // AQUÍ iría la lógica de autenticación o llamada a API
     console.log("Datos de inicio de sesión:", formData);
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#FCFBDC] p-6">
+    // CAMBIO: py-8 y overflow-y-auto aseguran que en PCs pequeñas con poca altura siempre se vea centrado y scrolee si hace falta
+    <div className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-[#FCFBDC] p-4 py-8 sm:p-6">
       
       {/* PATRÓN DE CÁPSULAS Y PASTILLAS DE FONDO */}
       <div className="absolute -left-12 -top-12 h-72 w-28 rotate-45 rounded-full border-[12px] border-[#00A8A8]/20 bg-[#00A8A8]/10 backdrop-blur-sm" />
@@ -44,15 +44,17 @@ export default function LoginPage() {
       <div className="pointer-events-none absolute left-1/4 top-1/3 h-96 w-96 rounded-full bg-[#00A8A8]/15 blur-3xl" />
       <div className="pointer-events-none absolute bottom-1/3 right-1/4 h-80 w-80 rounded-full bg-[#00A8A8]/15 blur-3xl" />
 
-      {/* CONTENEDOR PRINCIPAL */}
-      <div className="relative z-10 flex w-full max-w-4xl overflow-hidden rounded-3xl border border-[#00A8A8]/20 bg-[#00A8A8]/10 p-4 shadow-xl backdrop-blur-md md:p-8">
+      {/* CONTENEDOR PRINCIPAL - HERO CENTRADO */}
+      {/* CAMBIO: my-auto para auto-centrado perfecto + max-w adaptativo */}
+      <div className="relative z-10 my-auto flex w-full max-w-sm items-center overflow-hidden rounded-3xl border border-[#00A8A8]/20 bg-[#00A8A8]/10 p-4 shadow-xl backdrop-blur-md md:max-w-3xl md:p-6 lg:max-w-4xl lg:p-8">
         
         {/* COLUMNA IZQUIERDA - BIENVENIDA */}
-        <div className="hidden flex-1 flex-col justify-between p-8 md:flex">
+        {/* CAMBIO: md:w-1/2 para balancear proporciones en pantallas de laptop pequeñas */}
+        <div className="hidden flex-1 flex-col justify-between gap-6 p-4 md:flex md:w-1/2 lg:w-3/5 lg:p-6">
           
-          {/* LOGO MÁS GRANDE */}
-          <div className="flex items-center gap-4">
-            <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-[#00A8A8]/40 bg-white p-1 shadow-lg">
+          {/* LOGO */}
+          <div className="flex items-center gap-3 lg:gap-4">
+            <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-[#00A8A8]/40 bg-white p-1 shadow-lg lg:h-20 lg:w-20">
               <Image
                 src="/images/logo1.jpeg"
                 alt="FarmaSync Logo"
@@ -61,17 +63,18 @@ export default function LoginPage() {
                 priority
               />
             </div>
-            <span className="text-3xl font-black tracking-tight text-[#171717]">
+            <span className="text-2xl font-black tracking-tight text-[#171717] lg:text-3xl">
               FarmaSync
             </span>
           </div>
 
-          <div className="my-auto space-y-4 pr-6">
-            <h1 className="text-5xl font-extrabold leading-tight text-[#171717]">
+          <div className="my-auto space-y-3 lg:space-y-4 pr-4">
+            {/* CAMBIO: text-4xl en pantallas medianas para no sobrecargar visualmente */}
+            <h1 className="text-3xl font-extrabold leading-tight text-[#171717] md:text-4xl lg:text-5xl">
               Bienvenido <br />
               <span className="text-[#00A8A8]">de nuevo</span>
             </h1>
-            <p className="text-sm font-medium text-[#6B7280]">
+            <p className="text-xs font-medium text-[#6B7280] lg:text-sm">
               Ingresa tu número de documento para gestionar tus reservas de medicamentos sin filas.
             </p>
           </div>
@@ -82,7 +85,8 @@ export default function LoginPage() {
         </div>
 
         {/* COLUMNA DERECHA - TARJETA DE LOGIN */}
-        <div className="w-full rounded-2xl border-2 border-[#00A8A8]/30 bg-gradient-to-b from-white via-white to-[#00A8A8]/10 p-8 shadow-2xl backdrop-blur-xl md:w-[420px]">
+        {/* CAMBIO: Ancho fijo ajustado en laptops para evitar solapamientos */}
+        <div className="w-full rounded-2xl border-2 border-[#00A8A8]/30 bg-gradient-to-b from-white via-white to-[#00A8A8]/10 p-6 shadow-2xl backdrop-blur-xl md:w-[380px] lg:w-[420px] lg:p-8">
           
           {/* Logo móvil */}
           <div className="mb-6 flex items-center justify-center gap-3 md:hidden">
@@ -98,26 +102,26 @@ export default function LoginPage() {
             <span className="text-2xl font-extrabold text-[#171717]">FarmaSync</span>
           </div>
 
-          <div className="mb-8">
+          <div className="mb-6 lg:mb-8">
             <h2 className="text-2xl font-extrabold text-[#171717]">Iniciar Sesión</h2>
             <p className="mt-1 text-xs font-medium text-[#6B7280]">
               Ingresa tus datos para acceder a tu perfil
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-[#171717]">
                 Número de Cédula (CC)
               </label>
-              <div className="relative mt-2">
+              <div className="relative mt-1.5 lg:mt-2">
                 <input
                   type="text"
                   name="documento"
                   value={formData.documento}
                   onChange={handleChange}
                   placeholder="Ej: 1017123456"
-                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-3 pl-11 pr-4 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30"
+                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-2.5 pl-11 pr-4 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30 lg:py-3"
                   required
                 />
                 <CreditCard className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00A8A8]" />
@@ -128,14 +132,14 @@ export default function LoginPage() {
               <label className="block text-xs font-bold uppercase tracking-wider text-[#171717]">
                 Contraseña
               </label>
-              <div className="relative mt-2">
+              <div className="relative mt-1.5 lg:mt-2">
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-3 pl-11 pr-11 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30"
+                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-2.5 pl-11 pr-11 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30 lg:py-3"
                   required
                 />
                 <Lock className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00A8A8]" />
@@ -169,27 +173,27 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-[#00A8A8] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#00A8A8]/30 transition-all hover:bg-[#008C8C] hover:shadow-xl active:scale-[0.98]"
+              className="w-full rounded-xl bg-[#00A8A8] py-3 text-sm font-bold text-white shadow-lg shadow-[#00A8A8]/30 transition-all hover:bg-[#008C8C] hover:shadow-xl active:scale-[0.98] lg:py-3.5"
             >
               INGRESAR
             </button>
           </form>
 
           {/* OPCIÓN EMPLEADO */}
-          <div className="mt-5 rounded-xl border border-[#00A8A8]/30 bg-[#00A8A8]/10 p-3 text-center">
+          <div className="mt-4 rounded-xl border border-[#00A8A8]/30 bg-[#00A8A8]/10 p-2.5 text-center lg:mt-5 lg:p-3">
             <p className="text-xs font-semibold text-[#171717]">
               ¿Eres empleado autorizado?
             </p>
             <Link
               href="/registro-cuidador"
-              className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-extrabold text-[#00A8A8] hover:underline"
+              className="mt-1 inline-flex items-center gap-1.5 text-xs font-extrabold text-[#00A8A8] hover:underline"
             >
               <UserCheck className="h-4 w-4" />
               Ingresa como empleado aquí
             </Link>
           </div>
 
-          <div className="mt-8 space-y-2 text-center text-xs">
+          <div className="mt-6 space-y-2 text-center text-xs lg:mt-8">
             <p className="text-[#6B7280]">
               ¿No tienes una cuenta?{" "}
               <Link href="/registro" className="font-bold text-[#00A8A8] hover:underline">
