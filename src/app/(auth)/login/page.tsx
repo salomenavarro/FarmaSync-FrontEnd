@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, EyeOff, CreditCard, Lock, UserCheck } from "lucide-react";
+import { Eye, EyeOff, CreditCard, Lock, UserCheck,ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,19 +29,213 @@ export default function LoginPage() {
   return (
     // CAMBIO: py-8 y overflow-y-auto aseguran que en PCs pequeñas con poca altura siempre se vea centrado y scrolee si hace falta
 <div className="relative flex min-h-dvh w-full items-center justify-center overflow-x-hidden overflow-y-auto bg-[#FCFBDC] px-3 py-6 sm:px-6 sm:py-8 md:h-dvh md:min-h-0 md:overflow-y-hidden">      
-      {/* PATRÓN DE CÁPSULAS Y PASTILLAS DE FONDO */}
-      <div className="absolute -left-12 -top-12 h-36 w-16 sm:h-48 sm:w-20 sm:h-72 sm:w-28 rotate-45 rounded-full border-[12px] border-[#00A8A8]/20 bg-[#00A8A8]/10 backdrop-blur-sm" />
-      <div className="absolute top-8 left-1/4 h-24 w-10 sm:h-36 sm:w-14 -rotate-12 rounded-full border-4 border-[#00A8A8]/25 bg-white/40" />
-      <div className="absolute top-12 right-1/3 h-16 w-16 rounded-full border-4 border-[#00A8A8]/20 bg-[#00A8A8]/15" />
-      <div className="absolute -right-8 top-16 h-40 w-18 sm:h-56 sm:w-24 -rotate-45 rounded-full border-8 border-[#00A8A8]/20 bg-[#00A8A8]/10" />
-      <div className="absolute left-6 top-1/2 h-14 w-32 sm:h-20 sm:w-44 -translate-y-1/2 rotate-12 rounded-full border-4 border-[#00A8A8]/20 bg-white/50" />
-      <div className="absolute bottom-8 left-12 h-36 w-16 sm:h-48 sm:w-20 rotate-45 rounded-full border-[10px] border-[#00A8A8]/20 bg-[#00A8A8]/10" />
-      <div className="absolute bottom-10 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full border-4 border-[#00A8A8]/25 bg-white/60" />
-      <div className="absolute -bottom-16 -right-10 h-56 w-28 sm:h-80 sm:w-36 -rotate-45 rounded-full border-[16px] border-[#00A8A8]/25 bg-[#00A8A8]/15" />
+      
+       {/* ===================================================== */}
+      {/* BOTÓN VOLVER AL INICIO */}
+      {/* ===================================================== */}
 
-      {/* Halos verdes */}
-      <div className="pointer-events-none absolute left-1/4 top-1/3 h-64 w-64 sm:h-96 sm:w-96 rounded-full bg-[#00A8A8]/15 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-1/3 right-1/4 h-56 w-56 sm:h-80 sm:w-80 rounded-full bg-[#00A8A8]/15 blur-3xl" />
+
+      <Link
+        href="/"
+        className="absolute left-5 top-5 z-30 flex items-center gap-2 rounded-xl border border-[#00A8A8]/20 bg-white/90 px-4 py-2.5 text-sm font-semibold text-[#171717] shadow-md backdrop-blur-sm transition-all hover:bg-white hover:text-[#00A8A8] hover:shadow-lg sm:left-6 sm:top-6"
+      >
+        <ArrowLeft className="h-5 w-5" />
+        <span>Volver al inicio</span>
+      </Link>
+      
+      {/* ===================================================== */}
+      {/* PATRÓN DE FONDO */}
+      {/* ===================================================== */}
+
+
+      {/* CÍRCULO SUPERIOR DERECHO */}
+
+
+      <div className="pointer-events-none absolute -right-10 top-8 h-36 w-36 rounded-full border-[5px] border-[#00A8A8]/30 sm:h-44 sm:w-44 md:h-52 md:w-52" />
+
+
+      {/* CÍRCULO IZQUIERDO */}
+
+
+      <div className="pointer-events-none absolute -left-12 top-[30%] h-32 w-32 rounded-full border-[5px] border-[#00A8A8]/25 sm:h-40 sm:w-40 md:h-48 md:w-48" />
+
+
+      {/* CÍRCULO INFERIOR DERECHO */}
+
+
+      <div className="pointer-events-none absolute -right-8 bottom-5 h-40 w-40 rounded-full border-[6px] border-[#00A8A8]/30 sm:h-48 sm:w-48 md:h-56 md:w-56" />
+
+
+      {/* CÍRCULO PEQUEÑO */}
+
+
+      <div className="pointer-events-none absolute bottom-16 left-[28%] h-12 w-12 rounded-full border-2 border-[#00A8A8]/25 sm:h-16 sm:w-16" />
+
+
+      {/* ===================================================== */}
+      {/* CRUCES - SEPARADAS DE LOS CÍRCULOS */}
+      {/* ===================================================== */}
+
+
+      {/* Cruz superior izquierda */}
+
+
+      <div className="pointer-events-none absolute left-[16%] top-[12%] text-5xl font-black text-[#00A8A8]/30 sm:text-6xl">
+        +
+      </div>
+
+
+      {/* Cruz superior central */}
+
+
+      <div className="pointer-events-none absolute left-[48%] top-[7%] text-6xl font-black text-[#00A8A8]/30 sm:text-7xl">
+        +
+      </div>
+
+
+      {/* Cruz derecha */}
+
+
+      <div className="pointer-events-none absolute right-[17%] top-[28%] text-5xl font-black text-[#00A8A8]/30 sm:text-6xl">
+        +
+      </div>
+
+
+      {/* Cruz izquierda central */}
+
+
+      <div className="pointer-events-none absolute left-[14%] top-[55%] text-6xl font-black text-[#00A8A8]/30 sm:text-7xl">
+        +
+      </div>
+
+
+      {/* Cruz inferior derecha */}
+
+
+      <div className="pointer-events-none absolute right-[18%] bottom-[15%] text-5xl font-black text-[#00A8A8]/30 sm:text-6xl">
+        +
+      </div>
+
+
+      {/* Cruz inferior izquierda */}
+
+
+      <div className="pointer-events-none absolute left-[5%] bottom-[8%] text-4xl font-black text-[#00A8A8]/25 sm:text-5xl">
+        +
+      </div>
+
+
+
+
+      {/* ===================================================== */}
+      {/* PUNTOS DECORATIVOS */}
+      {/* ===================================================== */}
+
+
+      <div className="pointer-events-none absolute left-[8%] top-[18%] h-4 w-4 rounded-full bg-[#00A8A8]/35" />
+
+
+      <div className="pointer-events-none absolute left-[33%] top-[13%] h-3 w-3 rounded-full bg-[#00A8A8]/30" />
+
+
+      <div className="pointer-events-none absolute right-[27%] top-[8%] h-5 w-5 rounded-full bg-[#00A8A8]/30" />
+
+
+      <div className="pointer-events-none absolute right-[8%] top-[52%] h-4 w-4 rounded-full bg-[#00A8A8]/30" />
+
+
+      <div className="pointer-events-none absolute left-[20%] bottom-[25%] h-5 w-5 rounded-full bg-[#00A8A8]/25" />
+
+
+      <div className="pointer-events-none absolute right-[31%] bottom-[10%] h-4 w-4 rounded-full bg-[#00A8A8]/30" />
+
+
+      <div className="pointer-events-none absolute left-[39%] bottom-[8%] h-3 w-3 rounded-full bg-[#00A8A8]/30" />
+
+
+
+
+      {/* ===================================================== */}
+      {/* LÍNEAS DECORATIVAS */}
+      {/* ===================================================== */}
+
+
+      <div className="pointer-events-none absolute left-[23%] top-[20%] h-[2px] w-20 rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-28" />
+
+
+      <div className="pointer-events-none absolute right-[25%] top-[18%] h-[2px] w-20 -rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-28" />
+
+
+      <div className="pointer-events-none absolute left-[7%] bottom-[20%] h-[2px] w-20 -rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-28" />
+
+
+      <div className="pointer-events-none absolute right-[8%] bottom-[30%] h-[2px] w-20 rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-28" />
+
+
+      <div className="pointer-events-none absolute right-[38%] bottom-[7%] h-[2px] w-16 -rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-24" />
+
+
+
+
+      {/* ===================================================== */}
+      {/* GRUPOS DE PUNTOS */}
+      {/* ===================================================== */}
+
+
+      <div className="pointer-events-none absolute left-[10%] top-[35%] grid grid-cols-4 gap-2 opacity-50">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+
+
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+
+
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+      </div>
+
+
+
+
+      <div className="pointer-events-none absolute right-[10%] bottom-[22%] grid grid-cols-4 gap-2 opacity-50">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+
+
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+
+
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+      </div>
+
+
+
+
+      {/* ===================================================== */}
+      {/* HALOS */}
+      {/* ===================================================== */}
+
+
+      <div className="pointer-events-none absolute left-[15%] top-[15%] h-64 w-64 rounded-full bg-[#00A8A8]/10 blur-3xl" />
+
+
+      <div className="pointer-events-none absolute right-[15%] bottom-[15%] h-64 w-64 rounded-full bg-[#00A8A8]/10 blur-3xl" />
+
 
       {/* CONTENEDOR PRINCIPAL - HERO CENTRADO */}
       {/* CAMBIO: my-auto para auto-centrado perfecto + max-w adaptativo */}

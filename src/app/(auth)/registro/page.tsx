@@ -11,39 +11,165 @@ import {
   Calendar,
   Eye,
   EyeOff,
+  ArrowLeft
 } from "lucide-react";
 
 export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-<div className="relative flex min-h-dvh w-full items-center justify-center overflow-x-hidden overflow-y-auto bg-[#FCFBDC] p-3 sm:p-4 md:h-dvh md:overflow-y-hidden md:p-6">
-      {/* PATRÓN DE CÁPSULAS Y PASTILLAS */}
-      <div className="absolute -left-10 -top-10 h-36 w-16 rotate-45 rounded-full border-6 border-[#00A8A8]/20 bg-[#00A8A8]/10 backdrop-blur-sm sm:-left-12 sm:-top-12 sm:h-48 sm:w-20 sm:border-8 md:h-72 md:w-28 md:border-[12px]" />
+    <div className="relative flex min-h-dvh w-full items-center justify-center overflow-x-hidden overflow-y-auto bg-[#FCFBDC] p-3 sm:p-4 md:h-dvh md:overflow-y-hidden md:p-6">
 
-      <div className="absolute left-1/4 top-6 h-20 w-8 -rotate-12 rounded-full border-2 border-[#00A8A8]/25 bg-white/40 sm:top-8 sm:h-24 sm:w-10 md:h-36 md:w-14 md:border-4" />
+      {/* ===================================================== */}
+      {/* BOTÓN VOLVER AL INICIO */}
+      {/* ===================================================== */}
 
-      <div className="absolute right-1/3 top-10 h-8 w-8 rounded-full border-2 border-[#00A8A8]/20 bg-[#00A8A8]/15 sm:top-12 sm:h-10 sm:w-10 md:h-16 md:w-16 md:border-4" />
+      <Link
+        href="/"
+        className="absolute left-5 top-5 z-30 flex items-center gap-2 rounded-xl border border-[#00A8A8]/20 bg-white/90 px-4 py-2.5 text-sm font-semibold text-[#171717] shadow-md backdrop-blur-sm transition-all hover:bg-white hover:text-[#00A8A8] hover:shadow-lg sm:left-6 sm:top-6"
+      >
+        <ArrowLeft className="h-5 w-5" />
+        <span>Volver al inicio</span>
+      </Link>
 
-      <div className="absolute -right-6 top-12 h-32 w-12 -rotate-45 rounded-full border-4 border-[#00A8A8]/20 bg-[#00A8A8]/10 sm:-right-8 sm:top-16 sm:h-40 sm:w-16 md:h-56 md:w-24 md:border-8" />
+      {/* ===================================================== */}
+      {/* PATRÓN DE FONDO */}
+      {/* ===================================================== */}
 
-      <div className="absolute left-0 top-1/2 h-12 w-24 -translate-y-1/2 rotate-12 rounded-full border-2 border-[#00A8A8]/20 bg-white/50 sm:left-2 sm:h-14 sm:w-28 md:left-6 md:h-20 md:w-44 md:border-4" />
+      {/* CÍRCULO SUPERIOR DERECHO */}
+      <div className="pointer-events-none absolute -right-10 top-8 h-36 w-36 rounded-full border-[5px] border-[#00A8A8]/30 sm:h-44 sm:w-44 md:h-52 md:w-52" />
 
-      <div className="absolute bottom-6 left-4 h-28 w-12 rotate-45 rounded-full border-6 border-[#00A8A8]/20 bg-[#00A8A8]/10 sm:bottom-8 sm:left-6 sm:h-32 sm:w-14 sm:border-8 md:bottom-8 md:left-12 md:h-48 md:w-20 md:border-[10px]" />
+      {/* CÍRCULO IZQUIERDO */}
+      <div className="pointer-events-none absolute -left-12 top-[30%] h-32 w-32 rounded-full border-[5px] border-[#00A8A8]/25 sm:h-40 sm:w-40 md:h-48 md:w-48" />
 
-      <div className="absolute bottom-8 left-1/2 h-12 w-12 -translate-x-1/2 rounded-full border-2 border-[#00A8A8]/25 bg-white/60 sm:h-14 sm:w-14 md:h-20 md:w-20 md:border-4" />
+      {/* CÍRCULO INFERIOR DERECHO */}
+      <div className="pointer-events-none absolute -right-8 bottom-5 h-40 w-40 rounded-full border-[6px] border-[#00A8A8]/30 sm:h-48 sm:w-48 md:h-56 md:w-56" />
 
-      <div className="absolute -bottom-12 -right-8 h-48 w-20 -rotate-45 rounded-full border-6 border-[#00A8A8]/25 bg-[#00A8A8]/15 sm:-bottom-16 sm:-right-10 sm:h-56 sm:w-24 sm:border-8 md:h-80 md:w-36 md:border-[16px]" />
+      {/* CÍRCULO PEQUEÑO */}
+      <div className="pointer-events-none absolute bottom-16 left-[28%] h-12 w-12 rounded-full border-2 border-[#00A8A8]/25 sm:h-16 sm:w-16" />
 
-      {/* HALOS VERDES */}
-      <div className="pointer-events-none absolute left-1/4 top-1/3 h-48 w-48 rounded-full bg-[#00A8A8]/15 blur-3xl sm:h-64 sm:w-64 md:h-96 md:w-96" />
+      {/* ===================================================== */}
+      {/* CRUCES - SEPARADAS DE LOS CÍRCULOS */}
+      {/* ===================================================== */}
 
-      <div className="pointer-events-none absolute bottom-1/3 right-1/4 h-44 w-44 rounded-full bg-[#00A8A8]/15 blur-3xl sm:h-56 sm:w-56 md:h-80 md:w-80" />
+      {/* Cruz superior izquierda */}
+      <div className="pointer-events-none absolute left-[16%] top-[12%] text-5xl font-black text-[#00A8A8]/30 sm:text-6xl">
+        +
+      </div>
 
+      {/* Cruz superior central */}
+      <div className="pointer-events-none absolute left-[48%] top-[7%] text-6xl font-black text-[#00A8A8]/30 sm:text-7xl">
+        +
+      </div>
+
+      {/* Cruz derecha */}
+      <div className="pointer-events-none absolute right-[17%] top-[28%] text-5xl font-black text-[#00A8A8]/30 sm:text-6xl">
+        +
+      </div>
+
+      {/* Cruz izquierda central */}
+      <div className="pointer-events-none absolute left-[14%] top-[55%] text-6xl font-black text-[#00A8A8]/30 sm:text-7xl">
+        +
+      </div>
+
+      {/* Cruz inferior derecha */}
+      <div className="pointer-events-none absolute right-[18%] bottom-[15%] text-5xl font-black text-[#00A8A8]/30 sm:text-6xl">
+        +
+      </div>
+
+      {/* Cruz inferior izquierda */}
+      <div className="pointer-events-none absolute left-[5%] bottom-[8%] text-4xl font-black text-[#00A8A8]/25 sm:text-5xl">
+        +
+      </div>
+
+      {/* ===================================================== */}
+      {/* PUNTOS DECORATIVOS */}
+      {/* ===================================================== */}
+
+      <div className="pointer-events-none absolute left-[8%] top-[18%] h-4 w-4 rounded-full bg-[#00A8A8]/35" />
+
+      <div className="pointer-events-none absolute left-[33%] top-[13%] h-3 w-3 rounded-full bg-[#00A8A8]/30" />
+
+      <div className="pointer-events-none absolute right-[27%] top-[8%] h-5 w-5 rounded-full bg-[#00A8A8]/30" />
+
+      <div className="pointer-events-none absolute right-[8%] top-[52%] h-4 w-4 rounded-full bg-[#00A8A8]/30" />
+
+      <div className="pointer-events-none absolute left-[20%] bottom-[25%] h-5 w-5 rounded-full bg-[#00A8A8]/25" />
+
+      <div className="pointer-events-none absolute right-[31%] bottom-[10%] h-4 w-4 rounded-full bg-[#00A8A8]/30" />
+
+      <div className="pointer-events-none absolute left-[39%] bottom-[8%] h-3 w-3 rounded-full bg-[#00A8A8]/30" />
+
+      {/* ===================================================== */}
+      {/* LÍNEAS DECORATIVAS */}
+      {/* ===================================================== */}
+
+      <div className="pointer-events-none absolute left-[23%] top-[20%] h-[2px] w-20 rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-28" />
+
+      <div className="pointer-events-none absolute right-[25%] top-[18%] h-[2px] w-20 -rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-28" />
+
+      <div className="pointer-events-none absolute left-[7%] bottom-[20%] h-[2px] w-20 -rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-28" />
+
+      <div className="pointer-events-none absolute right-[8%] bottom-[30%] h-[2px] w-20 rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-28" />
+
+      <div className="pointer-events-none absolute right-[38%] bottom-[7%] h-[2px] w-16 -rotate-45 rounded-full bg-[#00A8A8]/25 sm:w-24" />
+
+      {/* ===================================================== */}
+      {/* GRUPOS DE PUNTOS */}
+      {/* ===================================================== */}
+
+      <div className="pointer-events-none absolute left-[10%] top-[35%] grid grid-cols-4 gap-2 opacity-50">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+      </div>
+
+      <div className="pointer-events-none absolute right-[10%] bottom-[22%] grid grid-cols-4 gap-2 opacity-50">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#00A8A8]" />
+      </div>
+
+      {/* ===================================================== */}
+      {/* HALOS */}
+      {/* ===================================================== */}
+
+      <div className="pointer-events-none absolute left-[15%] top-[15%] h-64 w-64 rounded-full bg-[#00A8A8]/10 blur-3xl" />
+
+      <div className="pointer-events-none absolute right-[15%] bottom-[15%] h-64 w-64 rounded-full bg-[#00A8A8]/10 blur-3xl" />
+
+      {/* ===================================================== */}
       {/* CONTENEDOR PRINCIPAL */}
+      {/* ===================================================== */}
+
       <div className="relative z-10 my-auto flex w-full max-w-sm flex-col items-center overflow-hidden rounded-3xl border border-[#00A8A8]/20 bg-[#00A8A8]/10 p-2.5 shadow-xl backdrop-blur-md sm:max-w-md sm:p-4 md:max-w-4xl md:flex-row md:p-6 lg:p-8">
 
+        {/* ===================================================== */}
         {/* COLUMNA IZQUIERDA - BIENVENIDA */}
+        {/* ===================================================== */}
+
         <div className="hidden flex-1 flex-col justify-between gap-8 p-4 md:flex md:w-1/2 md:p-6 lg:w-3/5 lg:p-8">
 
           {/* LOGO */}
@@ -79,7 +205,10 @@ export default function RegistroPage() {
           </p>
         </div>
 
+        {/* ===================================================== */}
         {/* COLUMNA DERECHA - TARJETA DE REGISTRO */}
+        {/* ===================================================== */}
+
         <div className="w-full shrink-0 overflow-visible rounded-2xl border-2 border-[#00A8A8]/30 bg-gradient-to-b from-white via-white to-[#00A8A8]/10 p-4 shadow-2xl backdrop-blur-xl sm:p-5 md:max-h-[85vh] md:w-[380px] md:overflow-y-auto md:p-7 lg:w-[420px] lg:p-8">
 
           {/* LOGO MÓVIL */}
@@ -109,6 +238,25 @@ export default function RegistroPage() {
           </div>
 
           <form className="space-y-3.5 sm:space-y-4">
+
+            {/* ===================================================== */}
+            {/* NOMBRE COMPLETO */}
+            {/* ===================================================== */}
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717]">
+                Nombre Completo
+              </label>
+
+              <div className="relative mt-1.5 sm:mt-2">
+                <input
+                  type="text"
+                  placeholder="Ingresa tu nombre completo"
+                  className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-2.5 px-3 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30 sm:py-3 sm:px-4"
+                  required
+                />
+              </div>
+            </div>
 
             {/* CÉDULA */}
             <div>
@@ -239,6 +387,7 @@ export default function RegistroPage() {
               © 2026 FarmaSync. Todos los derechos reservados.
             </p>
           </div>
+
         </div>
       </div>
     </div>
