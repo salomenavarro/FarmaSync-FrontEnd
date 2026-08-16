@@ -324,19 +324,23 @@ export default function Hero() {
 
             {/* IMAGEN */}
             <div className="relative z-10 w-full max-w-xs sm:max-w-md lg:max-w-lg">
-
-              <Image
-                src="/images/doc1.png"
-                alt=""
-                width={520}
-                height={650}
-                priority
-                quality={100}
-                sizes="(max-width: 640px) 320px, (max-width: 1024px) 450px, 520px"
-                className="h-auto w-full object-contain drop-shadow-[0_20px_30px_rgba(0,168,168,0.15)]"
-              />
-
-            </div>
+  <Image
+    src="/images/doc4.png"
+    alt="Profesional de salud de FarmaSync"
+    width={1199}
+    height={1312}
+    priority
+    quality={100}
+    sizes="(max-width: 640px) 320px, (max-width: 1024px) 450px, 520px"
+    className="
+      h-auto
+      w-full
+      object-contain
+      drop-shadow-[0_20px_30px_rgba(0,168,168,0.15)]
+      animate-float
+    "
+  />
+</div>
           </div>
 
         </div>
