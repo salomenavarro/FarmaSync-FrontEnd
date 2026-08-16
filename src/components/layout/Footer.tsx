@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <footer
       id="footer"
-      className="border-t border-[#DCEEEE] bg-white px-4 pb-8 pt-12 sm:px-6 sm:pt-16 lg:px-8"
+      className="border-t border-[#DCEEEE] bg-[#e8f0ec] px-4 pb-8 pt-12 sm:px-6 sm:pt-16 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 text-center sm:grid-cols-2 sm:text-left lg:grid-cols-4">
         {/* BRAND */}

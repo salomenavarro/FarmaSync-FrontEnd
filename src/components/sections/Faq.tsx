@@ -37,7 +37,7 @@ export default function Faq() {
   return (
     <section
       id="faq"
-      className="bg-[#F4FBFA] px-4 py-12 sm:px-6 sm:py-24 lg:px-8"
+      className="bg-white px-4 py-12 sm:px-6 sm:py-24 lg:px-8"
     >
       <div className="mx-auto max-w-3xl">
         <div className="mb-10 text-center sm:mb-12">
@@ -62,7 +62,7 @@ export default function Faq() {
             return (
               <article
                 key={index}
-                className="overflow-hidden rounded-2xl border border-[#DCEEEE] bg-white transition duration-300 hover:shadow-md"
+                className="overflow-hidden rounded-2xl border border-[#DCEEEE] bg-[#e8f0ec] transition duration-300 hover:shadow-md"
               >
                 <button
                   type="button"

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Search,
   CalendarCheck,
@@ -8,6 +10,7 @@ import {
 } from "lucide-react";
 
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 function BenefitCard({
   icon,
@@ -81,10 +84,33 @@ export default function Beneficios() {
   return (
     <section
       id="beneficios"
-      className="bg-white px-4 py-12 sm:px-6 sm:py-24 lg:px-8"
+      className="bg-[#e8f0ec] px-4 py-12 sm:px-6 sm:py-24 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
-        <div className="mb-12 text-center sm:mb-16">
+
+        {/* ===================================================== */}
+        {/* TÍTULO */}
+        {/* ===================================================== */}
+
+        <motion.div
+          className="mb-12 text-center sm:mb-16"
+          initial={{
+            opacity: 0,
+            y: 25,
+          }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+            amount: 0.25,
+          }}
+          transition={{
+            duration: 0.9,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+        >
           <h2 className="text-2xl font-extrabold tracking-tight text-[#171717] sm:text-4xl lg:text-5xl">
             Beneficios de FarmaSync
           </h2>
@@ -95,74 +121,236 @@ export default function Beneficios() {
             Facilitamos el acceso a tus medicamentos y servicios de salud de
             manera eficiente y segura.
           </p>
-        </div>
+        </motion.div>
+
+        {/* ===================================================== */}
+        {/* TARJETAS */}
+        {/* ===================================================== */}
 
         <div className="grid grid-cols-1 gap-10 pt-4 sm:grid-cols-2 sm:gap-8 sm:pt-6 lg:grid-cols-3">
-          <BenefitCard
-            icon={
-              <Search
-                className="h-6 w-6 sm:h-8 sm:w-8"
-                strokeWidth={2.5}
-              />
-            }
-            title="Consulta en tiempo real"
-            text="Olvídate de recorrer múltiples farmacias a ciegas. Nuestra plataforma te permite verificar la disponibilidad exacta de tus medicamentos en tiempo real desde cualquier dispositivo."
-          />
 
-          <BenefitCard
-            icon={
-              <CalendarCheck
-                className="h-6 w-6 sm:h-8 sm:w-8"
-                strokeWidth={2.5}
-              />
-            }
-            title="Reserva anticipada"
-            text="Con tan solo unos pocos clics, puedes apartar los fármacos que necesitas de manera inmediata."
-          />
+          {/* ================================================= */}
+          {/* 1. CONSULTA */}
+          {/* ================================================= */}
 
-          <BenefitCard
-            icon={
-              <Bell
-                className="h-6 w-6 sm:h-8 sm:w-8"
-                strokeWidth={2.5}
-              />
-            }
-            title="Notificaciones"
-            text="Mantente siempre informado. Recibe avisos automáticos directamente en tu dispositivo sobre el estado de tus reservas y si un medicamento de alta demanda vuelve a estar disponible."
-          />
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 35,
+              scale: 0.97,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.18,
+            }}
+            transition={{
+              duration: 0.85,
+              delay: 0.05,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <BenefitCard
+              icon={
+                <Search
+                  className="h-6 w-6 sm:h-8 sm:w-8"
+                  strokeWidth={2.5}
+                />
+              }
+              title="Consulta en tiempo real"
+              text="Olvídate de recorrer múltiples farmacias a ciegas. Nuestra plataforma te permite verificar la disponibilidad exacta de tus medicamentos en tiempo real desde cualquier dispositivo."
+            />
+          </motion.div>
 
-          <BenefitCard
-            icon={
-              <Clock
-                className="h-6 w-6 sm:h-8 sm:w-8"
-                strokeWidth={2.5}
-              />
-            }
-            title="Menos espera"
-            text="Reduce el tiempo de búsqueda y evita filas innecesarias para obtener tus medicamentos de manera más rápida y eficiente."
-          />
+          {/* ================================================= */}
+          {/* 2. RESERVA */}
+          {/* ================================================= */}
 
-          <BenefitCard
-            icon={
-              <Pill
-                className="h-6 w-6 sm:h-8 sm:w-8"
-                strokeWidth={2.5}
-              />
-            }
-            title="Acceso oportuno"
-            text="Mejora la continuidad de tus tratamientos médicos teniendo tus medicamentos disponibles cuando realmente los necesitas."
-          />
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 35,
+              scale: 0.97,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.18,
+            }}
+            transition={{
+              duration: 0.85,
+              delay: 0.18,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <BenefitCard
+              icon={
+                <CalendarCheck
+                  className="h-6 w-6 sm:h-8 sm:w-8"
+                  strokeWidth={2.5}
+                />
+              }
+              title="Reserva anticipada"
+              text="Con tan solo unos pocos clics, puedes apartar los fármacos que necesitas de manera inmediata."
+            />
+          </motion.div>
 
-          <BenefitCard
-            icon={
-              <ShieldCheck
-                className="h-6 w-6 sm:h-8 sm:w-8"
-                strokeWidth={2.5}
-              />
-            }
-            title="Seguridad"
-            text="Protegemos tu información personal y médica mediante un proceso diseñado para ofrecerte confianza y tranquilidad."
-          />
+          {/* ================================================= */}
+          {/* 3. NOTIFICACIONES */}
+          {/* ================================================= */}
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 35,
+              scale: 0.97,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.18,
+            }}
+            transition={{
+              duration: 0.85,
+              delay: 0.31,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <BenefitCard
+              icon={
+                <Bell
+                  className="h-6 w-6 sm:h-8 sm:w-8"
+                  strokeWidth={2.5}
+                />
+              }
+              title="Notificaciones"
+              text="Mantente siempre informado. Recibe avisos automáticos directamente en tu dispositivo sobre el estado de tus reservas y si un medicamento de alta demanda vuelve a estar disponible."
+            />
+          </motion.div>
+
+          {/* ================================================= */}
+          {/* 4. MENOS ESPERA */}
+          {/* ================================================= */}
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 35,
+              scale: 0.97,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.18,
+            }}
+            transition={{
+              duration: 0.85,
+              delay: 0.44,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <BenefitCard
+              icon={
+                <Clock
+                  className="h-6 w-6 sm:h-8 sm:w-8"
+                  strokeWidth={2.5}
+                />
+              }
+              title="Menos espera"
+              text="Reduce el tiempo de búsqueda y evita filas innecesarias para obtener tus medicamentos de manera más rápida y eficiente."
+            />
+          </motion.div>
+
+          {/* ================================================= */}
+          {/* 5. ACCESO OPORTUNO */}
+          {/* ================================================= */}
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 35,
+              scale: 0.97,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.18,
+            }}
+            transition={{
+              duration: 0.85,
+              delay: 0.57,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <BenefitCard
+              icon={
+                <Pill
+                  className="h-6 w-6 sm:h-8 sm:w-8"
+                  strokeWidth={2.5}
+                />
+              }
+              title="Acceso oportuno"
+              text="Mejora la continuidad de tus tratamientos médicos teniendo tus medicamentos disponibles cuando realmente los necesitas."
+            />
+          </motion.div>
+
+          {/* ================================================= */}
+          {/* 6. SEGURIDAD */}
+          {/* ================================================= */}
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 35,
+              scale: 0.97,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.18,
+            }}
+            transition={{
+              duration: 0.85,
+              delay: 0.70,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <BenefitCard
+              icon={
+                <ShieldCheck
+                  className="h-6 w-6 sm:h-8 sm:w-8"
+                  strokeWidth={2.5}
+                />
+              }
+              title="Seguridad"
+              text="Protegemos tu información personal y médica mediante un proceso diseñado para ofrecerte confianza y tranquilidad."
+            />
+          </motion.div>
+
         </div>
       </div>
     </section>

@@ -1,16 +1,21 @@
 @import "tailwindcss";
 
+/* =========================================================
+   CONFIGURACIÓN GENERAL
+========================================================= */
 
 html {
   scroll-behavior: smooth;
 }
 
-
 body {
   margin: 0;
 }
 
-/* Animación del menú de navegación */
+
+/* =========================================================
+   ANIMACIÓN DEL MENÚ DE NAVEGACIÓN
+========================================================= */
 
 .nav-link {
   position: relative;
@@ -18,6 +23,7 @@ body {
 }
 
 /* Línea debajo del enlace */
+
 .nav-link::after {
   content: "";
   position: absolute;
@@ -32,17 +38,86 @@ body {
 }
 
 /* Al pasar el mouse */
+
 .nav-link:hover::after {
   width: 70%;
 }
 
+
+/* =========================================================
+   ANIMACIÓN FLOTANTE DE LA DOCTORA
+========================================================= */
+
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 
   50% {
     transform: translateY(-12px);
+  }
+}
+
+.animate-float {
+  animation: float 5s ease-in-out 4s infinite;
+}
+
+
+/* =========================================================
+   ENTRADA DE LA DOCTORA
+   Entra lentamente desde la derecha
+========================================================= */
+
+@keyframes hero-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(120px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.hero-slide-in {
+  animation: hero-slide-in 4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+/* =========================================================
+   ENTRADA DEL TEXTO DEL HERO
+   Entra suavemente desde la izquierda
+========================================================= */
+
+@keyframes hero-text-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.hero-text-in {
+  animation: hero-text-in 2.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+/* =========================================================
+   ACCESIBILIDAD
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
   }
 }

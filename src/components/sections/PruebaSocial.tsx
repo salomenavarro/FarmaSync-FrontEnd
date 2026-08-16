@@ -1,4 +1,119 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+
+/* =========================================================
+   CONTADOR ANIMADO
+========================================================= */
+
+function AnimatedNumber({
+  value,
+  suffix = "",
+  prefix = "",
+  duration = 1500,
+}: {
+  value: number;
+  suffix?: string;
+  prefix?: string;
+  duration?: number;
+}) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [finished, setFinished] = useState(false);
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  /* ---------------------------------------------------------
+     DETECTAR CUANDO ENTRA EN PANTALLA
+  --------------------------------------------------------- */
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started) {
+          setStarted(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.5,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [started]);
+
+  /* ---------------------------------------------------------
+     ANIMACIÓN DEL CONTADOR
+  --------------------------------------------------------- */
+
+  useEffect(() => {
+    if (!started) return;
+
+    let startTime: number | null = null;
+    let animationFrame: number;
+
+    const animate = (currentTime: number) => {
+      if (startTime === null) {
+        startTime = currentTime;
+      }
+
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      /* Movimiento suave al final */
+
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+
+      const currentValue = Math.floor(easeOut * value);
+
+      setCount(currentValue);
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        setCount(value);
+        setFinished(true);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [started, value, duration]);
+
+  return (
+    <div
+      ref={ref}
+      className={`
+        inline-block
+        text-2xl
+        font-extrabold
+        text-[#00A8A8]
+        sm:text-4xl
+        transition-transform
+        duration-300
+        ease-out
+        ${finished ? "scale-[1.08]" : "scale-100"}
+      `}
+    >
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
+    </div>
+  );
+}
+
+/* =========================================================
+   TESTIMONIO
+========================================================= */
 
 function Testimonial({
   text,
@@ -71,14 +186,24 @@ function Testimonial({
   );
 }
 
+/* =========================================================
+   COMPONENTE PRINCIPAL
+========================================================= */
+
 export default function PruebaSocial() {
   return (
     <section
       id="prueba_social"
-      className="bg-white px-4 py-12 sm:px-6 sm:py-24 lg:px-8"
+      className="bg-[#e8f0ec] px-4 py-12 sm:px-6 sm:py-24 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
+
+        {/* =================================================
+            ENCABEZADO
+        ================================================= */}
+
         <div className="mb-10 text-center sm:mb-12">
+
           <span className="inline-block rounded-full bg-[#00A8A8]/10 px-3.5 py-1 text-xs font-semibold text-[#00A8A8] sm:px-4 sm:py-1.5 sm:text-sm">
             PRUEBA SOCIAL
           </span>
@@ -90,29 +215,56 @@ export default function PruebaSocial() {
           <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-[#00A8A8] sm:mt-4" />
         </div>
 
+        {/* =================================================
+            ESTADÍSTICAS
+        ================================================= */}
+
         <div className="mx-auto max-w-4xl rounded-2xl border border-[#DCEEEE] bg-white p-5 shadow-sm md:rounded-full sm:p-6">
+
           <div className="grid grid-cols-1 divide-y divide-[#E5E7EB] md:grid-cols-3 md:divide-x md:divide-y-0">
+
+            {/* =================================================
+                USUARIOS
+            ================================================= */}
+
             <div className="pt-2 text-center md:pt-0">
-              <div className="text-2xl font-extrabold text-[#00A8A8] sm:text-4xl">
-                +1,000
-              </div>
+
+              <AnimatedNumber
+                value={1000}
+                prefix="+"
+              />
 
               <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#6B7280] sm:text-xs">
                 Usuarios Satisfechos
               </p>
+
             </div>
 
+            {/* =================================================
+                MENOS FILAS
+            ================================================= */}
+
             <div className="pt-4 text-center md:pt-0">
-              <div className="text-2xl font-extrabold text-[#00A8A8] sm:text-4xl">
-                98%
-              </div>
+
+              <AnimatedNumber
+                value={98}
+                suffix="%"
+              />
 
               <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#6B7280] sm:text-xs">
                 Menos Filas
               </p>
+
             </div>
 
+            {/* =================================================
+                CONSULTAS
+            ================================================= */}
+
             <div className="pt-4 text-center md:pt-0">
+
+              {/* 24/7 SE MANTIENE EXACTAMENTE IGUAL */}
+
               <div className="text-2xl font-extrabold text-[#00A8A8] sm:text-4xl">
                 24/7
               </div>
@@ -120,16 +272,27 @@ export default function PruebaSocial() {
               <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#6B7280] sm:text-xs">
                 Consultas Disponibles
               </p>
+
             </div>
+
           </div>
         </div>
+
+        {/* =================================================
+            DESCRIPCIÓN
+        ================================================= */}
 
         <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-[#6B7280] sm:mt-10 sm:text-lg">
           Lee las experiencias reales de pacientes y profesionales de la salud
           que ya transformaron su acceso a medicamentos con FarmaSync.
         </p>
 
+        {/* =================================================
+            TESTIMONIOS
+        ================================================= */}
+
         <div className="mt-10 grid grid-cols-1 items-stretch gap-5 sm:mt-12 sm:gap-6 md:grid-cols-3">
+
           <Testimonial
             text="Excelente plataforma. Antes perdía horas haciendo filas en la farmacia solo para que me dijeran que no había stock. Ahora reservo desde casa."
             name="Carlos Mendoza"
@@ -147,7 +310,9 @@ export default function PruebaSocial() {
             name="Andrés Felipe G."
             role="Usuario Frecuente"
           />
+
         </div>
+
       </div>
     </section>
   );
