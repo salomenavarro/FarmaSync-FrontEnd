@@ -11,7 +11,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -31,18 +31,61 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-transparent"
-          : "bg-transparent"
-      }`}
+      className={`
+        fixed
+        left-0
+        right-0
+        top-0
+        z-50
+        transition-all
+        duration-500
+        ease-out
+      `}
     >
       <div
-        className={`flex h-16 items-center justify-between px-4 transition-all duration-300 sm:h-20 sm:px-8 lg:px-10 ${
-          scrolled
-            ? "mx-3 mt-2 rounded-full border border-[#E5F2F2] bg-white/95 shadow-md backdrop-blur-md sm:mx-4 sm:mt-3 lg:mx-8"
-            : "mx-3 mt-2 rounded-full border border-[#E5F2F2] bg-white/90 shadow-sm backdrop-blur-md sm:mx-4 sm:mt-3 lg:mx-8"
-        }`}
+        className={`
+          flex
+          h-16
+          items-center
+          justify-between
+          px-4
+          transition-all
+          duration-500
+          ease-out
+          sm:h-20
+          sm:px-8
+          lg:px-10
+
+          ${
+            scrolled
+              ? `
+                mx-3
+                mt-3
+                rounded-full
+                border
+                border-[#E5F2F2]
+                bg-white/95
+                shadow-lg
+                backdrop-blur-md
+                sm:mx-4
+                sm:mt-4
+                lg:mx-8
+              `
+              : `
+                mx-0
+                mt-0
+                rounded-none
+                border-b
+                border-transparent
+                bg-white/90
+                shadow-none
+                backdrop-blur-sm
+                sm:mx-0
+                sm:mt-0
+                lg:mx-0
+              `
+          }
+        `}
       >
         {/* ===================================================== */}
         {/* LOGO */}
@@ -57,7 +100,16 @@ export default function Navbar() {
             alt="FarmaSync"
             width={52}
             height={52}
-            className="h-9 w-9 rounded-full object-contain sm:h-12 sm:w-12"
+            className="
+              h-9
+              w-9
+              rounded-full
+              object-contain
+              transition-transform
+              duration-500
+              sm:h-12
+              sm:w-12
+            "
           />
 
           <span className="text-lg font-bold tracking-tight text-[#171717] sm:text-[21px]">
@@ -74,7 +126,17 @@ export default function Navbar() {
             <a
               key={href}
               href={href}
-              className="group relative py-2 text-base font-medium text-[#30343B] transition-colors duration-300 hover:text-[#00A8A8]"
+              className="
+                group
+                relative
+                py-2
+                text-base
+                font-medium
+                text-[#30343B]
+                transition-colors
+                duration-300
+                hover:text-[#00A8A8]
+              "
             >
               {text}
 
