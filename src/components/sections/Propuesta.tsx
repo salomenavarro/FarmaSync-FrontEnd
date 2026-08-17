@@ -1,38 +1,323 @@
 "use client";
 
+import { CalendarDays, LockKeyhole, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+
+function StepCard({
+  number,
+  label,
+  title,
+  text,
+  icon,
+  delay,
+}: {
+  number: string;
+  label: string;
+  title: string;
+  text: string;
+  icon: React.ReactNode;
+  delay: number;
+}) {
+  return (
+    <motion.div
+      className="group relative flex gap-5 sm:gap-7"
+      initial={{
+        opacity: 0,
+        x: 45,
+      }}
+      whileInView={{
+        opacity: 1,
+        x: 0,
+      }}
+      viewport={{
+        once: true,
+        amount: 0.2,
+      }}
+      transition={{
+        duration: 1.1,
+        delay,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
+      {/* ========================================= */}
+      {/* NÚMERO */}
+      {/* ========================================= */}
+
+      <div className="relative z-20 shrink-0">
+        {/* Halo del número */}
+        <div
+          className="
+            absolute
+            -inset-2
+            rounded-full
+            bg-[#00A8A8]/10
+          "
+        />
+
+        <motion.div
+          className="
+            relative
+            flex
+            h-[58px]
+            w-[58px]
+            items-center
+            justify-center
+            rounded-full
+            border-2
+            border-[#8DDDE1]
+            bg-white
+            text-[17px]
+            font-extrabold
+            text-[#00A8A8]
+            shadow-sm
+            transition-all
+            duration-300
+            group-hover:border-[#00A8A8]
+            group-hover:bg-[#00A8A8]
+            group-hover:text-white
+            group-hover:shadow-md
+            sm:h-[62px]
+            sm:w-[62px]
+            sm:text-[18px]
+          "
+          whileHover={{
+            scale: 1.06,
+          }}
+          transition={{
+            duration: 0.25,
+          }}
+        >
+          {number}
+        </motion.div>
+      </div>
+
+      {/* ========================================= */}
+      {/* TARJETA */}
+      {/* ========================================= */}
+
+      <motion.div
+        className="
+          relative
+          flex
+          min-h-[215px]
+          flex-1
+          items-center
+          rounded-2xl
+          border-2
+          border-[#27BFC2]
+          bg-white
+          p-5
+          shadow-sm
+          transition-all
+          duration-300
+          group-hover:-translate-y-1
+          group-hover:shadow-lg
+          group-hover:shadow-[#00A8A8]/10
+          sm:min-h-[215px]
+          sm:p-6
+          lg:min-h-[215px]
+        "
+        whileHover={{
+          y: -3,
+        }}
+        transition={{
+          duration: 0.25,
+        }}
+      >
+        {/* CONTENIDO */}
+
+        <div className="min-w-0 flex-1 pr-2 sm:pr-4">
+          <span
+            className="
+              text-[11px]
+              font-extrabold
+              uppercase
+              tracking-[1px]
+              text-[#00A8A8]
+              sm:text-[13px]
+            "
+          >
+            {label}
+          </span>
+
+          <h3
+            className="
+              mt-2.5
+              text-[20px]
+              font-extrabold
+              leading-tight
+              text-[#171717]
+              sm:mt-3
+              sm:text-[23px]
+            "
+          >
+            {title}
+          </h3>
+
+          <p
+            className="
+              mt-3
+              text-[13px]
+              leading-[1.7]
+              text-[#536078]
+              sm:text-[16px]
+              sm:leading-[1.75]
+            "
+          >
+            {text}
+          </p>
+        </div>
+
+        {/* ===================================== */}
+        {/* ICONO */}
+        {/* ===================================== */}
+
+        <div
+          className="
+            hidden
+            h-16
+            w-16
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            bg-[#EAF8F8]
+            text-[#00A8A8]
+            transition-all
+            duration-300
+            group-hover:scale-105
+            sm:flex
+            lg:h-[72px]
+            lg:w-[72px]
+          "
+        >
+          {icon}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export default function Propuesta() {
   return (
     <section
       id="propuesta"
-      className="bg-white px-6 py-20 sm:py-24 lg:py-28"
+      className="
+        overflow-hidden
+        bg-white
+        px-4
+        py-16
+        sm:px-6
+        sm:py-24
+        lg:px-8
+        lg:py-28
+      "
     >
-      <div className="mx-auto grid max-w-[1200px] items-center gap-16 lg:grid-cols-2">
-
+      <div
+        className="
+          mx-auto
+          grid
+          max-w-[1200px]
+          items-center
+          gap-14
+          lg:grid-cols-2
+          lg:gap-16
+        "
+      >
         {/* ===================================================== */}
         {/* COLUMNA IZQUIERDA */}
         {/* ===================================================== */}
 
         <motion.div
           className="max-w-[570px]"
-          initial={{ opacity: 0, x: -45 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
+          initial={{
+            opacity: 0,
+            x: -40,
+          }}
+          whileInView={{
+            opacity: 1,
+            x: 0,
+          }}
+          viewport={{
+            once: true,
+            amount: 0.25,
+          }}
           transition={{
             duration: 1.1,
             ease: [0.22, 1, 0.36, 1],
           }}
         >
-          <span className="text-[13px] font-bold uppercase tracking-[1px] text-[#00A8A8]">
+          {/* ETIQUETA */}
+
+          <span
+            className="
+              inline-flex
+              rounded-full
+              bg-[#EAF8F8]
+              px-3.5
+              py-1.5
+              text-[11px]
+              font-extrabold
+              uppercase
+              tracking-[1px]
+              text-[#00A8A8]
+              sm:px-4
+              sm:py-2
+              sm:text-[13px]
+            "
+          >
             El efecto FarmaSync
           </span>
 
-          <h2 className="mt-6 text-2xl font-extrabold leading-tight tracking-tight text-[#171717] sm:text-4xl lg:text-5xl">
-            Tu tratamiento no debería depender de la suerte
+          {/* TÍTULO */}
+
+          <h2
+            className="
+              mt-5
+              text-3xl
+              font-extrabold
+              leading-[1.1]
+              tracking-tight
+              text-[#171717]
+              sm:mt-6
+              sm:text-4xl
+              lg:text-5xl
+            "
+          >
+            Tu tratamiento no debería depender de la{" "}
+            <span className="relative inline-block text-[#00A8A8]">
+              suerte
+
+              {/* Subrayado decorativo */}
+
+              <span
+                className="
+                  absolute
+                  -bottom-1
+                  left-0
+                  h-[3px]
+                  w-full
+                  rounded-full
+                  bg-[#A8E3E3]
+                  sm:-bottom-2
+                "
+              />
+            </span>
           </h2>
 
-          <p className="mt-7 text-[16px] leading-[1.8] text-[#536078]">
+          {/* DESCRIPCIÓN */}
+
+          <p
+            className="
+              mt-6
+              text-[14px]
+              leading-[1.8]
+              text-[#536078]
+              sm:mt-7
+              sm:text-[16px]
+              sm:leading-[1.8]
+            "
+          >
             Miles de pacientes en Colombia se desplazan a su farmacia EPS sin
             saber si el medicamento que necesitan está disponible. FarmaSync
             elimina esa incertidumbre y las barreras entre tú y tus
@@ -42,299 +327,96 @@ export default function Propuesta() {
 
           {/* DETALLE DECORATIVO */}
 
-          <div className="mt-8 flex items-center gap-3">
+          <div className="mt-7 flex items-center gap-3 sm:mt-8">
             <div className="h-[2px] w-10 rounded-full bg-[#00A8A8]" />
+
             <div className="h-2 w-2 rounded-full bg-[#A8E3E3]" />
+
             <div className="h-2 w-2 rounded-full bg-[#DCEEEE]" />
           </div>
         </motion.div>
 
         {/* ===================================================== */}
-        {/* COLUMNA DERECHA */}
+        {/* COLUMNA DERECHA - TIMELINE */}
         {/* ===================================================== */}
 
         <div className="relative">
-
+          {/* =============================================== */}
           {/* LÍNEA DEL TIMELINE */}
+          {/* =============================================== */}
 
           <div
             className="
+              pointer-events-none
               absolute
-              bottom-[40px]
-              left-[30px]
-              top-[40px]
+              bottom-[30px]
+              left-[28px]
+              top-[30px]
               w-[2px]
-              bg-[#A8E3E3]
+              bg-[repeating-linear-gradient(to_bottom,#9FE2E4_0px,#9FE2E4_7px,transparent_7px,transparent_13px)]
+              sm:left-[30px]
             "
           />
 
-          {/* ================================================= */}
+          {/* =============================================== */}
           {/* PASO 1 */}
-          {/* ================================================= */}
+          {/* =============================================== */}
 
-          <motion.div
-            className="group relative flex gap-7 pb-20"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{
-              duration: 1.1,
-              delay: 0.15,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            {/* NÚMERO */}
+          <div className="relative pb-10 sm:pb-12">
+            <StepCard
+              number="1"
+              label="Sin desplazamientos en vano"
+              title="Consulta antes de salir"
+              text="Verifica en tiempo real si tu medicamento está disponible en las farmacias asociadas a tu EPS. Sin llamadas, sin filas, sin viajes innecesarios."
+              icon={
+                <MapPin
+                  className="h-7 w-7 sm:h-8 sm:w-8"
+                  strokeWidth={1.8}
+                />
+              }
+              delay={0.1}
+            />
+          </div>
 
-            <motion.div
-              className="
-                relative
-                z-10
-                flex
-                h-[62px]
-                w-[62px]
-                shrink-0
-                items-center
-                justify-center
-                rounded-full
-                border-2
-                border-[#DCEEEE]
-                bg-white
-                text-[18px]
-                font-bold
-                text-[#00A8A8]
-                shadow-sm
-                transition-all
-                duration-300
-                group-hover:border-[#00A8A8]
-                group-hover:bg-[#00A8A8]
-                group-hover:text-white
-                group-hover:shadow-lg
-                group-hover:shadow-[#00A8A8]/15
-              "
-              whileHover={{ scale: 1.06 }}
-              transition={{ duration: 0.25 }}
-            >
-              1
-            </motion.div>
-
-            {/* TARJETA */}
-
-            <motion.div
-              className="
-                relative
-                flex-1
-                rounded-2xl
-                border
-                border-[#E5F1F1]
-                bg-white
-                p-5
-                pt-4
-                shadow-sm
-                transition-all
-                duration-300
-                group-hover:-translate-y-1
-                group-hover:border-[#CFE7E7]
-                group-hover:shadow-md
-              "
-              whileHover={{ y: -3 }}
-              transition={{ duration: 0.25 }}
-            >
-              <div className="absolute left-0 top-5 h-8 w-[3px] rounded-r-full bg-[#00A8A8]" />
-
-              <span className="text-[13px] font-bold uppercase tracking-[1px] text-[#00A8A8]">
-                Sin desplazamientos en vano
-              </span>
-
-              <h3 className="mt-3 text-[23px] font-bold leading-tight text-[#171717]">
-                Consulta antes de salir
-              </h3>
-
-              <p className="mt-3 max-w-[560px] text-[16px] leading-[1.75] text-[#536078]">
-                Verifica en tiempo real si tu medicamento está disponible en
-                las farmacias asociadas a tu EPS. Sin llamadas, sin filas, sin
-                viajes innecesarios.
-              </p>
-            </motion.div>
-          </motion.div>
-
-          {/* ================================================= */}
+          {/* =============================================== */}
           {/* PASO 2 */}
-          {/* ================================================= */}
+          {/* =============================================== */}
 
-          <motion.div
-            className="group relative flex gap-7 pb-20"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{
-              duration: 1.1,
-              delay: 0.3,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            {/* NÚMERO */}
+          <div className="relative pb-10 sm:pb-12">
+            <StepCard
+              number="2"
+              label="Para pacientes crónicos y cuidadores"
+              title="Reserva con hasta 5 días de anticipación"
+              text="Aparta tu medicamento antes de que se agote. Si eres cuidador, puedes hacer la reserva en nombre del paciente a tu cargo sin necesitar que esté presente."
+              icon={
+                <CalendarDays
+                  className="h-7 w-7 sm:h-8 sm:w-8"
+                  strokeWidth={1.8}
+                />
+              }
+              delay={0.28}
+            />
+          </div>
 
-            <motion.div
-              className="
-                relative
-                z-10
-                flex
-                h-[62px]
-                w-[62px]
-                shrink-0
-                items-center
-                justify-center
-                rounded-full
-                border-2
-                border-[#DCEEEE]
-                bg-white
-                text-[18px]
-                font-bold
-                text-[#00A8A8]
-                shadow-sm
-                transition-all
-                duration-300
-                group-hover:border-[#00A8A8]
-                group-hover:bg-[#00A8A8]
-                group-hover:text-white
-                group-hover:shadow-lg
-                group-hover:shadow-[#00A8A8]/15
-              "
-              whileHover={{ scale: 1.06 }}
-              transition={{ duration: 0.25 }}
-            >
-              2
-            </motion.div>
-
-            {/* TARJETA */}
-
-            <motion.div
-              className="
-                relative
-                flex-1
-                rounded-2xl
-                border
-                border-[#E5F1F1]
-                bg-white
-                p-5
-                pt-4
-                shadow-sm
-                transition-all
-                duration-300
-                group-hover:-translate-y-1
-                group-hover:border-[#CFE7E7]
-                group-hover:shadow-md
-              "
-              whileHover={{ y: -3 }}
-              transition={{ duration: 0.25 }}
-            >
-              <div className="absolute left-0 top-5 h-8 w-[3px] rounded-r-full bg-[#00A8A8]" />
-
-              <span className="text-[13px] font-bold uppercase tracking-[1px] text-[#00A8A8]">
-                Para pacientes crónicos y cuidadores
-              </span>
-
-              <h3 className="mt-3 text-[23px] font-bold leading-tight text-[#171717]">
-                Reserva con hasta 5 días de anticipación
-              </h3>
-
-              <p className="mt-3 max-w-[560px] text-[16px] leading-[1.75] text-[#536078]">
-                Aparta tu medicamento antes de que se agote. Si eres cuidador,
-                puedes hacer la reserva en nombre del paciente a tu cargo sin
-                necesitar que esté presente.
-              </p>
-            </motion.div>
-          </motion.div>
-
-          {/* ================================================= */}
+          {/* =============================================== */}
           {/* PASO 3 */}
-          {/* ================================================= */}
+          {/* =============================================== */}
 
-          <motion.div
-            className="group relative flex gap-7"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{
-              duration: 1.1,
-              delay: 0.45,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            {/* NÚMERO */}
-
-            <motion.div
-              className="
-                relative
-                z-10
-                flex
-                h-[62px]
-                w-[62px]
-                shrink-0
-                items-center
-                justify-center
-                rounded-full
-                border-2
-                border-[#DCEEEE]
-                bg-white
-                text-[18px]
-                font-bold
-                text-[#00A8A8]
-                shadow-sm
-                transition-all
-                duration-300
-                group-hover:border-[#00A8A8]
-                group-hover:bg-[#00A8A8]
-                group-hover:text-white
-                group-hover:shadow-lg
-                group-hover:shadow-[#00A8A8]/15
-              "
-              whileHover={{ scale: 1.06 }}
-              transition={{ duration: 0.25 }}
-            >
-              3
-            </motion.div>
-
-            {/* TARJETA */}
-
-            <motion.div
-              className="
-                relative
-                flex-1
-                rounded-2xl
-                border
-                border-[#E5F1F1]
-                bg-white
-                p-5
-                pt-4
-                shadow-sm
-                transition-all
-                duration-300
-                group-hover:-translate-y-1
-                group-hover:border-[#CFE7E7]
-                group-hover:shadow-md
-              "
-              whileHover={{ y: -3 }}
-              transition={{ duration: 0.25 }}
-            >
-              <div className="absolute left-0 top-5 h-8 w-[3px] rounded-r-full bg-[#00A8A8]" />
-
-              <span className="text-[13px] font-bold uppercase tracking-[1px] text-[#00A8A8]">
-                Tranquilidad garantizada
-              </span>
-
-              <h3 className="mt-3 text-[23px] font-bold leading-tight text-[#171717]">
-                Tu código, tu medicamento
-              </h3>
-
-              <p className="mt-3 max-w-[560px] text-[16px] leading-[1.75] text-[#536078]">
-                Al confirmar tu reserva recibes un código único. Llévalo a
-                mostrar en la farmacia y retira sin filas. Tu tratamiento
-                continúa sin interrupciones.
-              </p>
-            </motion.div>
-          </motion.div>
-
+          <div className="relative">
+            <StepCard
+              number="3"
+              label="Tranquilidad garantizada"
+              title="Tu código, tu medicamento"
+              text="Al confirmar tu reserva recibes un código único. Llévalo a mostrar en la farmacia y retira sin filas. Tu tratamiento continúa sin interrupciones."
+              icon={
+                <LockKeyhole
+                  className="h-7 w-7 sm:h-8 sm:w-8"
+                  strokeWidth={1.8}
+                />
+              }
+              delay={0.46}
+            />
+          </div>
         </div>
       </div>
     </section>
