@@ -325,7 +325,7 @@ export default function Hero() {
             {/* IMAGEN */}
             <div className="relative z-10 w-full max-w-xs sm:max-w-md lg:max-w-lg">
               <Image
-                src="/images/doc4.png"
+                src="/images/doc6.png"
                 alt="Profesional de salud de FarmaSync"
                 width={1199}
                 height={1312}
