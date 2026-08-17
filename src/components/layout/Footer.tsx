@@ -59,7 +59,7 @@ export default function Footer() {
 
         <div className="flex flex-col items-center sm:items-start">
           <Image
-            src="/images/logo1.jpeg"
+            src="/images/logo3.png"
             alt="FarmaSync Logo"
             width={180}
             height={180}

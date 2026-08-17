@@ -4,7 +4,29 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { CreditCard, Mail } from "lucide-react";
+import { motion, Variants } from "framer-motion";
 import AuthLayout from "@/components/auth/AuthLayout";
+
+// Variantes de animación tipadas
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
 
 export default function RecuperarPasswordPage() {
   const [formData, setFormData] = useState({
@@ -23,24 +45,25 @@ export default function RecuperarPasswordPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     console.log("Solicitud de recuperación:", formData);
   };
 
   return (
     <AuthLayout>
-
-      {/* ===================================================== */}
-      {/* CONTENEDOR PRINCIPAL */}
-
-      <div className="relative z-10 my-auto flex w-full max-w-[420px] flex-col items-stretch overflow-hidden rounded-3xl border border-[#00A8A8]/20 bg-[#00A8A8]/10 p-3 shadow-xl backdrop-blur-md sm:p-4 md:max-w-3xl md:flex-row md:items-center md:p-6 lg:max-w-4xl lg:p-8">
-
-
-        {/* ===================================================== */}
+      {/* CONTENEDOR PRINCIPAL CON ANIMACIÓN DE ENTRADA */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+        className="relative z-10 my-auto flex w-full max-w-[420px] flex-col items-stretch overflow-hidden rounded-3xl border border-[#00A8A8]/20 bg-[#00A8A8]/10 p-3 shadow-xl backdrop-blur-md sm:p-4 md:max-w-3xl md:flex-row md:items-center md:p-6 lg:max-w-4xl lg:p-8"
+      >
         {/* COLUMNA IZQUIERDA */}
-
-        <div className="hidden flex-1 flex-col justify-between gap-6 p-4 md:flex md:w-1/2 lg:w-3/5 lg:p-6">
-
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+          className="hidden flex-1 flex-col justify-between gap-6 p-4 md:flex md:w-1/2 lg:w-3/5 lg:p-6"
+        >
           {/* LOGO */}
           <div className="flex items-center gap-3 lg:gap-4">
             <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-[#00A8A8]/40 bg-white p-1 shadow-lg lg:h-20 lg:w-20">
@@ -63,9 +86,7 @@ export default function RecuperarPasswordPage() {
             <h1 className="text-3xl font-extrabold leading-tight text-[#171717] md:text-4xl lg:text-5xl">
               Recupera tu
               <br />
-              <span className="text-[#00A8A8]">
-                contraseña
-              </span>
+              <span className="text-[#00A8A8]">contraseña</span>
             </h1>
 
             <p className="text-xs font-medium text-[#6B7280] lg:text-sm">
@@ -78,17 +99,17 @@ export default function RecuperarPasswordPage() {
           <p className="text-[11px] font-semibold leading-5 text-[#6B7280] sm:text-xs">
             © 2026 FarmaSync. Todos los derechos reservados.
           </p>
+        </motion.div>
 
-        </div>
-
-        {/* ===================================================== */}
         {/* TARJETA DERECHA - RECUPERAR CONTRASEÑA */}
-
-        <div className="w-full rounded-2xl border-2 border-[#00A8A8]/30 bg-gradient-to-b from-white via-white to-[#00A8A8]/10 p-4 shadow-2xl backdrop-blur-xl sm:p-5 md:w-[380px] md:p-6 lg:w-[420px] lg:p-8">
-
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+          className="w-full rounded-2xl border-2 border-[#00A8A8]/30 bg-gradient-to-b from-white via-white to-[#00A8A8]/10 p-4 shadow-2xl backdrop-blur-xl sm:p-5 md:w-[380px] md:p-6 lg:w-[420px] lg:p-8"
+        >
           {/* LOGO EN MÓVIL */}
           <div className="mb-5 flex items-center justify-center gap-2.5 sm:mb-6 md:hidden">
-
             <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-[#00A8A8]/40 bg-white p-0.5 shadow-md sm:h-14 sm:w-14">
               <Image
                 src="/images/logo1.jpeg"
@@ -102,12 +123,10 @@ export default function RecuperarPasswordPage() {
             <span className="text-[22px] font-extrabold text-[#171717] sm:text-2xl">
               FarmaSync
             </span>
-
           </div>
 
           {/* TÍTULO */}
           <div className="mb-5 sm:mb-6 lg:mb-8">
-
             <h2 className="text-[22px] font-extrabold text-[#171717] sm:text-2xl">
               ¿Olvidaste tu contraseña?
             </h2>
@@ -116,24 +135,23 @@ export default function RecuperarPasswordPage() {
               Ingresa tu número de cédula y correo electrónico para solicitar
               la recuperación de tu contraseña.
             </p>
-
           </div>
 
-          {/* FORMULARIO */}
-          <form
+          {/* FORMULARIO CON ANIMACIÓN EN CASCADA */}
+          <motion.form
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
             onSubmit={handleSubmit}
             className="space-y-3.5 sm:space-y-4 lg:space-y-5"
           >
-
             {/* CÉDULA */}
-            <div>
-
+            <motion.div variants={itemVariants}>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#171717] sm:text-xs">
                 Número de Cédula (CC)
               </label>
 
               <div className="relative mt-1.5 lg:mt-2">
-
                 <input
                   type="text"
                   name="documento"
@@ -145,20 +163,16 @@ export default function RecuperarPasswordPage() {
                 />
 
                 <CreditCard className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00A8A8]" />
-
               </div>
-
-            </div>
+            </motion.div>
 
             {/* CORREO */}
-            <div>
-
+            <motion.div variants={itemVariants}>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#171717] sm:text-xs">
                 Correo electrónico
               </label>
 
               <div className="relative mt-1.5 lg:mt-2">
-
                 <input
                   type="email"
                   name="correo"
@@ -170,42 +184,41 @@ export default function RecuperarPasswordPage() {
                 />
 
                 <Mail className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00A8A8]" />
-
               </div>
+            </motion.div>
 
-            </div>
-
-            {/* BOTÓN */}
-            <button
-              type="submit"
-              className="w-full rounded-xl bg-[#00A8A8] py-3 text-sm font-bold text-white shadow-lg shadow-[#00A8A8]/30 transition-all hover:bg-[#008C8C] hover:shadow-xl active:scale-[0.98] lg:py-3.5"
-            >
-              ENVIAR SOLICITUD
-            </button>
-
-          </form>
+            {/* BOTÓN CON FEEDBACK TÁCTIL */}
+            <motion.div variants={itemVariants}>
+              <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="w-full rounded-xl bg-[#00A8A8] py-3 text-sm font-bold text-white shadow-lg shadow-[#00A8A8]/30 transition-all hover:bg-[#008C8C] hover:shadow-xl lg:py-3.5"
+              >
+                ENVIAR SOLICITUD
+              </motion.button>
+            </motion.div>
+          </motion.form>
 
           {/* REGRESAR AL LOGIN */}
-          <div className="mt-5 text-center text-xs sm:mt-6 lg:mt-8">
-
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.4 }}
+            className="mt-5 text-center text-xs sm:mt-6 lg:mt-8"
+          >
             <p className="text-[#6B7280]">
               ¿Ya recuerdas tu contraseña?{" "}
-
               <Link
                 href="/login"
                 className="font-bold text-[#00A8A8] hover:underline"
               >
                 Inicia sesión
               </Link>
-
             </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
+          </motion.div>
+        </motion.div>
+      </motion.div>
     </AuthLayout>
   );
 }
