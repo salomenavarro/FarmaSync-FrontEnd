@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { registrar } from "@/modules/auth/services/authService";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -39,6 +40,37 @@ const itemVariants: Variants = {
 
 export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [formData, setFormData] = useState({
+  nombre_completo: "",
+  numero_documento: "",
+  telefono: "",
+  correo: "",
+  password: "",
+});
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
+const [success, setSuccess] = useState(false);
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  try {
+    await registrar(formData);
+    setSuccess(true);
+  } catch (err: any) {
+    setError(err.message || "Error al registrar usuario");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <AuthLayout>
@@ -128,12 +160,14 @@ export default function RegistroPage() {
           </div>
 
           {/* FORMULARIO CON CASCADA DE ANIMACIÓN */}
-          <motion.form
+           <motion.form
+            onSubmit={handleSubmit}
             variants={containerVariants}
             initial="hidden"
             animate="visible"
             className="space-y-3.5 sm:space-y-4"
           >
+
             {/* NOMBRE COMPLETO */}
             <motion.div variants={itemVariants}>
               <label className="block text-xs font-bold uppercase tracking-wider text-[#171717]">
@@ -143,6 +177,9 @@ export default function RegistroPage() {
               <div className="relative mt-1.5 sm:mt-2">
                 <input
                   type="text"
+                  name="nombre_completo"
+                  value={formData.nombre_completo}
+                  onChange={handleChange}
                   placeholder="Ingresa tu nombre completo"
                   className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-2.5 pl-10 pr-3 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30 sm:py-3 sm:pl-11 sm:pr-4"
                   required
@@ -160,6 +197,9 @@ export default function RegistroPage() {
               <div className="relative mt-1.5 sm:mt-2">
                 <input
                   type="text"
+                  name="numero_documento"
+                  value={formData.numero_documento}
+                  onChange={handleChange}
                   placeholder="Ej: 1017123456"
                   className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-2.5 pl-10 pr-3 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30 sm:py-3 sm:pl-11 sm:pr-4"
                   required
@@ -178,6 +218,9 @@ export default function RegistroPage() {
               <div className="relative mt-1.5 sm:mt-2">
                 <input
                   type="tel"
+                  name="telefono"
+                  value={formData.telefono}
+                  onChange={handleChange}
                   placeholder="300 123 4567"
                   className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-2.5 pl-10 pr-3 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30 sm:py-3 sm:pl-11 sm:pr-4"
                   required
@@ -196,6 +239,9 @@ export default function RegistroPage() {
               <div className="relative mt-1.5 sm:mt-2">
                 <input
                   type="email"
+                  name="correo"
+                  value={formData.correo}
+                  onChange={handleChange}
                   placeholder="ejemplo@correo.com"
                   className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-2.5 pl-10 pr-3 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30 sm:py-3 sm:pl-11 sm:pr-4"
                   required
@@ -231,6 +277,9 @@ export default function RegistroPage() {
               <div className="relative mt-1.5 sm:mt-2">
                 <input
                   type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="••••••••"
                   className="w-full rounded-xl border border-[#00A8A8]/20 bg-white/80 py-2.5 pl-10 pr-10 text-sm font-medium text-[#171717] outline-none transition-all focus:border-[#00A8A8] focus:bg-white focus:ring-2 focus:ring-[#00A8A8]/30 sm:py-3 sm:pl-11 sm:pr-11"
                   required
@@ -251,6 +300,24 @@ export default function RegistroPage() {
                 </button>
               </div>
             </motion.div>
+
+            {/* MENSAJES DE ERROR / ÉXITO */}
+            {error && (
+              <motion.p
+                variants={itemVariants}
+                className="text-sm font-semibold text-red-500"
+              >
+                {error}
+              </motion.p>
+            )}
+            {success && (
+              <motion.p
+                variants={itemVariants}
+                className="text-sm font-semibold text-green-600"
+              >
+                ¡Cuenta creada correctamente!
+              </motion.p>
+            )}
 
             {/* BOTÓN REGISTRARSE CON INTERACCIÓN TÁCTIL */}
             <motion.div variants={itemVariants}>
