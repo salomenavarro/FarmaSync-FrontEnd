@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 
 const faqs = [
@@ -33,14 +33,45 @@ const faqs = [
 
 export default function Faq() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.25,
+        rootMargin: "0px 0px -80px 0px",
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="faq"
       className="bg-white px-4 py-12 sm:px-6 sm:py-24 lg:px-8"
     >
       <div className="mx-auto max-w-3xl">
-        <div className="mb-10 text-center sm:mb-12">
+        {/* ENCABEZADO */}
+        <div
+          className={`mb-10 text-center transition-all duration-1000 ease-in-out sm:mb-12 ${
+            isVisible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-12 opacity-0"
+          }`}
+        >
           <span className="inline-block rounded-full bg-[#00A8A8]/10 px-3.5 py-1 text-xs font-semibold text-[#00A8A8] sm:px-4 sm:py-1.5 sm:text-sm">
             FAQ
           </span>
@@ -55,6 +86,7 @@ export default function Faq() {
           </p>
         </div>
 
+        {/* LISTA DE PREGUNTAS EN CASCADA MÁS LENTA */}
         <div className="flex flex-col gap-3 sm:gap-4">
           {faqs.map((faq, index) => {
             const active = openFaq === index;
@@ -62,7 +94,14 @@ export default function Faq() {
             return (
               <article
                 key={index}
-                className="overflow-hidden rounded-2xl border border-[#DCEEEE] bg-[#e8f0ec] transition duration-300 hover:shadow-md"
+                style={{
+                  transitionDelay: `${200 + index * 250}ms`,
+                }}
+                className={`overflow-hidden rounded-2xl border border-[#DCEEEE] bg-[#e8f0ec] transition-all duration-900 ease-out hover:shadow-md ${
+                  isVisible
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-12 opacity-0"
+                }`}
               >
                 <button
                   type="button"
@@ -83,8 +122,9 @@ export default function Faq() {
                   </span>
                 </button>
 
+                {/* DESPLEGABLE */}
                 <div
-                  className={`grid transition-all duration-300 ${
+                  className={`grid transition-all duration-300 ease-in-out ${
                     active ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                   }`}
                 >

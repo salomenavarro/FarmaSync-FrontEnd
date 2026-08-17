@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Search,
   Clock,
@@ -7,9 +8,6 @@ import {
   Bell,
   ShieldCheck,
 } from "lucide-react";
-
-import type { ReactNode } from "react";
-import { motion } from "framer-motion";
 
 /* =========================================================
    PASO
@@ -19,16 +17,16 @@ function Step({
   number,
   title,
   text,
-  delay,
+  isVisible,
 }: {
   number: string;
   title: string;
   text: string;
-  delay: number;
+  isVisible: boolean;
 }) {
   return (
-    <motion.div
-      className="
+    <div
+      className={`
         group
         relative
         flex
@@ -40,32 +38,16 @@ function Step({
         border-[#DCEEEE]
         bg-white
         p-4
-        transition-colors
+        transition-all
         duration-300
+        hover:-translate-y-1
         hover:border-[#00A8A8]
+        hover:shadow-md
         sm:gap-6
         sm:p-6
-      "
-      initial={{
-        opacity: 0,
-        x: 15,
-      }}
-      whileInView={{
-        opacity: 1,
-        x: 0,
-      }}
-      viewport={{
-        once: true,
-        amount: 0.05,
-      }}
-      transition={{
-        duration: 0.35,
-        delay,
-        ease: "easeOut",
-      }}
+        ${isVisible ? "hero-slide-in" : "opacity-0"}
+      `}
     >
-      {/* LÍNEA LATERAL */}
-
       <span
         className="
           absolute
@@ -77,12 +59,10 @@ function Step({
           scale-y-0
           bg-[#00A8A8]
           transition-transform
-          duration-300
+          duration-200
           group-hover:scale-y-100
         "
       />
-
-      {/* NÚMERO */}
 
       <div
         className="
@@ -95,8 +75,6 @@ function Step({
       >
         {number}
       </div>
-
-      {/* CONTENIDO */}
 
       <div>
         <h3
@@ -123,7 +101,7 @@ function Step({
           {text}
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -134,13 +112,15 @@ function Step({
 function WorkflowBenefit({
   icon,
   text,
+  isVisible,
 }: {
   icon: ReactNode;
   text: string;
+  isVisible: boolean;
 }) {
   return (
     <div
-      className="
+      className={`
         flex
         items-center
         gap-2
@@ -152,16 +132,17 @@ function WorkflowBenefit({
         py-2
         text-xs
         shadow-sm
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:border-[#00A8A8]
+        hover:shadow-md
         sm:text-sm
-      "
+        ${isVisible ? "hero-text-in" : "opacity-0"}
+      `}
     >
-      <span className="text-[#00A8A8]">
-        {icon}
-      </span>
-
-      <span className="font-medium text-[#171717]">
-        {text}
-      </span>
+      <span className="text-[#00A8A8]">{icon}</span>
+      <span className="font-medium text-[#171717]">{text}</span>
     </div>
   );
 }
@@ -171,8 +152,33 @@ function WorkflowBenefit({
 ========================================================= */
 
 export default function ComoFunciona() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Dispara la animación una sola vez al entrar en la pantalla
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.15, // Se activa cuando el 15% de la sección es visible
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="como_funciona"
       className="
         bg-white
@@ -185,12 +191,12 @@ export default function ComoFunciona() {
     >
       <div className="mx-auto max-w-7xl">
 
-        {/* =================================================
-            ENCABEZADO
-        ================================================= */}
-
-        <div className="mb-12 text-center sm:mb-16">
-
+        {/* ENCABEZADO */}
+        <div
+          className={`mb-12 text-center sm:mb-16 ${
+            isVisible ? "hero-text-in" : "opacity-0"
+          }`}
+        >
           <span
             className="
               mb-2
@@ -210,8 +216,6 @@ export default function ComoFunciona() {
           >
             ¿Cómo funciona?
           </span>
-
-          {/* SIN ANIMACIÓN */}
 
           <h2
             className="
@@ -240,13 +244,9 @@ export default function ComoFunciona() {
             Consulta disponibilidad, reserva y recibe notificaciones desde una
             sola plataforma.
           </p>
-
         </div>
 
-        {/* =================================================
-            CONTENIDO PRINCIPAL
-        ================================================= */}
-
+        {/* CONTENIDO */}
         <div
           className="
             grid
@@ -258,31 +258,15 @@ export default function ComoFunciona() {
           "
         >
 
-          {/* =================================================
-              TELÉFONO
-          ================================================= */}
-
-          <motion.div
-            className="flex justify-center"
-            initial={{
-              opacity: 0,
-              x: -12,
-            }}
-            whileInView={{
-              opacity: 1,
-              x: 0,
-            }}
-            viewport={{
-              once: true,
-              amount: 0.1,
-            }}
-            transition={{
-              duration: 0.4,
-              ease: "easeOut",
-            }}
+          {/* MOCKUP TELÉFONO */}
+          <div
+            className={`flex justify-center ${
+              isVisible ? "hero-slide-in" : "opacity-0"
+            }`}
           >
             <div
               className="
+                animate-float
                 w-full
                 max-w-xs
                 rounded-3xl
@@ -291,11 +275,14 @@ export default function ComoFunciona() {
                 bg-white
                 p-5
                 shadow-xl
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:shadow-2xl
                 sm:max-w-sm
                 sm:p-8
               "
             >
-
               <div
                 className="
                   mb-5
@@ -310,8 +297,7 @@ export default function ComoFunciona() {
                 FarmaSync
               </div>
 
-              {/* BUSCADOR */}
-
+              {/* Buscador */}
               <div
                 className="
                   mb-3.5
@@ -325,18 +311,13 @@ export default function ComoFunciona() {
                   sm:p-4
                 "
               >
-                <Search
-                  size={18}
-                  className="shrink-0 text-[#00A8A8]"
-                />
-
+                <Search size={18} className="shrink-0 text-[#00A8A8]" />
                 <span className="text-xs font-medium sm:text-sm">
                   Paracetamol
                 </span>
               </div>
 
-              {/* DISPONIBILIDAD */}
-
+              {/* Disponibilidad */}
               <div
                 className="
                   mb-3.5
@@ -351,26 +332,15 @@ export default function ComoFunciona() {
                 <h4 className="text-sm font-bold sm:text-base">
                   Disponible
                 </h4>
-
                 <p className="mt-0.5 text-xs text-gray-500">
                   Farmacia Central
                 </p>
-
-                <span
-                  className="
-                    mt-2
-                    block
-                    text-xs
-                    font-semibold
-                    text-green-600
-                  "
-                >
+                <span className="mt-2 block text-xs font-semibold text-green-600">
                   ✓ En stock
                 </span>
               </div>
 
-              {/* RESERVA */}
-
+              {/* Reserva */}
               <div
                 className="
                   rounded-xl
@@ -383,65 +353,50 @@ export default function ComoFunciona() {
                 <h4 className="text-sm font-bold sm:text-base">
                   Reserva creada
                 </h4>
-
                 <p className="mt-0.5 text-xs text-gray-500">
                   Código: FS-2481
                 </p>
               </div>
-
             </div>
-          </motion.div>
+          </div>
 
-          {/* =================================================
-              PASOS
-          ================================================= */}
-
+          {/* LISTA DE PASOS */}
           <div className="flex flex-col gap-3.5 sm:gap-4">
-
             <Step
               number="01"
               title="Busca tu medicamento"
               text="Consulta la disponibilidad exacta en tiempo real antes de salir de tu hogar."
-              delay={0}
+              isVisible={isVisible}
             />
-
             <Step
               number="02"
               title="Encuentra una farmacia"
               text="Visualiza los puntos de distribución de tu EPS que cuentan con el stock necesario."
-              delay={0.07}
+              isVisible={isVisible}
             />
-
             <Step
               number="03"
               title="Realiza tu reserva"
               text="Aparta tus fármacos de forma digital con un solo toque de manera inmediata."
-              delay={0.14}
+              isVisible={isVisible}
             />
-
             <Step
               number="04"
               title="Recibe confirmación"
               text="Obtén un código QR único de reserva y alertas automáticas sobre su estado."
-              delay={0.21}
+              isVisible={isVisible}
             />
-
             <Step
               number="05"
               title="Recoge tu medicamento"
               text="Presenta tu comprobante digital en la ventanilla rápida y retira sin filas."
-              delay={0.28}
+              isVisible={isVisible}
             />
-
           </div>
-
         </div>
 
-        {/* =================================================
-            BENEFICIOS
-        ================================================= */}
-
-        <motion.div
+        {/* BENEFICIOS */}
+        <div
           className="
             mt-10
             flex
@@ -451,45 +406,28 @@ export default function ComoFunciona() {
             sm:mt-12
             sm:gap-5
           "
-          initial={{
-            opacity: 0,
-          }}
-          whileInView={{
-            opacity: 1,
-          }}
-          viewport={{
-            once: true,
-            amount: 0.1,
-          }}
-          transition={{
-            duration: 0.4,
-            delay: 0.35,
-            ease: "easeOut",
-          }}
         >
-
           <WorkflowBenefit
             icon={<Clock size={16} />}
             text="Ahorra tiempo"
+            isVisible={isVisible}
           />
-
           <WorkflowBenefit
             icon={<MapPin size={16} />}
             text="Menos desplazamientos"
+            isVisible={isVisible}
           />
-
           <WorkflowBenefit
             icon={<Bell size={16} />}
             text="Notificaciones automáticas"
+            isVisible={isVisible}
           />
-
           <WorkflowBenefit
             icon={<ShieldCheck size={16} />}
             text="Proceso seguro"
+            isVisible={isVisible}
           />
-
-        </motion.div>
-
+        </div>
       </div>
     </section>
   );
