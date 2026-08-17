@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { login } from "@/modules/auth/services/authService";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, CreditCard, Lock } from "lucide-react";
@@ -37,6 +38,9 @@ export default function LoginPage() {
     remember: false,
   });
 
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
@@ -46,10 +50,25 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Datos de inicio de sesión:", formData);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  try {
+    const resultado = await login({
+      numero_documento: formData.documento,
+      password: formData.password,
+    });
+
+    console.log("Login exitoso:", resultado);
+    // Aquí más adelante guardaremos el token y redirigiremos al dashboard
+  } catch (err: any) {
+    setError(err.message || "Error al iniciar sesión");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <AuthLayout>
@@ -218,6 +237,18 @@ export default function LoginPage() {
                 Recordarme
               </label>
             </motion.div>
+
+
+            {error && (
+  <motion.p
+    initial={{ opacity: 0, y: 15 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, ease: "easeOut" }}
+    className="text-sm font-semibold text-red-500"
+  >
+    {error}
+  </motion.p>
+)}
 
             {/* BOTÓN INGRESAR */}
             <motion.div variants={itemVariants}>
