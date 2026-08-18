@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+
 import {
   Search,
   Calendar,
@@ -14,6 +15,17 @@ import {
 } from "lucide-react";
 
 export default function DashboardHomePage() {
+    const [nombre, setNombre] = useState("Usuario");
+
+  useEffect(() => {
+    const usuarioGuardado = localStorage.getItem("usuario");
+    if (usuarioGuardado) {
+      const usuario = JSON.parse(usuarioGuardado);
+      const primerNombre = usuario.nombre_completo.trim().split(" ")[0];
+      setNombre(primerNombre);
+    }
+  }, []);
+
   return (
     <main className="dashboard-body">
 
@@ -28,10 +40,9 @@ export default function DashboardHomePage() {
             FARMA SYNC
           </span>
 
-          <h1>
-            Bienvenida, María <span>👋</span>
-          </h1>
-
+         <h1>
+          Bienvenida, {nombre} <span>👋</span>
+        </h1>
           <p>
             Gestiona tus medicamentos y reservas
             <br className="desktop-only" />

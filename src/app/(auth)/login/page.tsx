@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { login } from "@/modules/auth/services/authService";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, CreditCard, Lock } from "lucide-react";
@@ -40,6 +41,7 @@ export default function LoginPage() {
 
 const [loading, setLoading] = useState(false);
 const [error, setError] = useState("");
+const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -57,12 +59,16 @@ const [error, setError] = useState("");
 
   try {
     const resultado = await login({
-      numero_documento: formData.documento,
-      password: formData.password,
-    });
+  numero_documento: formData.documento,
+  password: formData.password,
+});
 
-    console.log("Login exitoso:", resultado);
-    // Aquí más adelante guardaremos el token y redirigiremos al dashboard
+// Guardamos el token y los datos del usuario
+localStorage.setItem("token", resultado.token);
+localStorage.setItem("usuario", JSON.stringify(resultado.usuario));
+
+// Redirigimos al dashboard
+router.push("/dashboard");
   } catch (err: any) {
     setError(err.message || "Error al iniciar sesión");
   } finally {

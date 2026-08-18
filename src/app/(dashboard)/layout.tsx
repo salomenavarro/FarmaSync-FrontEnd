@@ -2,7 +2,7 @@
 
 import "./dashboard.css";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Home,
@@ -21,6 +21,38 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+const [usuario, setUsuario] = useState({
+  nombre_completo: "Usuario",
+  role_id: 1,
+});
+
+useEffect(() => {
+  const usuarioGuardado = localStorage.getItem("usuario");
+  if (usuarioGuardado) {
+    setUsuario(JSON.parse(usuarioGuardado));
+  }
+}, []);
+
+const primerNombre = usuario.nombre_completo.trim().split(" ")[0];
+
+const iniciales = usuario.nombre_completo
+  .trim()
+  .split(" ")
+  .slice(0, 2)
+  .map((palabra) => palabra[0])
+  .join("")
+  .toUpperCase();
+
+const roles: Record<number, string> = {
+  1: "Paciente",
+  2: "Cuidador",
+  3: "Farmacéutico",
+  4: "Administrador EPS",
+};
+
+const nombreRol = roles[usuario.role_id] || "Usuario";
+  
   return (
     <div className="dashboard-container">
 
@@ -118,13 +150,17 @@ export default function DashboardLayout({
         {/* FOOTER SIDEBAR */}
         <div className="sidebar__footer">
 
-          <a
-            href="/login"
-            className="sidebar__link logout"
-          >
-            <LogOut size={20} />
-            <span>Cerrar sesión</span>
-          </a>
+      <button
+        onClick={() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+          window.location.href = "/login";
+        }}
+        className="sidebar__link logout"
+      >
+        <LogOut size={20} />
+        <span>Cerrar sesión</span>
+      </button>
 
         </div>
 
@@ -188,18 +224,17 @@ export default function DashboardLayout({
             <div className="user-profile">
 
               <div className="user-avatar">
-                MG
-              </div>
+                    {iniciales}
+                  </div>
 
-              <div className="user-info">
+                  <div className="user-info">
+                    <span className="user-name">
+                      {primerNombre}
+                    </span>
+                    <span className="user-role">
+                      {nombreRol}
+                    </span>
 
-                <span className="user-name">
-                  María González
-                </span>
-
-                <span className="user-role">
-                  Paciente
-                </span>
 
               </div>
 
