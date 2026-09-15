@@ -1,5 +1,8 @@
-import { FeaturePlaceholder } from "@/components/layout/feature-placeholder";
+import LoginForm from "@/features/auth/components/LoginForm";
 
+// page.tsx queda así de simple a propósito: cero estado, cero
+// lógica, cero estilos. Solo decide qué componente de feature va
+// en esta ruta.
 export default function LoginPage() {
-  return <FeaturePlaceholder title="Iniciar sesión" description="El formulario de acceso se implementará en el slice de autenticación." />;
+  return <LoginForm />;
 }

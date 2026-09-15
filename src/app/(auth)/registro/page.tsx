@@ -1,5 +1,5 @@
-import { FeaturePlaceholder } from "@/components/layout/feature-placeholder";
+import RegisterForm from "@/features/auth/components/RegisterForm";
 
-export default function RegisterPage() {
-  return <FeaturePlaceholder title="Crear cuenta" description="El registro por rol se implementará en el slice de autenticación." />;
+export default function RegistroPage() {
+  return <RegisterForm />;
 }
