@@ -206,7 +206,7 @@ export default function LoginForm() {
   onClick={handleGoogleLogin}
   className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white py-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:bg-gray-50"
 >
-  <span className="text-xl font-bold text-[#4285F4]">G</span>
+  <span className="text-xl font-bold text-[#00A8A8]">G</span>
   Continuar con Google
 </motion.button>
 
