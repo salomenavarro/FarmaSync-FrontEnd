@@ -1,6 +1,8 @@
 import { apiClient } from "@/lib/http/axios";
+import { ForgotPasswordFormValues } from "../schemas/forgot-password.schema";
 import { LoginFormValues } from "../schemas/login.schema";
 import { RegisterFormValues } from "../schemas/register.schema";
+import { ResetPasswordFormValues } from "../schemas/reset-password.schema";
 import { AuthenticatedUser } from "../types/user";
 
 interface LoginResponse {
@@ -27,4 +29,24 @@ export async function registrar(data: RegisterFormValues): Promise<Authenticated
 
 export async function logout(): Promise<void> {
   await apiClient.post("/auth/logout");
+}
+
+// Envía el número de documento al backend para solicitar
+// el envío del correo de recuperación.
+export async function solicitarRecuperacion(data: ForgotPasswordFormValues): Promise<{ message: string }> {
+  const response = await apiClient.post<{ message: string }>("/auth/recover-password", {
+    numeroDocumento: data.numeroDocumento,
+  });
+  return response.data;
+}
+
+// Mapea la propiedad 'password' a 'nuevaPassword' para coincidir con NestJS.
+export async function restablecerPassword(
+  data: Omit<ResetPasswordFormValues, "confirmPassword">,
+): Promise<{ message: string }> {
+  const response = await apiClient.post<{ message: string }>("/auth/reset-password", {
+    token: data.token,
+    nuevaPassword: data.password,
+  });
+  return response.data;
 }

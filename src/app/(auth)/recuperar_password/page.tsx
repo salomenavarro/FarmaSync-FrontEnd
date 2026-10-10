@@ -1,5 +1,6 @@
-import { FeaturePlaceholder } from "@/components/layout/feature-placeholder";
+import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm";
 
+// Página para solicitar el correo de recuperación (Paso 1 del flujo)
 export default function PasswordRecoveryPage() {
-  return <FeaturePlaceholder title="Recuperar contraseña" description="La recuperación se implementará cuando se apruebe el contrato de autenticación." />;
+  return <ForgotPasswordForm />;
 }
