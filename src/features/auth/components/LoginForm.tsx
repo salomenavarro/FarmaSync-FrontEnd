@@ -47,6 +47,10 @@ export default function LoginForm() {
     loginMutation.mutate(data);
   };
 
+  const handleGoogleLogin = () => {
+  window.location.assign("/api/v1/auth/google");
+};
+
   return (
     <AuthLayout>
       <motion.div
