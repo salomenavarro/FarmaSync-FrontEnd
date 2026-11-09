@@ -7,6 +7,21 @@ interface LoginResponse {
   usuario: AuthenticatedUser;
 }
 
+interface GoogleLoginResponse {
+  message: string;
+  necesitaCompletarPerfil: boolean;
+  usuario: AuthenticatedUser;
+}
+
+interface GoogleLoginRequest {
+  credentialToken: string;
+}
+
+export interface CompleteProfileRequest {
+  numeroDocumento: string;
+  telefono: string;
+}
+
 // axios va por apiClient -> /api/v1/auth/login -> el proxy de Next
 // (route.ts) -> NestJS. La cookie httpOnly la pone el backend; este
 // service nunca la toca ni la guarda a mano (a diferencia del
@@ -25,6 +40,24 @@ export async function registrar(data: RegisterFormValues): Promise<Authenticated
   return response.data;
 }
 
+// Autenticación alternativa con Google mediante el DTO credentialToken.
+// Retorna el objeto completo incluyendo 'necesitaCompletarPerfil' para el onboarding.
+export async function googleLogin(data: GoogleLoginRequest): Promise<GoogleLoginResponse> {
+  const response = await apiClient.post<GoogleLoginResponse>("/auth/google", data);
+  return response.data;
+}
+
 export async function logout(): Promise<void> {
   await apiClient.post("/auth/logout");
+}
+
+// Envía la cédula real y el teléfono al endpoint protegido del backend
+export async function completeProfile(
+  data: CompleteProfileRequest
+): Promise<{ message: string }> {
+  const response = await apiClient.patch<{ message: string }>(
+    "/auth/complete-profile",
+    data
+  );
+  return response.data;
 }

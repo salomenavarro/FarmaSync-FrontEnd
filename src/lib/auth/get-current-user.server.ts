@@ -9,14 +9,18 @@ const backendBaseUrl = () => process.env.BACKEND_INTERNAL_URL ?? "http://localho
 // Next, no en el navegador.
 export async function getCurrentUserServer(): Promise<AuthenticatedUser | null> {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString();
+  const accessToken = cookieStore.get("access_token")?.value;
 
-  if (!cookieHeader) {
+  if (!accessToken) {
     return null;
   }
 
+  // Pasamos el token tanto como cookie tradicional como Bearer token
   const response = await fetch(`${backendBaseUrl()}/auth/me`, {
-    headers: { cookie: cookieHeader },
+    headers: { 
+      cookie: `access_token=${accessToken}`,
+      authorization: `Bearer ${accessToken}`
+    },
     cache: "no-store",
   });
 

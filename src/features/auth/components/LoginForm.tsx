@@ -7,9 +7,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, CreditCard, Lock } from "lucide-react";
 import { motion, Variants } from "framer-motion";
+import { GoogleLogin } from "@react-oauth/google";
 import AuthLayout from "@/components/layout/AuthLayout";
 import { loginSchema, LoginFormValues } from "../schemas/login.schema";
 import { useLogin, getLoginErrorMessage } from "../hooks/useLogin";
+import { useGoogleLogin, getGoogleLoginErrorMessage } from "../hooks/useGoogleLogin";
 
 // Animaciones tal cual las dejó Nikoll — no son lógica de negocio,
 // son puramente visuales, por eso se quedan en el componente.
@@ -42,13 +44,19 @@ export default function LoginForm() {
   });
 
   const loginMutation = useLogin();
+  const googleMutation = useGoogleLogin();
 
   const onSubmit = (data: LoginFormValues) => {
     loginMutation.mutate(data);
   };
 
-  const handleGoogleLogin = () => {
-  window.location.assign("/api/v1/auth/google");
+  // Manejador del token recibido tras la autenticación de Google
+const handleGoogleSuccess = (credentialResponse: { credential?: string }) => {
+  console.log("Response de Google recibida:", credentialResponse);
+
+  if (credentialResponse.credential) {
+    googleMutation.mutate({ credentialToken: credentialResponse.credential });
+  }
 };
 
   return (
@@ -68,7 +76,7 @@ export default function LoginForm() {
         >
           <div className="flex items-center gap-3 lg:gap-4">
             <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-[#00A8A8]/40 bg-white p-1 shadow-lg lg:h-20 lg:w-20">
-              <Image src="/images/logo1.jpeg" alt="FarmaSync Logo" fill className="rounded-full object-cover" priority />
+              <Image src="/images/logo1.jpeg" alt="FarmaSync Logo" fill className="rounded-full object-cover" priority sizes="80px" />
             </div>
             <span className="text-2xl font-black tracking-tight text-[#171717] lg:text-3xl">FarmaSync</span>
           </div>
@@ -97,7 +105,7 @@ export default function LoginForm() {
         >
           <div className="mb-5 flex items-center justify-center gap-2.5 sm:mb-6 md:hidden">
             <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-[#00A8A8]/40 bg-white p-0.5 shadow-md sm:h-14 sm:w-14">
-              <Image src="/images/logo1.jpeg" alt="FarmaSync Logo" fill className="rounded-full object-cover" priority />
+              <Image src="/images/logo1.jpeg" alt="FarmaSync Logo" fill className="rounded-full object-cover" priority sizes="56px" />
             </div>
             <span className="text-[22px] font-extrabold text-[#171717] sm:text-2xl">FarmaSync</span>
           </div>
@@ -179,7 +187,7 @@ export default function LoginForm() {
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                disabled={loginMutation.isPending}
+                disabled={loginMutation.isPending || googleMutation.isPending}
                 className="w-full rounded-xl bg-[#00A8A8] py-3 text-sm font-bold text-white shadow-lg shadow-[#00A8A8]/30 transition-all hover:bg-[#008C8C] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60 lg:py-3.5"
               >
                 {loginMutation.isPending ? "INGRESANDO..." : "INGRESAR"}
@@ -188,27 +196,36 @@ export default function LoginForm() {
           </motion.form>
 
           {/* SEPARADOR */}
-<div className="my-5 flex items-center gap-3">
-  <div className="h-px flex-1 bg-gray-200" />
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-gray-200" />
+            <span className="text-xs font-medium text-gray-500">O continúa con</span>
+            <div className="h-px flex-1 bg-gray-200" />
+          </div>
 
-  <span className="text-xs font-medium text-gray-500">
-    O continúa con
-  </span>
+          {/* BOTÓN OFICIAL DE GOOGLE */}
+          <motion.div
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex w-full justify-center"
+          >
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => console.error("Error al autenticar con Google")}
+             
+            />
+          </motion.div>
 
-  <div className="h-px flex-1 bg-gray-200" />
-</div>
-
-{/* BOTÓN DE GOOGLE */}
-<motion.button
-  whileHover={{ scale: 1.01 }}
-  whileTap={{ scale: 0.98 }}
-  type="button"
-  onClick={handleGoogleLogin}
-  className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white py-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:bg-gray-50"
->
-  <span className="text-xl font-bold text-[#00A8A8]">G</span>
-  Continuar con Google
-</motion.button>
+          {/* ERROR DE AUTENTICACIÓN DE GOOGLE */}
+          {googleMutation.isError && (
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-2 text-center text-xs font-semibold text-red-500"
+            >
+              {getGoogleLoginErrorMessage(googleMutation.error)}
+            </motion.p>
+          )}
 
           <motion.div
             initial={{ opacity: 0 }}

@@ -20,10 +20,22 @@ async function proxy(request: Request, context: RouteContext): Promise<Response>
       body: ["GET", "HEAD"].includes(request.method) ? undefined : await request.text(),
     });
 
+    // Creamos un nuevo objeto de cabeceras basado en la respuesta del backend
+    const responseHeaders = new Headers(response.headers);
+
+    // Aseguramos que las cookies (Set-Cookie) del backend se reenvíen intactas al navegador
+    if (typeof response.headers.getSetCookie === "function") {
+      const setCookieHeaders = response.headers.getSetCookie();
+      responseHeaders.delete("set-cookie");
+      setCookieHeaders.forEach((cookie) => {
+        responseHeaders.append("set-cookie", cookie);
+      });
+    }
+
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
-      headers: response.headers,
+      headers: responseHeaders,
     });
   } catch {
     return Response.json({
