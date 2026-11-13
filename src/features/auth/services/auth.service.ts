@@ -28,3 +28,10 @@ export async function registrar(data: RegisterFormValues): Promise<Authenticated
 export async function logout(): Promise<void> {
   await apiClient.post("/auth/logout");
 }
+
+export async function loginWithGoogle(credentialToken: string): Promise<AuthenticatedUser> {
+  const response = await apiClient.post<LoginResponse>("/auth/google", {
+    credentialToken,
+  });
+  return response.data.usuario;
+}

@@ -10,9 +10,11 @@ import { motion, Variants } from "framer-motion";
 import AuthLayout from "@/components/layout/AuthLayout";
 import { loginSchema, LoginFormValues } from "../schemas/login.schema";
 import { useLogin, getLoginErrorMessage } from "../hooks/useLogin";
+import axios from "axios";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { useRouter } from "next/navigation";
+import { loginWithGoogle } from "../services/auth.service";
 
-// Animaciones tal cual las dejó Nikoll — no son lógica de negocio,
-// son puramente visuales, por eso se quedan en el componente.
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -26,13 +28,12 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
+
+
 export default function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
-  // register(): conecta cada <input> con RHF (reemplaza el
-  // useState(formData) + handleChange de mano que tenías antes).
-  // formState.errors: viene directo del loginSchema (Zod), ya no
-  // hay que escribir mensajes de validación a mano en el JSX.
   const {
     register,
     handleSubmit,
@@ -47,9 +48,19 @@ export default function LoginForm() {
     loginMutation.mutate(data);
   };
 
-  const handleGoogleLogin = () => {
-  window.location.assign("/api/v1/auth/google");
+ const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+  try {
+    if (!credentialResponse.credential) return;
+
+    const usuario = await loginWithGoogle(credentialResponse.credential);
+    console.log("Sesión iniciada con éxito en backend:", usuario);
+
+    window.location.href = "/dashboard";
+  } catch (error: any) {
+    console.error("Error al autenticar con el backend:", error.response?.data || error.message);
+  }
 };
+
 
   return (
     <AuthLayout>
@@ -161,7 +172,7 @@ export default function LoginForm() {
               {errors.password && <p className="mt-1 text-xs font-semibold text-red-500">{errors.password.message}</p>}
             </motion.div>
 
-            {/* ERROR DEL SERVIDOR (credenciales, bloqueo, cuenta inactiva) */}
+            {/* ERROR DEL SERVIDOR */}
             {loginMutation.isError && (
               <motion.p
                 initial={{ opacity: 0, y: 15 }}
@@ -188,27 +199,22 @@ export default function LoginForm() {
           </motion.form>
 
           {/* SEPARADOR */}
-<div className="my-5 flex items-center gap-3">
-  <div className="h-px flex-1 bg-gray-200" />
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-gray-200" />
+            <span className="text-xs font-medium text-gray-500">O continúa con</span>
+            <div className="h-px flex-1 bg-gray-200" />
+          </div>
 
-  <span className="text-xs font-medium text-gray-500">
-    O continúa con
-  </span>
-
-  <div className="h-px flex-1 bg-gray-200" />
-</div>
-
-{/* BOTÓN DE GOOGLE */}
-<motion.button
-  whileHover={{ scale: 1.01 }}
-  whileTap={{ scale: 0.98 }}
-  type="button"
-  onClick={handleGoogleLogin}
-  className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white py-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:bg-gray-50"
->
-  <span className="text-xl font-bold text-[#00A8A8]">G</span>
-  Continuar con Google
-</motion.button>
+          {/* BOTÓN OFICIAL DE GOOGLE */}
+          <div className="flex w-full justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => console.error("Error al iniciar sesión en Google")}
+              shape="pill"
+              theme="outline"
+              width="350"
+            />
+          </div>
 
           <motion.div
             initial={{ opacity: 0 }}

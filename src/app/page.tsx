@@ -7,6 +7,7 @@ import ComoFunciona from "@/components/sections/ComoFunciona";
 import PruebaSocial from "@/components/sections/PruebaSocial";
 import Faq from "@/components/sections/Faq";
 
+
 export default function HomePage() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#F4FBFA] text-[#374151]">
