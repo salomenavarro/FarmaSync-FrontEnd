@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Inter } from "next/font/google";
 
 import {
@@ -22,18 +22,18 @@ import {
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-/* =========================================================
-   FUENTE DE LOS TÍTULOS
-   ========================================================= */
+// =========================================================
+// FUENTE
+// =========================================================
 
 const titleFont = Inter({
   subsets: ["latin"],
   weight: ["700", "800"],
 });
 
-/* =========================================================
-   TIPOS
-   ========================================================= */
+// =========================================================
+// TIPOS
+// =========================================================
 
 type NavItem = {
   href: string;
@@ -41,26 +41,14 @@ type NavItem = {
   icon: LucideIcon;
 };
 
-/* =========================================================
-   MENÚ PRINCIPAL
-   ========================================================= */
+// =========================================================
+// NAVEGACIÓN
+// =========================================================
 
 const MAIN_NAV: NavItem[] = [
-  {
-    href: "/dashboard",
-    label: "Inicio",
-    icon: Home,
-  },
-  {
-    href: "/medicamentos",
-    label: "Buscar medicamentos",
-    icon: Search,
-  },
-  {
-    href: "/reservas",
-    label: "Mis reservas",
-    icon: CalendarDays,
-  },
+  { href: "/dashboard", label: "Inicio", icon: Home },
+  { href: "/medicamentos", label: "Buscar medicamentos", icon: Search },
+  { href: "/reservas", label: "Mis reservas", icon: CalendarDays },
   {
     href: "/reservas?vista=historial",
     label: "Historial de reservas",
@@ -78,16 +66,8 @@ const MAIN_NAV: NavItem[] = [
   },
 ];
 
-/* =========================================================
-   MENÚ DE CUENTA
-   ========================================================= */
-
 const ACCOUNT_NAV: NavItem[] = [
-  {
-    href: "/perfil",
-    label: "Mi perfil",
-    icon: User,
-  },
+  { href: "/perfil", label: "Mi perfil", icon: User },
   {
     href: "/perfil?seccion=seguridad",
     label: "Seguridad",
@@ -95,65 +75,76 @@ const ACCOUNT_NAV: NavItem[] = [
   },
 ];
 
-/* =========================================================
-   FUNCIONES AUXILIARES
-   ========================================================= */
-
-const pathOf = (href: string) => href.split("?")[0];
-
-const matchesPath = (pathname: string, href: string) => {
-  const path = pathOf(href);
-
-  return path === "/dashboard"
-    ? pathname === path
-    : pathname.startsWith(path);
-};
-
-/* =========================================================
-   ESTILOS REUTILIZABLES
-   ========================================================= */
+// =========================================================
+// ESTILOS
+// =========================================================
 
 const FOCUS =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0646DC]";
 
 const NAV_LINK = `
-  flex items-center gap-3
-  rounded-xl px-4 py-2.5
+  flex w-full items-center gap-3
+  rounded-xl px-3 py-2
   text-[0.9375rem] font-semibold
-  transition
+  leading-snug transition-colors
   ${FOCUS}
 `;
 
-/* =========================================================
-   BARRA LATERAL
-   ========================================================= */
+// =========================================================
+// SIDEBAR
+// =========================================================
 
 function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  /* Identificar la opción activa */
+  const currentQuery = searchParams.toString();
 
-  const activeLabel = [...MAIN_NAV, ...ACCOUNT_NAV].find((item) =>
-    matchesPath(pathname, item.href),
-  )?.label;
+  const currentUrl = currentQuery
+    ? `${pathname}?${currentQuery}`
+    : pathname;
 
-  /* Renderizar elementos del menú */
+  const isActive = (href: string) => {
+    const [targetPath, targetQuery] = href.split("?");
+
+    if (targetQuery) {
+      return currentUrl === href;
+    }
+
+    if (targetPath === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+
+    const hasSpecificActiveLink = [
+      ...MAIN_NAV,
+      ...ACCOUNT_NAV,
+    ].some((item) => {
+      return item.href.startsWith(`${targetPath}?`) &&
+        currentUrl === item.href;
+    });
+
+    return (
+      !hasSpecificActiveLink &&
+      (pathname === targetPath ||
+        pathname.startsWith(`${targetPath}/`))
+    );
+  };
 
   const renderItem = ({
     href,
     label,
     icon: Icon,
   }: NavItem) => {
-    const active = label === activeLabel;
+    const active = isActive(href);
 
     return (
-      <li key={label}>
+      <li key={href}>
         <Link
           href={href}
           aria-current={active ? "page" : undefined}
           className={`${NAV_LINK} ${
             active
-              ? "bg-gradient-to-r from-[#0646DC] to-[#0869EF] text-white shadow-[0_8px_20px_rgba(10,70,200,0.22)]"
+              ? "bg-gradient-to-r from-[#0646DC] to-[#0869EF] text-white shadow-[0_8px_20px_rgba(10,70,200,0.18)]"
               : "text-[#14285B] hover:bg-[#E5F1FF] hover:text-[#0646DC]"
           }`}
         >
@@ -177,21 +168,18 @@ function Sidebar() {
         shrink-0 flex-col
         overflow-hidden
         border-r border-[#DCE9F8]
-        bg-white
-        px-4 py-5
+        bg-white px-4
+        pt-4 pb-3
         lg:flex
       "
     >
-      {/* =========================================
-          LOGO FARMASYNC
-          ========================================= */}
+      {/* LOGO */}
 
       <Link
         href="/"
         className={`
-          mb-5 flex shrink-0
-          items-center gap-2.5
-          rounded-full px-2
+          mb-3 flex shrink-0 items-center gap-2.5
+          rounded-full px-2 py-1
           ${FOCUS}
         `}
       >
@@ -210,33 +198,30 @@ function Sidebar() {
         </span>
       </Link>
 
-      {/* =========================================
-          MENÚ DE NAVEGACIÓN
-          ========================================= */}
+      {/* MENÚ: SOLO ESTA ZONA PUEDE HACER SCROLL */}
 
       <nav
         aria-label="Navegación del dashboard"
         className="
-          min-h-0
+          min-h-0 flex-1
           overflow-y-auto
           overscroll-contain
           pr-1
+          [scrollbar-width:thin]
+          [scrollbar-color:#C8DDF8_transparent]
         "
       >
-        {/* Menú principal */}
-
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-0.5">
           {MAIN_NAV.map(renderItem)}
         </ul>
 
-        {/* SECCIÓN CUENTA */}
+        {/* CUENTA */}
 
         <p
           className="
-            mb-2 mt-6
+            mb-2 mt-4
             flex items-center gap-3
-            px-4
-            text-xs font-bold
+            px-3 text-xs font-bold
             text-[#4A5B78]
           "
         >
@@ -248,93 +233,75 @@ function Sidebar() {
           />
         </p>
 
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-0.5">
           {ACCOUNT_NAV.map(renderItem)}
         </ul>
       </nav>
 
-      {/* =========================================
-          SECCIÓN INFERIOR
-          Ocupa el espacio restante
-          ========================================= */}
+      {/* SECCIÓN INFERIOR FIJA */}
 
       <div
         className="
-          mt-5
-          flex min-h-0 flex-1
-          flex-col
+          mt-3 shrink-0
           border-t border-[#E5EDF8]
-          pt-4
+          pt-3
         "
       >
-        {/* =========================================
-            TARJETA DE AYUDA
-            ========================================= */}
+        {/* TARJETA DE AYUDA */}
 
         <div
           className="
-            shrink-0
-            rounded-[24px]
+            rounded-[22px]
             bg-gradient-to-br
             from-[#E5F2FF]
             via-[#DCEBFF]
             to-[#C7E1FF]
-            px-4 py-6
+            px-3 py-4
             text-center
             shadow-[0_6px_18px_rgba(25,90,170,0.07)]
           "
         >
-          {/* Icono */}
-
           <span
             aria-hidden="true"
             className="
-              mx-auto flex h-14 w-14
+              mx-auto flex h-11 w-11
               items-center justify-center
               rounded-full bg-white
               text-[#0869EF]
               shadow-[0_5px_15px_rgba(10,70,200,0.1)]
             "
           >
-            <Headphones size={27} />
+            <Headphones size={23} />
           </span>
-
-          {/* Título */}
 
           <p
             className={`
               ${titleFont.className}
-              mt-3 text-base
-              font-extrabold
-              text-[#14285B]
+              mt-2 text-[15px]
+              font-extrabold text-[#14285B]
             `}
           >
             ¿Necesitas ayuda?
           </p>
 
-          {/* Descripción */}
-
-          <p className="mt-2 text-[13px] font-medium leading-5 text-[#334B70]">
+          <p className="mt-1 text-[13px] font-medium leading-5 text-[#334B70]">
             Estamos aquí para ayudarte.
           </p>
-
-          {/* Botón de soporte */}
 
           <Link
             href="/soporte"
             className={`
-              mt-4 flex w-full
+              mt-3 flex w-full
               items-center justify-center
               rounded-full
               bg-gradient-to-r
               from-[#0646DC]
               to-[#0869EF]
-              px-4 py-3
-              text-center text-sm
+              px-3 py-2.5
+              text-center text-[13px]
               font-bold text-white
               shadow-[0_6px_14px_rgba(10,70,200,0.18)]
-              transition
-              hover:brightness-95
+              transition hover:brightness-95
               ${FOCUS}
             `}
           >
@@ -342,23 +309,20 @@ function Sidebar() {
           </Link>
         </div>
 
-        {/* =========================================
-            CERRAR SESIÓN
-            Alineado hacia la parte inferior
-            ========================================= */}
+        {/* CERRAR SESIÓN */}
 
         <button
           type="button"
           className={`
             ${NAV_LINK}
-            mt-auto mb-3
-            w-full shrink-0
+            mt-3
             text-[#14285B]
             hover:bg-[#E5F1FF]
           `}
         >
           <LogOut
             size={19}
+            className="shrink-0"
             aria-hidden="true"
           />
 
@@ -369,10 +333,9 @@ function Sidebar() {
   );
 }
 
-/* =========================================================
-   DASHBOARD SHELL
-   Sin barra superior
-   ========================================================= */
+// =========================================================
+// DASHBOARD SHELL
+// =========================================================
 
 export default function DashboardShell({
   children,
@@ -384,17 +347,11 @@ export default function DashboardShell({
 }) {
   return (
     <div className="flex min-h-dvh bg-[#F4F8FF] text-[#14285B]">
-
-      {/* BARRA LATERAL */}
-
       <Sidebar />
-
-      {/* CONTENIDO PRINCIPAL */}
 
       <main className="min-w-0 flex-1">
         {children}
       </main>
-
     </div>
   );
 }
