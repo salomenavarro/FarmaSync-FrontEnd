@@ -1,14 +1,58 @@
 @import "tailwindcss";
 
+/* =========================================================
+   PALETA DE COLORES - FARMASYNC
+   ========================================================= */
+
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #ffffff;
+  --foreground: #172033;
+
+  /* Colores principales */
+  --primary: #3848A7;
+  --primary-light: #5480BC;
+  --secondary: #76BDCC;
+  --mint: #A3E8C1;
+  --mint-light: #D4F6BA;
+  --sky: #DCEBFA;
+
+  /* Degradados principales */
+  --gradient-primary: linear-gradient(
+    120deg,
+    #3848A7 0%,
+    #5480BC 50%,
+    #76BDCC 100%
+  );
+
+  --gradient-soft: linear-gradient(
+    120deg,
+    #A3E8C1 0%,
+    #D4F6BA 35%,
+    #E9F3FA 70%,
+    #B8C9F0 100%
+  );
+
+  --gradient-blue-mint: linear-gradient(
+    120deg,
+    #3848A7 0%,
+    #5480BC 45%,
+    #76BDCC 75%,
+    #A3E8C1 100%
+  );
+
+  /* Superficies */
+  --card-background: #FFFFFF;
+  --section-background: #F7F9FC;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 }
+
+/* =========================================================
+   CONFIGURACIÓN GENERAL
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -26,8 +70,31 @@ body {
 }
 
 /* =========================================================
+   CLASES DE DEGRADADOS
+   ========================================================= */
+
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-soft {
+  background: var(--gradient-soft);
+}
+
+.gradient-blue-mint {
+  background: var(--gradient-blue-mint);
+}
+
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* =========================================================
    ANIMACIÓN DEL MENÚ DE NAVEGACIÓN (Navbar.tsx)
-========================================================= */
+   ========================================================= */
 
 .nav-link {
   position: relative;
@@ -41,7 +108,7 @@ body {
   bottom: -5px;
   width: 0;
   height: 3px;
-  background-color: #00A8A8;
+  background: var(--gradient-primary);
   border-radius: 10px;
   transform: translateX(-50%);
   transition: width 0.25s ease-in-out;
@@ -52,8 +119,10 @@ body {
 }
 
 /* =========================================================
-   ANIMACIÓN FLOTANTE DE LA DOCTORA (Hero.tsx)
-========================================================= */
+   ANIMACIÓN FLOTANTE GENERAL
+   (El Hero actual ya no la usa; bórrala si no la usas
+   en ningún otro componente)
+   ========================================================= */
 
 @keyframes float {
   0%,
@@ -71,48 +140,114 @@ body {
 }
 
 /* =========================================================
-   ENTRADA DE LA DOCTORA (Hero.tsx)
-========================================================= */
+   ANIMACIONES DEL HERO (Hero.tsx)
+   Entrada escalonada: texto → imagen → cruces
+   ========================================================= */
+
+/* --- Keyframes --- */
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @keyframes hero-slide-in {
-  0% {
+  from {
     opacity: 0;
-    transform: translateX(120px);
+    transform: translateX(48px) scale(0.96);
   }
 
-  100% {
+  to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
   }
 }
 
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-20deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* --- Clases --- */
+
+/* Bloques de texto: suben mientras aparecen */
+.hero-item {
+  animation: hero-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Imagen: entra desde la derecha */
 .hero-slide-in {
-  animation: hero-slide-in 4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: hero-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
 }
 
-/* =========================================================
-   ENTRADA DEL TEXTO DEL HERO (Hero.tsx)
-========================================================= */
+/* --- Clases --- */
 
-@keyframes hero-text-in {
-  0% {
-    opacity: 0;
-    transform: translateX(-60px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Bloques de texto: suben mientras aparecen */
+.hero-item {
+  animation: hero-fade-up 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.hero-text-in {
-  animation: hero-text-in 2.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+/* Imagen: entra desde la derecha */
+.hero-slide-in {
+  animation: hero-slide-in 1.35s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
 }
+
+/* Cruces: aparecen junto con la imagen (mismo retraso de 0.4s)
+   y después empiezan a flotar.
+   Primer valor: aparición. Segundo valor: inicio de la flotación,
+   cuando la imagen ya terminó de entrar (0.4s + 1.35s ≈ 1.75s). */
+.hero-cross {
+  animation:
+    hero-pop 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    hero-float 5s ease-in-out infinite;
+  animation-delay: 0.4s, 1.8s;
+}
+
+/* --- Retrasos del texto --- */
+
+.hero-delay-1 { animation-delay: 0.1s; }
+.hero-delay-2 { animation-delay: 0.25s; }
+.hero-delay-3 { animation-delay: 0.4s; }
+.hero-delay-4 { animation-delay: 0.55s; }
+.hero-delay-5 { animation-delay: 0.7s; }
+
+/* --- Retrasos de las cruces ---
+   Primer valor: aparición. Segundo valor: inicio de la flotación.
+   Esperan a que la imagen ya esté visible. */
+
+.hero-cross.hero-delay-4 { animation-delay: 0.85s, 1.45s; }
+.hero-cross.hero-delay-5 { animation-delay: 1s, 1.9s; }
+.hero-cross.hero-delay-6 { animation-delay: 1.15s, 2.4s; }
 
 /* =========================================================
    ACCESIBILIDAD
-========================================================= */
+   Reduce el movimiento si el usuario lo desactivó en su sistema
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   *,
