@@ -17,6 +17,7 @@ import {
   Search,
   ShieldCheck,
   User,
+  UsersRound,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -83,7 +84,16 @@ const MAIN_NAV: NavItem[] = [
     label: "Recordatorios",
     icon: Bell,
   },
+  {
+    href: "/dashboard/grupo-familiar",
+    label: "Mi Grupo Familiar",
+    icon: UsersRound,
+  },
 ];
+
+// ========================================
+// NAVEGACIÓN DE CUENTA
+// ========================================
 
 const ACCOUNT_NAV: NavItem[] = [
   {
@@ -465,7 +475,12 @@ function MobileBar() {
         <ul className="flex gap-2 overflow-x-auto pb-1">
           {[...MAIN_NAV, ...ACCOUNT_NAV].map(
             ({ href, label, icon: Icon }) => {
-              const active = currentUrl === href;
+              const active =
+                currentUrl === href ||
+                (href === "/dashboard/grupo-familiar" &&
+                  pathname.startsWith(
+                    "/dashboard/grupo-familiar/"
+                  ));
 
               return (
                 <li key={href} className="shrink-0">
