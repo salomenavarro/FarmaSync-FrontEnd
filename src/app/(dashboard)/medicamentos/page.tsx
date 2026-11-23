@@ -1,5 +1,427 @@
-import { FeaturePlaceholder } from "@/components/layout/feature-placeholder";
+
+"use client";
+
+import { useMemo, useState } from "react";
+import {
+  ArrowLeft,
+  ClipboardList,
+  PackageSearch,
+  Pill,
+  Search,
+  Store,
+} from "lucide-react";
+
+import {
+  medicamentosMock,
+  sedesFarmacias,
+} from "@/features/catalogo/data/medicamentosMock";
+
+import type {
+  Medicamento,
+  SedeFarmacia,
+} from "@/features/catalogo/types";
+
+import MedicamentoCard from "@/features/catalogo/components/MedicamentoCard";
+import MedicamentoSearch from "@/features/catalogo/components/MedicamentoSearch";
+import MedicamentoFilters from "@/features/catalogo/components/MedicamentoFilters";
+import type { FiltrosMedicamentos } from "@/features/catalogo/components/MedicamentoFilters";
+import SedesAlternativas from "@/features/catalogo/components/SedesAlternativas";
+import AlertaReabastecimiento from "@/features/catalogo/components/AlertaReabastecimiento";
 
 export default function MedicinesPage() {
-  return <FeaturePlaceholder title="Medicamentos" description="La consulta de disponibilidad se implementará en el módulo de medicamentos." />;
+  const [busqueda, setBusqueda] = useState("");
+
+  const [filtros, setFiltros] = useState<FiltrosMedicamentos>({
+    sedeId: "",
+    ubicacion: "",
+    cercania: "cercanas",
+  });
+
+  const [medicamentoSeleccionado, setMedicamentoSeleccionado] =
+    useState<Medicamento | null>(null);
+
+  const [sedeDetalle, setSedeDetalle] =
+    useState<SedeFarmacia | null>(null);
+
+  // Filtrar y ordenar sedes.
+  const sedesFiltradas = useMemo(() => {
+    const resultado = sedesFarmacias.filter((sede) => {
+      const coincideSede =
+        !filtros.sedeId || sede.id === filtros.sedeId;
+
+      const coincideUbicacion =
+        !filtros.ubicacion ||
+        `${sede.ciudad} - ${sede.zona}` === filtros.ubicacion;
+
+      return coincideSede && coincideUbicacion;
+    });
+
+    return resultado.sort((a, b) =>
+      filtros.cercania === "lejanas"
+        ? b.distanciaKm - a.distanciaKm
+        : a.distanciaKm - b.distanciaKm
+    );
+  }, [filtros]);
+
+  // Buscar medicamentos por nombre genérico o código.
+  const medicamentosFiltrados = useMemo(() => {
+    const texto = busqueda.trim().toLocaleLowerCase("es");
+
+    if (!texto) return medicamentosMock;
+
+    return medicamentosMock.filter((medicamento) => {
+      const nombre = medicamento.nombreGenerico.toLocaleLowerCase("es");
+      const codigo = medicamento.codigo.toLocaleLowerCase("es");
+
+      return nombre.includes(texto) || codigo.includes(texto);
+    });
+  }, [busqueda]);
+
+  // Crear una tarjeta por medicamento y sede coincidente.
+  const resultados = useMemo(() => {
+    return medicamentosFiltrados.flatMap((medicamento) =>
+      sedesFiltradas.map((sede) => ({
+        medicamento,
+        sede,
+      }))
+    );
+  }, [medicamentosFiltrados, sedesFiltradas]);
+
+  const abrirDetalle = (
+    medicamento: Medicamento,
+    sede: SedeFarmacia
+  ) => {
+    setMedicamentoSeleccionado(medicamento);
+    setSedeDetalle(sede);
+  };
+
+  const cerrarDetalle = () => {
+    setMedicamentoSeleccionado(null);
+    setSedeDetalle(null);
+  };
+
+  const cantidadDetalle =
+    medicamentoSeleccionado?.stockPorSede.find(
+      (item) => item.sedeId === sedeDetalle?.id
+    )?.cantidad ?? 0;
+
+  const agotadoEnTodas =
+    medicamentoSeleccionado?.stockPorSede.every(
+      (item) => item.cantidad === 0
+    ) ?? false;
+
+  const mostrarGuardados =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("vista") ===
+      "guardados";
+
+  return (
+    <div className="min-h-full bg-[#F5F9FF] p-4 md:p-6">
+      <div className="mx-auto max-w-[1450px] space-y-5">
+        {/* ENCABEZADO */}
+        <header
+          className="
+            relative overflow-hidden rounded-[24px]
+            bg-gradient-to-r from-[#0B1F5C]
+            via-[#0755D8] to-[#0876E9]
+            p-5 text-white md:p-7
+          "
+        >
+          <div
+            className="
+              pointer-events-none absolute -right-10 -top-16
+              h-48 w-48 rounded-full bg-white/10 blur-2xl
+            "
+          />
+
+          <div className="relative flex items-center gap-4">
+            <div
+              className="
+                flex h-12 w-12 shrink-0 items-center
+                justify-center rounded-[15px]
+                bg-white/15
+              "
+            >
+              <Pill size={25} />
+            </div>
+
+            <div>
+              <p className="text-[11px] font-semibold text-blue-100">
+                FarmaSync · Catálogo de medicamentos
+              </p>
+
+              <h1 className="mt-1 text-xl font-extrabold md:text-2xl">
+                {mostrarGuardados
+                  ? "Mis medicamentos"
+                  : "Buscar medicamentos"}
+              </h1>
+
+              <p className="mt-1 text-[12px] text-blue-100">
+                Consulta medicamentos y disponibilidad por sede.
+              </p>
+            </div>
+          </div>
+        </header>
+
+        {/* VISTA DE MIS MEDICAMENTOS */}
+        {mostrarGuardados ? (
+          <section
+            className="
+              rounded-[20px] border border-[#DFE9F6]
+              bg-white p-8 text-center
+            "
+          >
+            <ClipboardList
+              size={34}
+              className="mx-auto text-[#0755D8]"
+            />
+
+            <h2 className="mt-3 text-[16px] font-bold text-[#14285B]">
+              Mis medicamentos
+            </h2>
+
+            <p className="mx-auto mt-2 max-w-md text-[12px] text-[#71829B]">
+              Aquí aparecerán tus medicamentos guardados cuando
+              implementemos esa funcionalidad.
+            </p>
+          </section>
+        ) : (
+          <>
+            {/* BÚSQUEDA */}
+            <section
+              className="
+                rounded-[20px] border border-[#DFE9F6]
+                bg-white p-4
+              "
+            >
+              <MedicamentoSearch
+                value={busqueda}
+                onChange={(valor) => {
+                  setBusqueda(valor);
+                  cerrarDetalle();
+                }}
+              />
+            </section>
+
+            {/* FILTROS */}
+            <MedicamentoFilters
+              sedes={sedesFarmacias}
+              filtros={filtros}
+              onChange={(nuevosFiltros) => {
+                setFiltros(nuevosFiltros);
+                cerrarDetalle();
+              }}
+            />
+
+            {/* DETALLE DEL MEDICAMENTO */}
+            {medicamentoSeleccionado && sedeDetalle ? (
+              <section className="space-y-4">
+                <button
+                  type="button"
+                  onClick={cerrarDetalle}
+                  className="
+                    inline-flex items-center gap-2
+                    text-[12px] font-bold text-[#0755D8]
+                    hover:text-[#043C9E]
+                  "
+                >
+                  <ArrowLeft size={16} />
+                  Volver a los resultados
+                </button>
+
+                <div
+                  className="
+                    rounded-[20px] border border-[#DFE9F6]
+                    bg-white p-5
+                  "
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="
+                        flex h-12 w-12 shrink-0 items-center
+                        justify-center rounded-[14px]
+                        bg-[#EAF3FF] text-[#0755D8]
+                      "
+                    >
+                      <Pill size={24} />
+                    </div>
+
+                    <div>
+                      <h2 className="text-lg font-extrabold text-[#14285B]">
+                        {medicamentoSeleccionado.nombreGenerico}{" "}
+                        {medicamentoSeleccionado.concentracion}
+                      </h2>
+
+                      <p className="mt-1 text-[12px] text-[#71829B]">
+                        {medicamentoSeleccionado.codigo} ·{" "}
+                        {medicamentoSeleccionado.presentacion}
+                      </p>
+
+                      <p className="mt-2 text-[12px] text-[#62748E]">
+                        {medicamentoSeleccionado.descripcion}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="
+                      mt-4 rounded-[14px]
+                      border border-[#E4EDF9]
+                      bg-[#F7FAFF] p-4
+                    "
+                  >
+                    <div className="flex items-center gap-2">
+                      <Store size={17} className="text-[#0755D8]" />
+
+                      <span className="text-[13px] font-bold text-[#14285B]">
+                        {sedeDetalle.nombre}
+                      </span>
+                    </div>
+
+                    <p className="mt-2 text-[12px] text-[#62748E]">
+                      {sedeDetalle.ciudad} · {sedeDetalle.zona}
+                    </p>
+
+                    <p className="mt-2 text-[12px] font-bold text-[#14285B]">
+                      Stock: {cantidadDetalle}{" "}
+                      {cantidadDetalle === 1 ? "unidad" : "unidades"}
+                    </p>
+
+                    {cantidadDetalle > 0 && cantidadDetalle <= 15 && (
+                      <p className="mt-2 text-[12px] font-semibold text-[#A96508]">
+                        Quedan pocas unidades en esta sede. ¡Reserva pronto!
+                      </p>
+                    )}
+
+                    {cantidadDetalle === 0 && (
+                      <p className="mt-2 text-[12px] font-semibold text-[#D13438]">
+                        Medicamento agotado en esta sede.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* ALTERNATIVAS CUANDO NO HAY STOCK */}
+                {cantidadDetalle === 0 && (
+                  <SedesAlternativas
+                    medicamento={medicamentoSeleccionado}
+                    sedeActual={sedeDetalle}
+                    sedes={sedesFarmacias}
+                    onSeleccionarSede={(sede) => setSedeDetalle(sede)}
+                  />
+                )}
+
+                {/* ALERTA SI ESTÁ AGOTADO EN TODAS LAS SEDES */}
+                {agotadoEnTodas && (
+                  <AlertaReabastecimiento
+                    key={medicamentoSeleccionado.id}
+                    medicamento={medicamentoSeleccionado}
+                  />
+                )}
+              </section>
+            ) : (
+              <>
+                {/* RESUMEN DE RESULTADOS */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-[16px] font-extrabold text-[#14285B]">
+                      Medicamentos disponibles para consulta
+                    </h2>
+
+                    <p className="mt-1 text-[12px] text-[#71829B]">
+                      {resultados.length}{" "}
+                      {resultados.length === 1
+                        ? "resultado encontrado"
+                        : "resultados encontrados"}
+                    </p>
+                  </div>
+
+                  <span
+                    className="
+                      inline-flex items-center gap-2
+                      rounded-full border border-[#DCE8F7]
+                      bg-white px-3 py-2
+                      text-[11px] font-semibold text-[#62748E]
+                    "
+                  >
+                    <Store size={14} className="text-[#0755D8]" />
+                    {sedesFiltradas.length} sedes
+                  </span>
+                </div>
+
+                {/* TARJETAS */}
+                {resultados.length > 0 ? (
+                  <div
+                    className="
+                      grid grid-cols-1 gap-4
+                      lg:grid-cols-2 2xl:grid-cols-3
+                    "
+                  >
+                    {resultados.map(({ medicamento, sede }) => (
+                      <MedicamentoCard
+                        key={`${medicamento.id}-${sede.id}`}
+                        medicamento={medicamento}
+                        sede={sede}
+                        onVerDisponibilidad={() =>
+                          abrirDetalle(medicamento, sede)
+                        }
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    className="
+                      rounded-[20px] border border-[#DFE9F6]
+                      bg-white px-5 py-12 text-center
+                    "
+                  >
+                    <PackageSearch
+                      size={36}
+                      className="mx-auto text-[#0876E9]"
+                    />
+
+                    <h3 className="mt-3 text-[15px] font-bold text-[#14285B]">
+                      No encontramos resultados
+                    </h3>
+
+                    <p className="mt-2 text-[12px] text-[#71829B]">
+                      Prueba con otro nombre, código o combinación de filtros.
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBusqueda("");
+                        setFiltros({
+                          sedeId: "",
+                          ubicacion: "",
+                          cercania: "cercanas",
+                        });
+                      }}
+                      className="
+                        mt-4 inline-flex items-center gap-2
+                        rounded-[12px] bg-[#0755D8]
+                        px-4 py-2.5
+                        text-[12px] font-bold text-white
+                        hover:bg-[#0647B6]
+                      "
+                    >
+                      <Search size={15} />
+                      Mostrar todos
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            <p className="pb-2 text-[11px] text-[#71829B]">
+              Los medicamentos, existencias y distancias mostrados
+              son datos de demostración. No representan inventario
+              actualizado en tiempo real.
+            </p>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
