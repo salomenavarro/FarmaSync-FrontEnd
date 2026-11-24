@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 
 import {
   ArrowLeft,
-  ClipboardList,
   PackageSearch,
   Pill,
   Search,
@@ -25,32 +24,48 @@ import type {
 import MedicamentoCard from "@/features/catalogo/components/MedicamentoCard";
 import MedicamentoSearch from "@/features/catalogo/components/MedicamentoSearch";
 import MedicamentoFilters from "@/features/catalogo/components/MedicamentoFilters";
+
 import type { FiltrosMedicamentos } from "@/features/catalogo/components/MedicamentoFilters";
+
 import SedesAlternativas from "@/features/catalogo/components/SedesAlternativas";
 import AlertaReabastecimiento from "@/features/catalogo/components/AlertaReabastecimiento";
 
+import MisMedicamentosContent from "@/features/mis-medicamentos/components/MisMedicamentosContent";
+
 import BannerWaves from "@/components/layout/BannerWaves";
+
+// ========================================
+// PROPIEDADES DEL CATÁLOGO
+// ========================================
+
+interface CatalogoContentProps {
+  busquedaInicial: string;
+  sedeInicial: string;
+}
 
 // ========================================
 // CONTENIDO DEL CATÁLOGO
 // ========================================
 
-function MedicinesContent() {
-  const searchParams = useSearchParams();
+function CatalogoContent({
+  busquedaInicial,
+  sedeInicial,
+}: CatalogoContentProps) {
 
-  const mostrarGuardados =
-    searchParams.get("vista") === "guardados";
+  const [busqueda, setBusqueda] =
+    useState(busquedaInicial);
 
-  const [busqueda, setBusqueda] = useState("");
+  const [filtros, setFiltros] =
+    useState<FiltrosMedicamentos>({
+      sedeId: sedeInicial,
+      ubicacion: "",
+      cercania: "cercanas",
+    });
 
-  const [filtros, setFiltros] = useState<FiltrosMedicamentos>({
-    sedeId: "",
-    ubicacion: "",
-    cercania: "cercanas",
-  });
-
-  const [medicamentoSeleccionado, setMedicamentoSeleccionado] =
-    useState<Medicamento | null>(null);
+  const [
+    medicamentoSeleccionado,
+    setMedicamentoSeleccionado,
+  ] = useState<Medicamento | null>(null);
 
   const [sedeDetalle, setSedeDetalle] =
     useState<SedeFarmacia | null>(null);
@@ -60,13 +75,17 @@ function MedicinesContent() {
   // ========================================
 
   const sedesFiltradas = useMemo(() => {
+
     const resultado = sedesFarmacias.filter((sede) => {
+
       const coincideSede =
-        !filtros.sedeId || sede.id === filtros.sedeId;
+        !filtros.sedeId ||
+        sede.id === filtros.sedeId;
 
       const coincideUbicacion =
         !filtros.ubicacion ||
-        `${sede.ciudad} - ${sede.zona}` === filtros.ubicacion;
+        `${sede.ciudad} - ${sede.zona}` ===
+          filtros.ubicacion;
 
       return coincideSede && coincideUbicacion;
     });
@@ -76,6 +95,7 @@ function MedicinesContent() {
         ? b.distanciaKm - a.distanciaKm
         : a.distanciaKm - b.distanciaKm
     );
+
   }, [filtros]);
 
   // ========================================
@@ -83,32 +103,43 @@ function MedicinesContent() {
   // ========================================
 
   const medicamentosFiltrados = useMemo(() => {
-    const texto = busqueda.trim().toLocaleLowerCase("es");
+
+    const texto = busqueda
+      .trim()
+      .toLocaleLowerCase("es");
 
     if (!texto) return medicamentosMock;
 
     return medicamentosMock.filter((medicamento) => {
+
       const nombre =
         medicamento.nombreGenerico.toLocaleLowerCase("es");
 
       const codigo =
         medicamento.codigo.toLocaleLowerCase("es");
 
-      return nombre.includes(texto) || codigo.includes(texto);
+      return (
+        nombre.includes(texto) ||
+        codigo.includes(texto)
+      );
     });
+
   }, [busqueda]);
 
   // ========================================
-  // RESULTADOS DEL CATÁLOGO
+  // RESULTADOS POR MEDICAMENTO Y SEDE
   // ========================================
 
   const resultados = useMemo(() => {
-    return medicamentosFiltrados.flatMap((medicamento) =>
-      sedesFiltradas.map((sede) => ({
-        medicamento,
-        sede,
-      }))
+
+    return medicamentosFiltrados.flatMap(
+      (medicamento) =>
+        sedesFiltradas.map((sede) => ({
+          medicamento,
+          sede,
+        }))
     );
+
   }, [medicamentosFiltrados, sedesFiltradas]);
 
   // ========================================
@@ -131,7 +162,8 @@ function MedicinesContent() {
   const cantidadDetalle =
     medicamentoSeleccionado && sedeDetalle
       ? medicamentoSeleccionado.stockPorSede.find(
-          (stock) => stock.sedeId === sedeDetalle.id
+          (stock) =>
+            stock.sedeId === sedeDetalle.id
         )?.cantidad ?? 0
       : 0;
 
@@ -141,12 +173,32 @@ function MedicinesContent() {
       (stock) => stock.cantidad === 0
     );
 
+  // ========================================
+  // LIMPIAR BÚSQUEDA Y FILTROS
+  // ========================================
+
+  function limpiarFiltros() {
+    setBusqueda("");
+
+    setFiltros({
+      sedeId: "",
+      ubicacion: "",
+      cercania: "cercanas",
+    });
+
+    cerrarDetalle();
+  }
+
+  // ========================================
+  // INTERFAZ
+  // ========================================
+
   return (
     <div className="min-h-full min-w-0 bg-[#F5F9FF] p-3">
       <div className="mx-auto w-full space-y-3">
 
         {/* ========================================
-            ENCABEZADO PRINCIPAL
+            ENCABEZADO
         ======================================== */}
 
         <section
@@ -154,10 +206,8 @@ function MedicinesContent() {
             relative isolate flex min-h-[150px]
             shrink-0 items-center overflow-hidden
             rounded-[24px]
-            bg-gradient-to-r
-            from-[#0B1F5C]
-            via-[#0755D8]
-            to-[#0876E9]
+            bg-gradient-to-r from-[#0B1F5C]
+            via-[#0755D8] to-[#0876E9]
             px-5 py-4 text-white
             shadow-[0_10px_25px_rgba(5,91,210,0.18)]
             sm:px-8 lg:min-h-[186px]
@@ -167,7 +217,7 @@ function MedicinesContent() {
 
           <div className="relative z-10 w-full">
 
-            {/* ETIQUETA SUPERIOR */}
+            {/* ETIQUETA */}
 
             <div
               className="
@@ -176,7 +226,7 @@ function MedicinesContent() {
                 bg-white/10 px-3 py-1.5
               "
             >
-              <Pill size={15} aria-hidden="true" />
+              <Pill size={15} />
 
               <span className="text-xs font-semibold">
                 Catálogo de medicamentos
@@ -191,9 +241,7 @@ function MedicinesContent() {
                 tracking-tight sm:text-[30px]
               "
             >
-              {mostrarGuardados
-                ? "Mis medicamentos"
-                : "Buscar medicamentos"}
+              Buscar medicamentos
             </h1>
 
             {/* DESCRIPCIÓN */}
@@ -205,322 +253,461 @@ function MedicinesContent() {
                 sm:text-sm
               "
             >
-              {mostrarGuardados
-                ? "Consulta y organiza tus medicamentos favoritos."
-                : "Consulta medicamentos y disponibilidad por sede."}
+              Consulta medicamentos y disponibilidad por sede.
             </p>
+
           </div>
         </section>
 
         {/* ========================================
-            VISTA DE MIS MEDICAMENTOS
+            BUSCADOR
         ======================================== */}
 
-        {mostrarGuardados ? (
-          <section
-            className="
-              rounded-[20px] border border-[#DFE9F6]
-              bg-white p-8 text-center
-            "
-          >
-            <ClipboardList
-              size={34}
-              className="mx-auto text-[#0755D8]"
-            />
+        <section
+          className="
+            rounded-[20px] border border-[#DFE9F6]
+            bg-white p-4
+          "
+        >
+          <MedicamentoSearch
+            value={busqueda}
+            onChange={(valor) => {
+              setBusqueda(valor);
+              cerrarDetalle();
+            }}
+          />
+        </section>
 
-            <h2 className="mt-3 text-[16px] font-bold text-[#14285B]">
-              Mis medicamentos
-            </h2>
+        {/* ========================================
+            FILTROS
+        ======================================== */}
 
-            <p className="mx-auto mt-2 max-w-md text-[12px] text-[#71829B]">
-              Aquí aparecerán tus medicamentos guardados cuando
-              implementemos esa funcionalidad.
-            </p>
-          </section>
-        ) : (
-          <>
-            {/* ========================================
-                BUSCADOR
-            ======================================== */}
+        <MedicamentoFilters
+          sedes={sedesFarmacias}
+          filtros={filtros}
+          onChange={(nuevosFiltros) => {
+            setFiltros(nuevosFiltros);
+            cerrarDetalle();
+          }}
+        />
 
-            <section
+        {/* ========================================
+            DETALLE DEL MEDICAMENTO
+        ======================================== */}
+
+        {medicamentoSeleccionado && sedeDetalle ? (
+
+          <section className="space-y-4">
+
+            {/* VOLVER A LOS RESULTADOS */}
+
+            <button
+              type="button"
+              onClick={cerrarDetalle}
               className="
-                rounded-[20px] border border-[#DFE9F6]
-                bg-white p-4
+                inline-flex items-center gap-2
+                text-[12px] font-bold text-[#0755D8]
+                hover:text-[#043C9E]
               "
             >
-              <MedicamentoSearch
-                value={busqueda}
-                onChange={(valor) => {
-                  setBusqueda(valor);
-                  cerrarDetalle();
-                }}
-              />
-            </section>
+              <ArrowLeft size={16} />
 
-            {/* ========================================
-                FILTROS
-            ======================================== */}
+              Volver a los resultados
+            </button>
 
-            <MedicamentoFilters
-              sedes={sedesFarmacias}
-              filtros={filtros}
-              onChange={(nuevosFiltros) => {
-                setFiltros(nuevosFiltros);
-                cerrarDetalle();
-              }}
-            />
+            {/* INFORMACIÓN DEL MEDICAMENTO */}
 
-            {/* ========================================
-                DETALLE DEL MEDICAMENTO
-            ======================================== */}
-
-            {medicamentoSeleccionado && sedeDetalle ? (
-              <section className="space-y-4">
-                <button
-                  type="button"
-                  onClick={cerrarDetalle}
-                  className="
-                    inline-flex items-center gap-2
-                    text-[12px] font-bold text-[#0755D8]
-                    hover:text-[#043C9E]
-                  "
-                >
-                  <ArrowLeft size={16} />
-
-                  Volver a los resultados
-                </button>
+            <div
+              className="
+                rounded-[20px] border border-[#DFE9F6]
+                bg-white p-5
+              "
+            >
+              <div className="flex items-start gap-3">
 
                 <div
                   className="
-                    rounded-[20px] border border-[#DFE9F6]
-                    bg-white p-5
+                    flex h-12 w-12 shrink-0 items-center
+                    justify-center rounded-[14px]
+                    bg-[#EAF3FF] text-[#0755D8]
                   "
                 >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="
-                        flex h-12 w-12 shrink-0 items-center
-                        justify-center rounded-[14px]
-                        bg-[#EAF3FF] text-[#0755D8]
-                      "
-                    >
-                      <Pill size={24} />
-                    </div>
+                  <Pill size={24} />
+                </div>
 
-                    <div>
-                      <h2 className="text-lg font-extrabold text-[#14285B]">
-                        {medicamentoSeleccionado.nombreGenerico}{" "}
-                        {medicamentoSeleccionado.concentracion}
-                      </h2>
+                <div className="min-w-0">
 
-                      <p className="mt-1 text-[12px] text-[#71829B]">
-                        {medicamentoSeleccionado.codigo} ·{" "}
-                        {medicamentoSeleccionado.presentacion}
-                      </p>
+                  <h2 className="text-[18px] font-extrabold text-[#14285B]">
+                    {medicamentoSeleccionado.nombreGenerico}{" "}
+                    {medicamentoSeleccionado.concentracion}
+                  </h2>
 
-                      <p className="mt-2 text-[12px] text-[#62748E]">
-                        {medicamentoSeleccionado.descripcion}
-                      </p>
-                    </div>
-                  </div>
+                  <p className="mt-1 text-[12px] text-[#71829B]">
+                    {medicamentoSeleccionado.codigo} ·{" "}
+                    {medicamentoSeleccionado.presentacion}
+                  </p>
 
-                  {/* INFORMACIÓN DE LA SEDE */}
+                </div>
+              </div>
+
+              <p className="mt-4 text-[13px] leading-relaxed text-[#62748E]">
+                {medicamentoSeleccionado.descripcion}
+              </p>
+
+              {/* INFORMACIÓN DE LA SEDE */}
+
+              <div
+                className="
+                  mt-4 rounded-[16px]
+                  border border-[#DFE9F6]
+                  bg-[#F7FAFF] p-4
+                "
+              >
+                <div className="flex items-start gap-3">
 
                   <div
                     className="
-                      mt-4 rounded-[14px]
-                      border border-[#E4EDF9]
-                      bg-[#F7FAFF] p-4
+                      flex h-10 w-10 shrink-0
+                      items-center justify-center
+                      rounded-[12px]
+                      bg-[#EAF3FF] text-[#0755D8]
                     "
                   >
-                    <div className="flex items-center gap-2">
-                      <Store
-                        size={17}
-                        className="text-[#0755D8]"
-                      />
+                    <Store size={20} />
+                  </div>
 
-                      <span className="text-[13px] font-bold text-[#14285B]">
-                        {sedeDetalle.nombre}
-                      </span>
-                    </div>
+                  <div className="min-w-0 flex-1">
 
-                    <p className="mt-2 text-[12px] text-[#62748E]">
+                    <h3 className="text-[14px] font-bold text-[#14285B]">
+                      {sedeDetalle.nombre}
+                    </h3>
+
+                    <p className="mt-1 text-[12px] text-[#71829B]">
                       {sedeDetalle.ciudad} · {sedeDetalle.zona}
                     </p>
 
-                    <p className="mt-2 text-[12px] font-bold text-[#14285B]">
-                      Stock: {cantidadDetalle}{" "}
-                      {cantidadDetalle === 1
-                        ? "unidad"
-                        : "unidades"}
+                    <p className="mt-1 text-[12px] text-[#71829B]">
+                      {sedeDetalle.direccion}
                     </p>
 
-                    {/* DISPONIBILIDAD LIMITADA */}
-
-                    {cantidadDetalle > 0 &&
-                      cantidadDetalle <= 15 && (
-                        <p className="mt-2 text-[12px] font-semibold text-[#A96508]">
-                          Quedan pocas unidades en esta sede.
-                          ¡Reserva pronto!
-                        </p>
-                      )}
-
-                    {/* MEDICAMENTO AGOTADO */}
-
-                    {cantidadDetalle === 0 && (
-                      <p className="mt-2 text-[12px] font-semibold text-[#D13438]">
-                        Medicamento agotado en esta sede.
-                      </p>
-                    )}
                   </div>
                 </div>
 
-                {/* ========================================
-                    SEDES ALTERNATIVAS
-                ======================================== */}
+                {/* STOCK DISPONIBLE */}
 
-                {cantidadDetalle === 0 && (
-                  <SedesAlternativas
-                    medicamento={medicamentoSeleccionado}
-                    sedeActual={sedeDetalle}
-                    sedes={sedesFarmacias}
-                    onSeleccionarSede={(sede) =>
-                      setSedeDetalle(sede)
-                    }
-                  />
-                )}
-
-                {/* ========================================
-                    ALERTA DE REABASTECIMIENTO
-                ======================================== */}
-
-                {agotadoEnTodas && (
-                  <AlertaReabastecimiento
-                    key={medicamentoSeleccionado.id}
-                    medicamento={medicamentoSeleccionado}
-                  />
-                )}
-              </section>
-            ) : (
-              <>
-                {/* ========================================
-                    RESUMEN DE RESULTADOS
-                ======================================== */}
-
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-[16px] font-extrabold text-[#14285B]">
-                      Medicamentos disponibles para consulta
-                    </h2>
-
-                    <p className="mt-1 text-[12px] text-[#71829B]">
-                      {resultados.length}{" "}
-                      {resultados.length === 1
-                        ? "resultado encontrado"
-                        : "resultados encontrados"}
-                    </p>
-                  </div>
+                <div
+                  className="
+                    mt-4 flex items-center justify-between
+                    gap-3 border-t border-[#DFE9F6] pt-3
+                  "
+                >
+                  <span className="text-[12px] font-medium text-[#62748E]">
+                    Stock disponible
+                  </span>
 
                   <span
-                    className="
-                      inline-flex items-center gap-2
-                      rounded-full border border-[#DCE8F7]
-                      bg-white px-3 py-2
-                      text-[11px] font-semibold text-[#62748E]
-                    "
+                    className={`
+                      text-[15px] font-extrabold
+                      ${
+                        cantidadDetalle > 15
+                          ? "text-[#059669]"
+                          : cantidadDetalle > 0
+                            ? "text-[#D97706]"
+                            : "text-[#DC2626]"
+                      }
+                    `}
                   >
-                    <Store
-                      size={14}
-                      className="text-[#0755D8]"
-                    />
-
-                    {sedesFiltradas.length} sedes
+                    {cantidadDetalle}{" "}
+                    {cantidadDetalle === 1
+                      ? "unidad"
+                      : "unidades"}
                   </span>
                 </div>
 
-                {/* ========================================
-                    TARJETAS DE MEDICAMENTOS
-                ======================================== */}
+              </div>
 
-                {resultados.length > 0 ? (
+              {/* DISPONIBILIDAD LIMITADA */}
+
+              {cantidadDetalle > 0 &&
+                cantidadDetalle <= 15 && (
+
                   <div
                     className="
-                      grid grid-cols-1 gap-4
-                      lg:grid-cols-2 2xl:grid-cols-3
+                      mt-4 rounded-[12px]
+                      border border-[#FCE7B5]
+                      bg-[#FFF4DE] p-3
                     "
                   >
-                    {resultados.map(({ medicamento, sede }) => (
-                      <MedicamentoCard
-                        key={`${medicamento.id}-${sede.id}`}
-                        medicamento={medicamento}
-                        sede={sede}
-                        onVerDisponibilidad={() =>
-                          abrirDetalle(medicamento, sede)
-                        }
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div
-                    className="
-                      rounded-[20px] border border-[#DFE9F6]
-                      bg-white px-5 py-12 text-center
-                    "
-                  >
-                    <PackageSearch
-                      size={36}
-                      className="mx-auto text-[#0876E9]"
-                    />
-
-                    <h3 className="mt-3 text-[15px] font-bold text-[#14285B]">
-                      No encontramos resultados
-                    </h3>
-
-                    <p className="mt-2 text-[12px] text-[#71829B]">
-                      Prueba con otro nombre, código o combinación
-                      de filtros.
+                    <p className="text-[12px] font-semibold text-[#A96508]">
+                      Quedan pocas unidades en esta sede.
+                      ¡Reserva pronto!
                     </p>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setBusqueda("");
-
-                        setFiltros({
-                          sedeId: "",
-                          ubicacion: "",
-                          cercania: "cercanas",
-                        });
-                      }}
-                      className="
-                        mt-4 inline-flex items-center gap-2
-                        rounded-[12px] bg-[#0755D8]
-                        px-4 py-2.5
-                        text-[12px] font-bold text-white
-                        hover:bg-[#0647B6]
-                      "
-                    >
-                      <Search size={15} />
-
-                      Mostrar todos
-                    </button>
                   </div>
+
                 )}
-              </>
+
+              {/* MEDICAMENTO AGOTADO */}
+
+              {cantidadDetalle === 0 && (
+
+                <div
+                  className="
+                    mt-4 rounded-[12px]
+                    border border-[#FADADA]
+                    bg-[#FEECEC] p-3
+                  "
+                >
+                  <p className="text-[12px] font-semibold text-[#B91C1C]">
+                    Actualmente no hay unidades disponibles
+                    en esta sede.
+                  </p>
+                </div>
+
+              )}
+
+            </div>
+
+            {/* ========================================
+                SEDES ALTERNATIVAS
+            ======================================== */}
+
+            {cantidadDetalle === 0 && (
+
+              <SedesAlternativas
+                medicamento={medicamentoSeleccionado}
+                sedeActual={sedeDetalle}
+                sedes={sedesFarmacias}
+                onSeleccionarSede={(sede) =>
+                  setSedeDetalle(sede)
+                }
+              />
+
             )}
 
-            {/* NOTA DE DATOS SIMULADOS */}
+            {/* ========================================
+                ALERTA DE REABASTECIMIENTO
+            ======================================== */}
 
-            <p className="pb-2 text-[11px] text-[#71829B]">
-              Los medicamentos, existencias y distancias mostrados
-              son datos de demostración. No representan inventario
-              actualizado en tiempo real.
-            </p>
+            {agotadoEnTodas && (
+
+              <AlertaReabastecimiento
+                key={medicamentoSeleccionado.id}
+                medicamento={medicamentoSeleccionado}
+              />
+
+            )}
+
+          </section>
+
+        ) : (
+
+          <>
+
+            {/* ========================================
+                RESUMEN DE RESULTADOS
+            ======================================== */}
+
+            <div className="flex flex-wrap items-center justify-between gap-3">
+
+              <div>
+                <h2 className="text-[16px] font-extrabold text-[#14285B]">
+                  Resultados de búsqueda
+                </h2>
+
+                <p className="mt-1 text-[12px] text-[#71829B]">
+                  {resultados.length}{" "}
+                  {resultados.length === 1
+                    ? "resultado encontrado"
+                    : "resultados encontrados"}
+                </p>
+              </div>
+
+              <div
+                className="
+                  inline-flex items-center gap-2
+                  rounded-full border border-[#DCE8F7]
+                  bg-white px-3 py-2
+                  text-[11px] font-semibold text-[#62748E]
+                "
+              >
+                <Store
+                  size={14}
+                  className="text-[#0755D8]"
+                />
+
+                {sedesFiltradas.length}{" "}
+                {sedesFiltradas.length === 1
+                  ? "sede"
+                  : "sedes"}
+              </div>
+
+            </div>
+
+            {/* ========================================
+                TARJETAS DE MEDICAMENTOS
+            ======================================== */}
+
+            {resultados.length > 0 ? (
+
+              <div
+                className="
+                  grid grid-cols-1 gap-4
+                  lg:grid-cols-2 2xl:grid-cols-3
+                "
+              >
+                {resultados.map(
+                  ({ medicamento, sede }) => (
+
+                    <MedicamentoCard
+                      key={`${medicamento.id}-${sede.id}`}
+                      medicamento={medicamento}
+                      sede={sede}
+                      onVerDisponibilidad={() =>
+                        abrirDetalle(medicamento, sede)
+                      }
+                    />
+
+                  )
+                )}
+              </div>
+
+            ) : (
+
+              /* ========================================
+                 ESTADO VACÍO
+              ======================================== */
+
+              <section
+                className="
+                  flex min-h-[280px] flex-col
+                  items-center justify-center
+                  rounded-[20px]
+                  border border-[#DFE9F6]
+                  bg-white p-8 text-center
+                "
+              >
+                <div
+                  className="
+                    flex h-16 w-16 items-center
+                    justify-center rounded-[20px]
+                    bg-[#EAF3FF] text-[#0755D8]
+                  "
+                >
+                  <PackageSearch size={30} />
+                </div>
+
+                <h3 className="mt-4 text-[16px] font-extrabold text-[#14285B]">
+                  No encontramos medicamentos
+                </h3>
+
+                <p className="mt-2 max-w-md text-[12px] leading-relaxed text-[#71829B]">
+                  No hay resultados que coincidan con tu
+                  búsqueda o los filtros seleccionados.
+                  Intenta con otro nombre, código o sede.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={limpiarFiltros}
+                  className="
+                    mt-5 inline-flex items-center
+                    justify-center gap-2
+                    rounded-[12px]
+                    bg-[#0755D8] px-5 py-3
+                    text-[12px] font-bold text-white
+                    transition-colors hover:bg-[#0647B6]
+                  "
+                >
+                  <Search size={16} />
+
+                  Limpiar búsqueda y filtros
+                </button>
+
+              </section>
+
+            )}
+
           </>
+
         )}
+
+        {/* ========================================
+            INFORMACIÓN SOBRE LOS DATOS
+        ======================================== */}
+
+        <div
+          className="
+            rounded-[14px]
+            border border-[#DCE8F7]
+            bg-[#EAF3FF] p-3
+          "
+        >
+          <p className="text-[11px] leading-relaxed text-[#62748E]">
+            La disponibilidad de medicamentos puede variar
+            según la sede seleccionada. Actualmente los
+            datos de inventario corresponden a una
+            simulación del sistema.
+          </p>
+        </div>
+
       </div>
     </div>
+  );
+}
+
+// ========================================
+// CONTROL DE VISTAS
+// ========================================
+
+function MedicinesContent() {
+
+  const searchParams = useSearchParams();
+
+  const mostrarGuardados =
+    searchParams.get("vista") === "guardados";
+
+  const busquedaInicial =
+    searchParams.get("busqueda") ?? "";
+
+  const sedeId =
+    searchParams.get("sedeId") ?? "";
+
+  // VALIDAR QUE LA SEDE EXISTA
+
+  const sedeInicial = sedesFarmacias.some(
+    (sede) => sede.id === sedeId
+  )
+    ? sedeId
+    : "";
+
+  // ========================================
+  // VISTA DE MIS MEDICAMENTOS
+  // ========================================
+
+  if (mostrarGuardados) {
+
+    return (
+      <MisMedicamentosContent
+        medicamentos={medicamentosMock}
+        sedes={sedesFarmacias}
+      />
+    );
+
+  }
+
+  // ========================================
+  // VISTA DEL CATÁLOGO
+  // ========================================
+
+  return (
+    <CatalogoContent
+      key={JSON.stringify([
+        busquedaInicial,
+        sedeInicial,
+      ])}
+      busquedaInicial={busquedaInicial}
+      sedeInicial={sedeInicial}
+    />
   );
 }
 
@@ -529,22 +716,31 @@ function MedicinesContent() {
 // ========================================
 
 export default function MedicinesPage() {
+
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-full items-center justify-center bg-[#F5F9FF] p-6">
+        <div
+          className="
+            flex min-h-[400px] items-center
+            justify-center bg-[#F5F9FF]
+          "
+        >
           <div className="flex flex-col items-center gap-3">
+
             <div
               className="
-                h-9 w-9 animate-spin rounded-full
-                border-4 border-[#DCE8F7]
+                h-9 w-9 animate-spin
+                rounded-full border-4
+                border-[#DCE8F7]
                 border-t-[#0755D8]
               "
             />
 
-            <p className="text-sm font-semibold text-[#62748E]">
+            <p className="text-[12px] font-medium text-[#62748E]">
               Cargando medicamentos...
             </p>
+
           </div>
         </div>
       }
