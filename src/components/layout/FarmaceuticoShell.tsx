@@ -17,6 +17,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import LogoutButton from "@/features/auth/components/LogoutButton";
+import SidebarWaves from "@/components/layout/SidebarWaves";
 
 // =========================================================
 // FUENTE
@@ -119,16 +120,21 @@ function Sidebar({ name }: { name: string }) {
   return (
     <aside
       className="
-        sticky top-0
+        sticky top-0 isolate
         hidden h-dvh w-[260px]
         shrink-0 flex-col
         overflow-hidden
-        bg-gradient-to-b from-[#0B1F5C] to-[#0F2A75]
+        bg-gradient-to-b
+        from-[#0B1F5C] to-[#0F2A75]
         px-4 pb-3 pt-4
         text-white
         lg:flex
       "
     >
+      {/* ONDAS Y CÍRCULOS DECORATIVOS */}
+
+      <SidebarWaves />
+
       {/* LOGO */}
 
       <Link

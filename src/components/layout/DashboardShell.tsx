@@ -22,6 +22,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import LogoutButton from "@/features/auth/components/LogoutButton";
+import SidebarWaves from "@/components/layout/SidebarWaves";
 
 // ========================================
 // FUENTE
@@ -320,7 +321,7 @@ function Sidebar({ name }: { name: string }) {
   return (
     <aside
       className="
-        sticky top-0
+        sticky top-0 isolate
         hidden h-dvh w-[260px]
         shrink-0 flex-col
         overflow-hidden
@@ -331,6 +332,10 @@ function Sidebar({ name }: { name: string }) {
         lg:flex
       "
     >
+      {/* ONDAS Y CÍRCULOS DECORATIVOS */}
+
+      <SidebarWaves />
+
       {/* LOGO */}
 
       <Link

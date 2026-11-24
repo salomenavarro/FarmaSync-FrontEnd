@@ -21,6 +21,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import LogoutButton from "@/features/auth/components/LogoutButton";
+import SidebarWaves from "@/components/layout/SidebarWaves";
 
 // =========================================================
 // TIPOS
@@ -233,51 +234,6 @@ function AdminProfile({ name }: { name: string }) {
 }
 
 // =========================================================
-// DECORACIONES DEL MENÚ LATERAL
-// =========================================================
-
-function SidebarDecoration() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 260 320"
-      preserveAspectRatio="none"
-      className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-80 w-full"
-    >
-      <path
-        d="M0 140C80 80 160 240 260 120V320H0Z"
-        fill="#0876E9"
-        fillOpacity=".10"
-      />
-
-      <path
-        d="M0 210C90 140 170 280 260 190V320H0Z"
-        fill="#FFFFFF"
-        fillOpacity=".04"
-      />
-
-      <circle
-        cx="245"
-        cy="200"
-        r="110"
-        fill="none"
-        stroke="white"
-        strokeOpacity=".08"
-      />
-
-      <circle
-        cx="245"
-        cy="200"
-        r="80"
-        fill="none"
-        stroke="white"
-        strokeOpacity=".06"
-      />
-    </svg>
-  );
-}
-
-// =========================================================
 // MENÚ LATERAL DE ESCRITORIO
 // =========================================================
 
@@ -295,19 +251,29 @@ function Sidebar({ name }: { name: string }) {
         lg:flex
       "
     >
-      <SidebarDecoration />
+      {/* ONDAS Y CÍRCULOS DECORATIVOS */}
+
+      <SidebarWaves />
+
+      {/* LOGOTIPO */}
 
       <div className="px-2">
         <Brand />
       </div>
 
+      {/* IDENTIFICACIÓN DEL PANEL */}
+
       <div className="mt-7">
         <PanelIdentification />
       </div>
 
+      {/* NAVEGACIÓN PRINCIPAL */}
+
       <div className="mt-7 min-h-0 flex-1 overflow-y-auto">
         <Navigation />
       </div>
+
+      {/* PERFIL Y CIERRE DE SESIÓN */}
 
       <div className="mt-4 border-t border-white/10 pt-4">
         <AdminProfile name={name} />
@@ -330,6 +296,9 @@ function MobileBar({ name }: { name: string }) {
 
   return (
     <header className="sticky top-0 z-40 bg-[#0B1F5C] text-white shadow-md lg:hidden">
+
+      {/* ENCABEZADO MÓVIL */}
+
       <div className="flex items-center justify-between px-4 py-3">
         <Brand />
 
@@ -348,6 +317,8 @@ function MobileBar({ name }: { name: string }) {
           )}
         </button>
       </div>
+
+      {/* MENÚ DESPLEGABLE */}
 
       {open && (
         <div
@@ -382,9 +353,16 @@ export default function AdministradorShell({
 }: AdministradorShellProps) {
   return (
     <div className="flex min-h-dvh flex-col bg-[#F5F9FF] text-[#14285B] lg:flex-row">
+
+      {/* MENÚ MÓVIL */}
+
       <MobileBar name={usuario.nombreCompleto} />
 
+      {/* MENÚ LATERAL DE ESCRITORIO */}
+
       <Sidebar name={usuario.nombreCompleto} />
+
+      {/* CONTENIDO PRINCIPAL */}
 
       <main className="min-w-0 flex-1">
         {children}
