@@ -144,8 +144,8 @@ export default function GrupoFamiliarPage() {
   ).length;
 
   return (
-    <main className="flex min-h-full flex-col bg-[#F5F9FF] p-3 lg:h-dvh lg:min-h-0 lg:overflow-hidden lg:p-4">
-      <div className="mx-auto flex min-h-0 w-full max-w-[1450px] flex-1 flex-col gap-3">
+    <main className="flex min-h-full min-w-0 flex-col bg-[#F5F9FF] p-3 lg:h-dvh lg:min-h-0 lg:overflow-hidden">
+      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col gap-3">
 
         {/* =====================================
             BANNER PRINCIPAL
@@ -153,36 +153,65 @@ export default function GrupoFamiliarPage() {
 
         <section
           className="
-            relative isolate flex min-h-[165px]
+            relative isolate flex min-h-[150px]
             shrink-0 items-center overflow-hidden
-            rounded-[25px]
+            rounded-[24px]
             bg-gradient-to-r
             from-[#0B1F5C]
             via-[#0755D8]
             to-[#0876E9]
-            px-6 py-5 text-white
-            shadow-[0_8px_22px_rgba(5,91,210,0.13)]
-            sm:px-8
+            px-5 py-4 text-white
+            shadow-[0_10px_25px_rgba(5,91,210,0.18)]
+            sm:px-8 lg:min-h-[186px]
           "
         >
-          {/* ONDAS DECORATIVAS REUTILIZABLES */}
+          {/* ONDAS DECORATIVAS */}
 
           <BannerWaves />
 
-          {/* TEXTO */}
+          {/* CONTENIDO DEL ENCABEZADO */}
 
-          <div className="relative z-10 max-w-[620px] lg:max-w-[52%]">
-            <p className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#D8F5FF]">
-              <HeartHandshake size={17} />
+          <div className="relative z-10 w-full lg:max-w-[60%]">
 
-              Plan familiar
-            </p>
+            {/* ETIQUETA SUPERIOR */}
 
-            <h1 className="mt-2 text-[29px] font-extrabold leading-tight tracking-tight sm:text-[33px]">
+            <div
+              className="
+                mb-3 inline-flex items-center gap-2
+                rounded-full border border-white/20
+                bg-white/10 px-3 py-1.5
+              "
+            >
+              <HeartHandshake
+                size={15}
+                aria-hidden="true"
+              />
+
+              <span className="text-xs font-semibold">
+                Plan familiar
+              </span>
+            </div>
+
+            {/* TÍTULO */}
+
+            <h1
+              className="
+                text-[26px] font-extrabold
+                tracking-tight sm:text-[30px]
+              "
+            >
               Mi Grupo Familiar
             </h1>
 
-            <p className="mt-2 max-w-[540px] text-[13px] leading-relaxed text-white/95">
+            {/* DESCRIPCIÓN */}
+
+            <p
+              className="
+                mt-2 max-w-xl text-[13px]
+                leading-relaxed text-[#E1EDFF]
+                sm:text-sm
+              "
+            >
               Administra los familiares a tu cargo y
               organiza sus reservas de medicamentos
               desde un solo lugar.
@@ -191,7 +220,13 @@ export default function GrupoFamiliarPage() {
 
           {/* ILUSTRACIÓN MÉDICA Y FAMILIAR */}
 
-          <div className="pointer-events-none absolute bottom-0 right-3 hidden h-[150px] w-[36%] lg:block xl:right-5 xl:h-[155px]">
+          <div
+            className="
+              pointer-events-none absolute bottom-0
+              right-3 hidden h-[150px] w-[36%]
+              lg:block xl:right-5 xl:h-[155px]
+            "
+          >
             <Image
               src="/images/familia.png"
               alt="Familia acompañada de elementos médicos"

@@ -43,17 +43,14 @@ function MedicinesContent() {
 
   const [busqueda, setBusqueda] = useState("");
 
-  const [filtros, setFiltros] =
-    useState<FiltrosMedicamentos>({
-      sedeId: "",
-      ubicacion: "",
-      cercania: "cercanas",
-    });
+  const [filtros, setFiltros] = useState<FiltrosMedicamentos>({
+    sedeId: "",
+    ubicacion: "",
+    cercania: "cercanas",
+  });
 
-  const [
-    medicamentoSeleccionado,
-    setMedicamentoSeleccionado,
-  ] = useState<Medicamento | null>(null);
+  const [medicamentoSeleccionado, setMedicamentoSeleccionado] =
+    useState<Medicamento | null>(null);
 
   const [sedeDetalle, setSedeDetalle] =
     useState<SedeFarmacia | null>(null);
@@ -69,8 +66,7 @@ function MedicinesContent() {
 
       const coincideUbicacion =
         !filtros.ubicacion ||
-        `${sede.ciudad} - ${sede.zona}` ===
-          filtros.ubicacion;
+        `${sede.ciudad} - ${sede.zona}` === filtros.ubicacion;
 
       return coincideSede && coincideUbicacion;
     });
@@ -87,75 +83,73 @@ function MedicinesContent() {
   // ========================================
 
   const medicamentosFiltrados = useMemo(() => {
-    const texto = busqueda
-      .trim()
-      .toLocaleLowerCase("es");
+    const texto = busqueda.trim().toLocaleLowerCase("es");
 
     if (!texto) return medicamentosMock;
 
     return medicamentosMock.filter((medicamento) => {
       const nombre =
-        medicamento.nombreGenerico.toLocaleLowerCase(
-          "es"
-        );
+        medicamento.nombreGenerico.toLocaleLowerCase("es");
 
       const codigo =
         medicamento.codigo.toLocaleLowerCase("es");
 
-      return (
-        nombre.includes(texto) ||
-        codigo.includes(texto)
-      );
+      return nombre.includes(texto) || codigo.includes(texto);
     });
   }, [busqueda]);
 
   // ========================================
-  // RESULTADOS POR MEDICAMENTO Y SEDE
+  // RESULTADOS DEL CATÁLOGO
   // ========================================
 
   const resultados = useMemo(() => {
-    return medicamentosFiltrados.flatMap(
-      (medicamento) =>
-        sedesFiltradas.map((sede) => ({
-          medicamento,
-          sede,
-        }))
+    return medicamentosFiltrados.flatMap((medicamento) =>
+      sedesFiltradas.map((sede) => ({
+        medicamento,
+        sede,
+      }))
     );
   }, [medicamentosFiltrados, sedesFiltradas]);
 
-  const abrirDetalle = (
+  // ========================================
+  // DETALLE DEL MEDICAMENTO
+  // ========================================
+
+  function abrirDetalle(
     medicamento: Medicamento,
     sede: SedeFarmacia
-  ) => {
+  ) {
     setMedicamentoSeleccionado(medicamento);
     setSedeDetalle(sede);
-  };
+  }
 
-  const cerrarDetalle = () => {
+  function cerrarDetalle() {
     setMedicamentoSeleccionado(null);
     setSedeDetalle(null);
-  };
+  }
 
   const cantidadDetalle =
-    medicamentoSeleccionado?.stockPorSede.find(
-      (item) => item.sedeId === sedeDetalle?.id
-    )?.cantidad ?? 0;
+    medicamentoSeleccionado && sedeDetalle
+      ? medicamentoSeleccionado.stockPorSede.find(
+          (stock) => stock.sedeId === sedeDetalle.id
+        )?.cantidad ?? 0
+      : 0;
 
   const agotadoEnTodas =
-    medicamentoSeleccionado?.stockPorSede.every(
-      (item) => item.cantidad === 0
-    ) ?? false;
+    medicamentoSeleccionado !== null &&
+    medicamentoSeleccionado.stockPorSede.every(
+      (stock) => stock.cantidad === 0
+    );
 
   return (
     <div className="min-h-full min-w-0 bg-[#F5F9FF] p-3">
-
       <div className="mx-auto w-full space-y-3">
 
         {/* ========================================
             ENCABEZADO PRINCIPAL
         ======================================== */}
 
-        <header
+        <section
           className="
             relative isolate flex min-h-[150px]
             shrink-0 items-center overflow-hidden
@@ -171,39 +165,52 @@ function MedicinesContent() {
         >
           <BannerWaves />
 
-          <div className="relative z-10 flex items-center gap-4">
+          <div className="relative z-10 w-full">
 
-            {/* ICONO PRINCIPAL */}
+            {/* ETIQUETA SUPERIOR */}
 
             <div
               className="
-                flex h-12 w-12 shrink-0
-                items-center justify-center
-                rounded-[15px] bg-white/15
+                mb-3 inline-flex items-center gap-2
+                rounded-full border border-white/20
+                bg-white/10 px-3 py-1.5
               "
             >
-              <Pill size={25} />
+              <Pill size={15} aria-hidden="true" />
+
+              <span className="text-xs font-semibold">
+                Catálogo de medicamentos
+              </span>
             </div>
 
-            {/* INFORMACIÓN DEL ENCABEZADO */}
+            {/* TÍTULO */}
 
-            <div>
-              <p className="mb-1 text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#C9F5FF]">
-                FarmaSync · Catálogo de medicamentos
-              </p>
+            <h1
+              className="
+                text-[26px] font-extrabold
+                tracking-tight sm:text-[30px]
+              "
+            >
+              {mostrarGuardados
+                ? "Mis medicamentos"
+                : "Buscar medicamentos"}
+            </h1>
 
-              <h1 className="text-[26px] font-extrabold tracking-tight sm:text-[30px]">
-                {mostrarGuardados
-                  ? "Mis medicamentos"
-                  : "Buscar medicamentos"}
-              </h1>
+            {/* DESCRIPCIÓN */}
 
-              <p className="mt-1.5 text-[13px] leading-[1.45] text-white/95 sm:text-sm">
-                Consulta medicamentos y disponibilidad por sede.
-              </p>
-            </div>
+            <p
+              className="
+                mt-2 max-w-xl text-[13px]
+                leading-relaxed text-[#E1EDFF]
+                sm:text-sm
+              "
+            >
+              {mostrarGuardados
+                ? "Consulta y organiza tus medicamentos favoritos."
+                : "Consulta medicamentos y disponibilidad por sede."}
+            </p>
           </div>
-        </header>
+        </section>
 
         {/* ========================================
             VISTA DE MIS MEDICAMENTOS
@@ -212,8 +219,7 @@ function MedicinesContent() {
         {mostrarGuardados ? (
           <section
             className="
-              rounded-[20px]
-              border border-[#DFE9F6]
+              rounded-[20px] border border-[#DFE9F6]
               bg-white p-8 text-center
             "
           >
@@ -233,15 +239,13 @@ function MedicinesContent() {
           </section>
         ) : (
           <>
-
             {/* ========================================
                 BUSCADOR
             ======================================== */}
 
             <section
               className="
-                rounded-[20px]
-                border border-[#DFE9F6]
+                rounded-[20px] border border-[#DFE9F6]
                 bg-white p-4
               "
             >
@@ -273,7 +277,6 @@ function MedicinesContent() {
 
             {medicamentoSeleccionado && sedeDetalle ? (
               <section className="space-y-4">
-
                 <button
                   type="button"
                   onClick={cerrarDetalle}
@@ -290,18 +293,15 @@ function MedicinesContent() {
 
                 <div
                   className="
-                    rounded-[20px]
-                    border border-[#DFE9F6]
+                    rounded-[20px] border border-[#DFE9F6]
                     bg-white p-5
                   "
                 >
                   <div className="flex items-start gap-3">
-
                     <div
                       className="
-                        flex h-12 w-12 shrink-0
-                        items-center justify-center
-                        rounded-[14px]
+                        flex h-12 w-12 shrink-0 items-center
+                        justify-center rounded-[14px]
                         bg-[#EAF3FF] text-[#0755D8]
                       "
                     >
@@ -335,7 +335,6 @@ function MedicinesContent() {
                     "
                   >
                     <div className="flex items-center gap-2">
-
                       <Store
                         size={17}
                         className="text-[#0755D8]"
@@ -362,7 +361,8 @@ function MedicinesContent() {
                     {cantidadDetalle > 0 &&
                       cantidadDetalle <= 15 && (
                         <p className="mt-2 text-[12px] font-semibold text-[#A96508]">
-                          Quedan pocas unidades en esta sede. ¡Reserva pronto!
+                          Quedan pocas unidades en esta sede.
+                          ¡Reserva pronto!
                         </p>
                       )}
 
@@ -404,13 +404,11 @@ function MedicinesContent() {
               </section>
             ) : (
               <>
-
                 {/* ========================================
                     RESUMEN DE RESULTADOS
                 ======================================== */}
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
-
                   <div>
                     <h2 className="text-[16px] font-extrabold text-[#14285B]">
                       Medicamentos disponibles para consulta
@@ -427,11 +425,9 @@ function MedicinesContent() {
                   <span
                     className="
                       inline-flex items-center gap-2
-                      rounded-full
-                      border border-[#DCE8F7]
+                      rounded-full border border-[#DCE8F7]
                       bg-white px-3 py-2
-                      text-[11px] font-semibold
-                      text-[#62748E]
+                      text-[11px] font-semibold text-[#62748E]
                     "
                   >
                     <Store
@@ -451,30 +447,25 @@ function MedicinesContent() {
                   <div
                     className="
                       grid grid-cols-1 gap-4
-                      lg:grid-cols-2
-                      2xl:grid-cols-3
+                      lg:grid-cols-2 2xl:grid-cols-3
                     "
                   >
-                    {resultados.map(
-                      ({ medicamento, sede }) => (
-                        <MedicamentoCard
-                          key={`${medicamento.id}-${sede.id}`}
-                          medicamento={medicamento}
-                          sede={sede}
-                          onVerDisponibilidad={() =>
-                            abrirDetalle(medicamento, sede)
-                          }
-                        />
-                      )
-                    )}
+                    {resultados.map(({ medicamento, sede }) => (
+                      <MedicamentoCard
+                        key={`${medicamento.id}-${sede.id}`}
+                        medicamento={medicamento}
+                        sede={sede}
+                        onVerDisponibilidad={() =>
+                          abrirDetalle(medicamento, sede)
+                        }
+                      />
+                    ))}
                   </div>
                 ) : (
                   <div
                     className="
-                      rounded-[20px]
-                      border border-[#DFE9F6]
-                      bg-white px-5 py-12
-                      text-center
+                      rounded-[20px] border border-[#DFE9F6]
+                      bg-white px-5 py-12 text-center
                     "
                   >
                     <PackageSearch
@@ -487,7 +478,8 @@ function MedicinesContent() {
                     </h3>
 
                     <p className="mt-2 text-[12px] text-[#71829B]">
-                      Prueba con otro nombre, código o combinación de filtros.
+                      Prueba con otro nombre, código o combinación
+                      de filtros.
                     </p>
 
                     <button
@@ -503,8 +495,7 @@ function MedicinesContent() {
                       }}
                       className="
                         mt-4 inline-flex items-center gap-2
-                        rounded-[12px]
-                        bg-[#0755D8]
+                        rounded-[12px] bg-[#0755D8]
                         px-4 py-2.5
                         text-[12px] font-bold text-white
                         hover:bg-[#0647B6]
@@ -519,9 +510,7 @@ function MedicinesContent() {
               </>
             )}
 
-            {/* ========================================
-                NOTA DE DATOS SIMULADOS
-            ======================================== */}
+            {/* NOTA DE DATOS SIMULADOS */}
 
             <p className="pb-2 text-[11px] text-[#71829B]">
               Los medicamentos, existencias y distancias mostrados
@@ -544,9 +533,7 @@ export default function MedicinesPage() {
     <Suspense
       fallback={
         <div className="flex min-h-full items-center justify-center bg-[#F5F9FF] p-6">
-
           <div className="flex flex-col items-center gap-3">
-
             <div
               className="
                 h-9 w-9 animate-spin rounded-full

@@ -30,29 +30,37 @@ export default function AdminHeader({
   return (
     <section
       className="
-        relative isolate overflow-hidden
+        relative isolate flex min-h-[150px]
+        shrink-0 items-center overflow-hidden
         rounded-[24px]
         bg-gradient-to-r
         from-[#0B1F5C]
         via-[#0755D8]
         to-[#0876E9]
-        px-5 py-5
-        text-white
-        shadow-[0_8px_25px_rgba(7,85,216,0.15)]
-        sm:px-7
+        px-5 py-4 text-white
+        shadow-[0_10px_25px_rgba(5,91,210,0.18)]
+        sm:px-8 lg:min-h-[186px]
       "
     >
       {/* DECORACIONES DEL ENCABEZADO */}
 
       <BannerWaves />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="relative z-10 flex w-full flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
 
         {/* INFORMACIÓN PRINCIPAL */}
 
         <div className="min-w-0">
 
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5">
+          {/* ETIQUETA SUPERIOR */}
+
+          <div
+            className="
+              mb-3 inline-flex items-center gap-2
+              rounded-full border border-white/20
+              bg-white/10 px-3 py-1.5
+            "
+          >
             <ShieldCheck
               size={15}
               aria-hidden="true"
@@ -63,11 +71,26 @@ export default function AdminHeader({
             </span>
           </div>
 
-          <h1 className="text-2xl font-extrabold tracking-tight sm:text-[28px]">
+          {/* SALUDO PERSONALIZADO */}
+
+          <h1
+            className="
+              text-[26px] font-extrabold
+              tracking-tight sm:text-[30px]
+            "
+          >
             Hola, {primerNombre}
           </h1>
 
-          <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-[#E1EDFF]">
+          {/* DESCRIPCIÓN */}
+
+          <p
+            className="
+              mt-2 max-w-xl text-[13px]
+              leading-relaxed text-[#E1EDFF]
+              sm:text-sm
+            "
+          >
             Gestiona tu equipo, supervisa la disponibilidad
             de medicamentos y monitorea el rendimiento
             de las sedes de farmacia.
@@ -77,9 +100,22 @@ export default function AdminHeader({
 
         {/* FECHA ACTUAL */}
 
-        <div className="flex w-fit shrink-0 items-center gap-3 rounded-2xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur-sm">
-
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+        <div
+          className="
+            flex w-fit max-w-full shrink-0
+            items-center gap-3
+            rounded-2xl border border-white/20
+            bg-white/10 px-4 py-3
+            backdrop-blur-sm lg:ml-auto
+          "
+        >
+          <span
+            className="
+              flex h-10 w-10 shrink-0
+              items-center justify-center
+              rounded-xl bg-white/15
+            "
+          >
             <CalendarDays
               size={21}
               aria-hidden="true"

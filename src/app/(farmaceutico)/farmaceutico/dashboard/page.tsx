@@ -13,6 +13,7 @@ import {
   Printer,
   QrCode,
   Search,
+  Store,
   Tag,
   TriangleAlert,
   Users,
@@ -209,47 +210,98 @@ function Panel({
 function Banner({ porAlistar }: { porAlistar: number }) {
   return (
     <section
+      aria-labelledby="operacion-farmacia"
       className="
-        relative isolate flex min-h-[145px]
-        shrink-0 items-center
-        overflow-hidden rounded-[24px]
+        relative isolate flex min-h-[150px]
+        shrink-0 items-center overflow-hidden
+        rounded-[24px]
         bg-gradient-to-r
         from-[#0B1F5C]
         via-[#0755D8]
         to-[#0876E9]
         px-5 py-4 text-white
-        shadow-[0_10px_26px_rgba(5,91,210,0.16)]
-        sm:px-7
+        shadow-[0_10px_25px_rgba(5,91,210,0.18)]
+        sm:px-8 lg:min-h-[186px]
       "
     >
-      {/* ONDAS DECORATIVAS REUTILIZABLES */}
+      {/* ONDAS DECORATIVAS */}
 
       <BannerWaves />
 
-      {/* TEXTO */}
+      {/* CONTENIDO DEL ENCABEZADO */}
 
-      <div className="relative z-10 max-w-[570px]">
-        <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#D1F5FF]">
-          FarmaSync · Operación en farmacia
-        </p>
+      <div className="relative z-10 flex w-full flex-col gap-3">
 
-        <h1
-          className={`
-            ${titleFont.className}
-            mt-1 text-[25px]
-            font-extrabold leading-tight
-          `}
+        {/* ETIQUETA SUPERIOR */}
+
+        <div
+          className="
+            inline-flex w-fit items-center gap-2
+            rounded-full border border-white/20
+            bg-white/10 px-3 py-1.5
+          "
         >
-          Operación en farmacia
-        </h1>
+          <Store size={15} aria-hidden="true" />
 
-        <p className="mt-1.5 text-[13px] leading-[1.45] text-white/95">
-          Gestiona las reservas de tu sede, verifica las
-          entregas y actualiza el inventario.
-        </p>
+          <span className="text-xs font-semibold">
+            FarmaSync · Operación en farmacia
+          </span>
+        </div>
+
+        {/* TÍTULO Y DESCRIPCIÓN */}
+
+        <div className="min-w-0 lg:max-w-[60%]">
+          <h1
+            id="operacion-farmacia"
+            className="
+              text-[26px] font-extrabold
+              tracking-tight sm:text-[30px]
+            "
+          >
+            Operación en farmacia
+          </h1>
+
+          <p
+            className="
+              mt-2 max-w-xl text-[13px]
+              leading-relaxed text-[#E1EDFF]
+              sm:text-sm
+            "
+          >
+            Gestiona las reservas de tu sede, verifica las
+            entregas y actualiza el inventario.
+          </p>
+        </div>
+
+        {/* ALERTA DE ALISTAMIENTO */}
+
+        {porAlistar > 0 && (
+          <Link
+            href="/farmaceutico/reservas"
+            className="
+              relative z-20 inline-flex w-fit
+              shrink-0 items-center gap-2
+              rounded-xl border border-[#F4A8A8]
+              bg-[#FFECEC] px-3 py-2
+              text-[12px] font-extrabold
+              text-[#C62828]
+              shadow-[0_5px_14px_rgba(120,0,0,0.12)]
+              transition hover:bg-white
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+              focus-visible:outline-white
+              lg:absolute lg:right-0 lg:top-0
+            "
+          >
+            <Bell size={17} aria-hidden="true" />
+
+            {porAlistar} por alistar
+          </Link>
+        )}
       </div>
 
-      {/* ILUSTRACIÓN */}
+      {/* ILUSTRACIÓN MÉDICA */}
 
       <svg
         aria-hidden="true"
@@ -257,10 +309,12 @@ function Banner({ porAlistar }: { porAlistar: number }) {
         className="
           pointer-events-none absolute
           bottom-0 right-[225px]
-          hidden h-[125px] w-auto
-          opacity-90 xl:block
+          hidden h-[150px] w-auto
+          opacity-90 2xl:block
         "
       >
+        {/* TABLA DE VERIFICACIÓN */}
+
         <g transform="rotate(8 175 75)">
           <rect
             x="130"
@@ -312,6 +366,8 @@ function Banner({ porAlistar }: { porAlistar: number }) {
           ))}
         </g>
 
+        {/* FRASCO DE MEDICAMENTOS */}
+
         <rect
           x="52"
           y="34"
@@ -335,29 +391,6 @@ function Banner({ porAlistar }: { porAlistar: number }) {
           fill="#0869EF"
         />
       </svg>
-
-      {/* ALERTA DE ALISTAMIENTO */}
-
-      {porAlistar > 0 && (
-        <Link
-          href="/farmaceutico/reservas"
-          className="
-            absolute right-4 top-4 z-20
-            inline-flex items-center gap-2
-            rounded-xl border border-[#F4A8A8]
-            bg-[#FFECEC] px-3 py-2
-            text-[12px] font-extrabold
-            text-[#C62828]
-            shadow-[0_5px_14px_rgba(120,0,0,0.12)]
-            transition hover:bg-white
-            sm:right-5 sm:top-5
-          "
-        >
-          <Bell size={17} aria-hidden="true" />
-
-          {porAlistar} por alistar
-        </Link>
-      )}
     </section>
   );
 }
@@ -373,7 +406,7 @@ function SemaforoSla() {
       titulo="Semáforo de alistamiento (SLA)"
       className="shrink-0"
     >
-      <ul className="mt-2.5 grid grid-cols-3 gap-2">
+      <ul className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-3">
         {semaforo.map(
           ({
             nivel,
@@ -769,18 +802,21 @@ export default function FarmaceuticoDashboardPage() {
   return (
     <div
       className="
-        flex min-h-dvh flex-col
+        flex min-h-dvh min-w-0 flex-col
         gap-3 bg-[#F5F9FF] p-3
         lg:h-dvh lg:min-h-0
-        lg:overflow-hidden
+        lg:overflow-y-auto
       "
     >
+      {/* ENCABEZADO PRINCIPAL */}
+
       <Banner porAlistar={porAlistar} />
+
+      {/* CONTENIDO DEL DASHBOARD */}
 
       <div
         className="
-          grid min-h-0 flex-1
-          gap-3
+          grid flex-1 gap-3
           xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]
           xl:items-stretch
         "
@@ -795,7 +831,7 @@ export default function FarmaceuticoDashboardPage() {
 
         {/* COLUMNA DERECHA */}
 
-        <div className="grid min-h-0 min-w-0 grid-rows-3 gap-3">
+        <div className="grid min-h-0 min-w-0 gap-3 xl:grid-rows-3">
           <EntregaVentanilla />
 
           <AlistamientoEtiquetado />
