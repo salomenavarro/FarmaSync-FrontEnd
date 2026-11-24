@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -12,7 +11,6 @@ import {
   Clock,
   Headphones,
   Home,
-  LogOut,
   Pill,
   Search,
   ShieldCheck,
@@ -22,6 +20,8 @@ import {
 
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+
+import LogoutButton from "@/features/auth/components/LogoutButton";
 
 // ========================================
 // FUENTE
@@ -413,20 +413,12 @@ function Sidebar({ name }: { name: string }) {
           </span>
         </div>
 
-        {/* CERRAR SESIÓN */}
+        {/* COMPONENTE REUTILIZABLE DE CIERRE DE SESIÓN */}
 
-        <button
-          type="button"
+        <LogoutButton
+          iconSize={20}
           className={`${NAV_LINK} mt-2 text-white hover:bg-white/10`}
-        >
-          <LogOut
-            size={20}
-            className="shrink-0"
-            aria-hidden="true"
-          />
-
-          <span>Cerrar sesión</span>
-        </button>
+        />
       </div>
     </aside>
   );
@@ -463,9 +455,19 @@ function MobileBar() {
           <Logo />
         </Link>
 
-        <span className="text-xs font-semibold text-[#C3D4F7]">
-          Paciente
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-[#C3D4F7]">
+            Paciente
+          </span>
+
+          {/* CERRAR SESIÓN EN DISPOSITIVOS MÓVILES */}
+
+          <LogoutButton
+            iconOnly
+            iconSize={22}
+            className={`rounded-full p-2 text-white hover:bg-white/10 ${FOCUS}`}
+          />
+        </div>
       </div>
 
       <nav

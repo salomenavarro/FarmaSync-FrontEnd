@@ -5,10 +5,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Inter } from "next/font/google";
 
-import { Boxes, ClipboardList, Home, LogOut, Package, User } from "lucide-react";
+import {
+  Boxes,
+  ClipboardList,
+  Home,
+  Package,
+  User,
+} from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+
+import LogoutButton from "@/features/auth/components/LogoutButton";
 
 // =========================================================
 // FUENTE
@@ -30,14 +38,30 @@ type NavItem = {
 };
 
 // =========================================================
-// NAVEGACIÓN (ajusta las rutas a las que ya tengas)
+// NAVEGACIÓN
 // =========================================================
 
 const MAIN_NAV: NavItem[] = [
-  { href: "/farmaceutico/dashboard", label: "Inicio", icon: Home },
-  { href: "/farmaceutico/reservas", label: "Solicitudes", icon: ClipboardList },
-  { href: "/farmaceutico/entregas", label: "Entregas", icon: Package },
-  { href: "/farmaceutico/inventario", label: "Inventario", icon: Boxes },
+  {
+    href: "/farmaceutico/dashboard",
+    label: "Inicio",
+    icon: Home,
+  },
+  {
+    href: "/farmaceutico/reservas",
+    label: "Solicitudes",
+    icon: ClipboardList,
+  },
+  {
+    href: "/farmaceutico/entregas",
+    label: "Entregas",
+    icon: Package,
+  },
+  {
+    href: "/farmaceutico/inventario",
+    label: "Inventario",
+    icon: Boxes,
+  },
 ];
 
 // =========================================================
@@ -49,7 +73,6 @@ const FOCUS =
 
 const NAV_LINK = `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-semibold leading-snug transition-colors ${FOCUS}`;
 
-/* "Inicio" solo se marca en su ruta exacta; las demás, también en sus subrutas */
 const isActive = (pathname: string, href: string) =>
   href === "/farmaceutico/dashboard"
     ? pathname === href
@@ -61,7 +84,7 @@ const classesItem = (active: boolean) =>
     : "text-white/90 hover:bg-white/10";
 
 // =========================================================
-// LOGO (el oficial, sobre un círculo blanco para que se vea en fondo oscuro)
+// LOGO
 // =========================================================
 
 function Logo() {
@@ -77,7 +100,9 @@ function Logo() {
         />
       </span>
 
-      <span className={`${titleFont.className} text-2xl font-extrabold text-white`}>
+      <span
+        className={`${titleFont.className} text-2xl font-extrabold text-white`}
+      >
         FarmaSync
       </span>
     </>
@@ -85,7 +110,7 @@ function Logo() {
 }
 
 // =========================================================
-// SIDEBAR (escritorio)
+// SIDEBAR (ESCRITORIO)
 // =========================================================
 
 function Sidebar({ name }: { name: string }) {
@@ -113,17 +138,21 @@ function Sidebar({ name }: { name: string }) {
         <Logo />
       </Link>
 
-      {/* ROL DE LA SEDE */}
+      {/* IDENTIFICACIÓN DEL PANEL */}
 
       <div className="mb-4 shrink-0 rounded-2xl border border-white/10 bg-white/10 px-4 py-3">
-        <p className={`${titleFont.className} text-base font-extrabold`}>
+        <p
+          className={`${titleFont.className} text-base font-extrabold`}
+        >
           Panel farmacéutico
         </p>
 
-        <p className="mt-0.5 text-sm text-[#C3D4F7]">Gestión de farmacia</p>
+        <p className="mt-0.5 text-sm text-[#C3D4F7]">
+          Gestión de farmacia
+        </p>
       </div>
 
-      {/* MENÚ: SOLO ESTA ZONA PUEDE HACER SCROLL */}
+      {/* MENÚ DE NAVEGACIÓN */}
 
       <nav
         aria-label="Panel farmacéutico"
@@ -147,7 +176,11 @@ function Sidebar({ name }: { name: string }) {
                   aria-current={active ? "page" : undefined}
                   className={`${NAV_LINK} ${classesItem(active)}`}
                 >
-                  <Icon size={22} className="shrink-0" aria-hidden="true" />
+                  <Icon
+                    size={22}
+                    className="shrink-0"
+                    aria-hidden="true"
+                  />
 
                   <span>{label}</span>
                 </Link>
@@ -157,7 +190,7 @@ function Sidebar({ name }: { name: string }) {
         </ul>
       </nav>
 
-      {/* SECCIÓN INFERIOR FIJA: USUARIO Y CIERRE DE SESIÓN */}
+      {/* SECCIÓN INFERIOR */}
 
       <div className="mt-3 shrink-0 border-t border-white/15 pt-3">
         <div className="flex items-center gap-3 px-2">
@@ -169,28 +202,29 @@ function Sidebar({ name }: { name: string }) {
           </span>
 
           <span className="min-w-0 leading-tight">
-            <span className="block truncate text-base font-extrabold">{name}</span>
+            <span className="block truncate text-base font-extrabold">
+              {name}
+            </span>
 
-            <span className="block text-sm text-[#C3D4F7]">Farmacéutico</span>
+            <span className="block text-sm text-[#C3D4F7]">
+              Farmacéutico
+            </span>
           </span>
         </div>
 
-        {/* Conecta aquí tu logout (por ejemplo, la mutación de auth) */}
-        <button
-          type="button"
-          className={`${NAV_LINK} mt-2 text-white hover:bg-white/10`}
-        >
-          <LogOut size={22} className="shrink-0" aria-hidden="true" />
+        {/* COMPONENTE REUTILIZABLE DE CIERRE DE SESIÓN */}
 
-          <span>Cerrar sesión</span>
-        </button>
+        <LogoutButton
+          iconSize={22}
+          className={`${NAV_LINK} mt-2 text-white hover:bg-white/10`}
+        />
       </div>
     </aside>
   );
 }
 
 // =========================================================
-// BARRA SUPERIOR (celular y tablet: la barra lateral se oculta)
+// BARRA SUPERIOR (CELULAR Y TABLET)
 // =========================================================
 
 function MobileBar() {
@@ -206,17 +240,21 @@ function MobileBar() {
           <Logo />
         </Link>
 
-        {/* Conecta aquí tu logout */}
-        <button
-          type="button"
-          aria-label="Cerrar sesión"
-          className={`rounded-full p-2 transition hover:bg-white/10 ${FOCUS}`}
-        >
-          <LogOut size={22} aria-hidden="true" />
-        </button>
+        {/* COMPONENTE REUTILIZABLE DE CIERRE DE SESIÓN */}
+
+        <LogoutButton
+          iconOnly
+          iconSize={22}
+          className={`rounded-full p-2 text-white hover:bg-white/10 ${FOCUS}`}
+        />
       </div>
 
-      <nav aria-label="Panel farmacéutico" className="mt-3">
+      {/* NAVEGACIÓN MÓVIL */}
+
+      <nav
+        aria-label="Panel farmacéutico"
+        className="mt-3"
+      >
         <ul className="flex gap-2 overflow-x-auto pb-1">
           {MAIN_NAV.map(({ href, label, icon: Icon }) => {
             const active = isActive(pathname, href);
@@ -228,7 +266,11 @@ function MobileBar() {
                   aria-current={active ? "page" : undefined}
                   className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${FOCUS} ${classesItem(active)}`}
                 >
-                  <Icon size={18} className="shrink-0" aria-hidden="true" />
+                  <Icon
+                    size={18}
+                    className="shrink-0"
+                    aria-hidden="true"
+                  />
 
                   <span>{label}</span>
                 </Link>
@@ -260,7 +302,9 @@ export default function FarmaceuticoShell({
 
       <Sidebar name={usuario.nombreCompleto} />
 
-      <main className="min-w-0 flex-1">{children}</main>
+      <main className="min-w-0 flex-1">
+        {children}
+      </main>
     </div>
   );
 }
