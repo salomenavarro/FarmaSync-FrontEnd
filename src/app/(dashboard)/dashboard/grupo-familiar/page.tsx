@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -17,6 +16,7 @@ import {
 
 import DependienteCard from "@/features/grupo-familiar/components/DependienteCard";
 import DependienteForm from "@/features/grupo-familiar/components/DependienteForm";
+import BannerWaves from "@/components/layout/BannerWaves";
 
 import type {
   Dependiente,
@@ -151,18 +151,30 @@ export default function GrupoFamiliarPage() {
             BANNER PRINCIPAL
         ===================================== */}
 
-        <section className="relative isolate flex min-h-[165px] shrink-0 items-center overflow-hidden rounded-[25px] bg-gradient-to-r from-[#0755D8] via-[#087BE8] to-[#27B6E8] px-6 py-5 text-white shadow-[0_8px_22px_rgba(5,91,210,0.13)] sm:px-8">
-          {/* DECORACIONES */}
+        <section
+          className="
+            relative isolate flex min-h-[165px]
+            shrink-0 items-center overflow-hidden
+            rounded-[25px]
+            bg-gradient-to-r
+            from-[#0B1F5C]
+            via-[#0755D8]
+            to-[#0876E9]
+            px-6 py-5 text-white
+            shadow-[0_8px_22px_rgba(5,91,210,0.13)]
+            sm:px-8
+          "
+        >
+          {/* ONDAS DECORATIVAS REUTILIZABLES */}
 
-          <div className="pointer-events-none absolute -right-12 -top-24 h-64 w-64 rounded-full border-[35px] border-white/10" />
-
-          <div className="pointer-events-none absolute bottom-[-75px] right-[300px] h-48 w-48 rounded-full bg-white/10 blur-2xl" />
+          <BannerWaves />
 
           {/* TEXTO */}
 
           <div className="relative z-10 max-w-[620px] lg:max-w-[52%]">
             <p className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#D8F5FF]">
               <HeartHandshake size={17} />
+
               Plan familiar
             </p>
 
@@ -177,20 +189,18 @@ export default function GrupoFamiliarPage() {
             </p>
           </div>
 
-          
-{/* ILUSTRACIÓN MÉDICA Y FAMILIAR */}
+          {/* ILUSTRACIÓN MÉDICA Y FAMILIAR */}
 
-<div className="pointer-events-none absolute bottom-0 right-3 hidden h-[150px] w-[36%] lg:block xl:right-5 xl:h-[155px]">
-  <Image
-    src="/images/familia.png"
-    alt="Familia acompañada de elementos médicos"
-    fill
-    priority
-    sizes="(min-width: 1280px) 500px, 350px"
-    className="object-contain object-right-bottom"
-  />
-</div>
-
+          <div className="pointer-events-none absolute bottom-0 right-3 hidden h-[150px] w-[36%] lg:block xl:right-5 xl:h-[155px]">
+            <Image
+              src="/images/familia.png"
+              alt="Familia acompañada de elementos médicos"
+              fill
+              priority
+              sizes="(min-width: 1280px) 500px, 350px"
+              className="object-contain object-right-bottom"
+            />
+          </div>
         </section>
 
         {/* =====================================
@@ -198,6 +208,7 @@ export default function GrupoFamiliarPage() {
         ===================================== */}
 
         <div className="grid shrink-0 grid-cols-1 gap-3 sm:grid-cols-2">
+
           {/* FAMILIARES REGISTRADOS */}
 
           <div className="flex items-center gap-4 rounded-[20px] border border-[#DCE8F7] bg-white px-5 py-3.5 shadow-sm">
@@ -240,6 +251,7 @@ export default function GrupoFamiliarPage() {
         ===================================== */}
 
         <section className="flex min-h-0 flex-1 flex-col rounded-[24px] border border-[#DCE8F7] bg-white p-4 shadow-sm sm:p-5">
+
           {/* ENCABEZADO Y BOTÓN */}
 
           <div className="mb-4 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -249,6 +261,7 @@ export default function GrupoFamiliarPage() {
                   size={23}
                   className="text-[#0755D8]"
                 />
+
                 Mis dependientes
               </h2>
 
@@ -258,6 +271,7 @@ export default function GrupoFamiliarPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
+
               {/* BOTÓN AGREGAR DEPENDIENTE */}
 
               <button
@@ -266,6 +280,7 @@ export default function GrupoFamiliarPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0755D8] px-5 py-2.5 text-[13px] font-extrabold text-white shadow-[0_5px_14px_rgba(7,85,216,0.18)] transition hover:bg-[#0646B7]"
               >
                 <Plus size={19} />
+
                 Agregar dependiente
               </button>
 
@@ -312,6 +327,7 @@ export default function GrupoFamiliarPage() {
                 className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#0755D8] px-4 py-2.5 text-[12px] font-bold text-white hover:bg-[#0646B7]"
               >
                 <Plus size={17} />
+
                 Agregar dependiente
               </button>
             </div>

@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { Inter } from "next/font/google";
 
@@ -21,6 +20,8 @@ import {
 
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+
+import BannerWaves from "@/components/layout/BannerWaves";
 
 const titleFont = Inter({
   subsets: ["latin"],
@@ -213,33 +214,17 @@ function Banner({ porAlistar }: { porAlistar: number }) {
         shrink-0 items-center
         overflow-hidden rounded-[24px]
         bg-gradient-to-r
-        from-[#0649D8] via-[#0876E9]
-        to-[#24B9E8]
+        from-[#0B1F5C]
+        via-[#0755D8]
+        to-[#0876E9]
         px-5 py-4 text-white
         shadow-[0_10px_26px_rgba(5,91,210,0.16)]
         sm:px-7
       "
     >
-      {/* ONDAS DECORATIVAS */}
+      {/* ONDAS DECORATIVAS REUTILIZABLES */}
 
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 1200 220"
-        preserveAspectRatio="none"
-        className="pointer-events-none absolute inset-0 -z-10 h-full w-full"
-      >
-        <path
-          d="M540 220C650 120 700 35 850 70c135 32 195 110 350 0v150H540Z"
-          fill="#59D4F4"
-          fillOpacity=".22"
-        />
-
-        <path
-          d="M750 220c100-80 160-105 260-65 80 32 120 25 190-25v90H750Z"
-          fill="#A5E9FF"
-          fillOpacity=".18"
-        />
-      </svg>
+      <BannerWaves />
 
       {/* TEXTO */}
 
@@ -369,6 +354,7 @@ function Banner({ porAlistar }: { porAlistar: number }) {
           "
         >
           <Bell size={17} aria-hidden="true" />
+
           {porAlistar} por alistar
         </Link>
       )}
@@ -467,6 +453,7 @@ function SolicitudesPendientes() {
           className="inline-flex shrink-0 items-center gap-1 text-[12px] font-bold text-[#0755D8] hover:underline"
         >
           Ver todas
+
           <ArrowRight size={15} aria-hidden="true" />
         </Link>
       }
@@ -479,27 +466,45 @@ function SolicitudesPendientes() {
         <table className="h-full w-full min-w-[610px] text-left text-[12px] text-[#14285B]">
           <thead>
             <tr className="bg-[#EEF4FC] text-[11px]">
-              <th scope="col" className="rounded-l-lg px-2 py-2 font-extrabold">
+              <th
+                scope="col"
+                className="rounded-l-lg px-2 py-2 font-extrabold"
+              >
                 Código
               </th>
 
-              <th scope="col" className="px-2 py-2 font-extrabold">
+              <th
+                scope="col"
+                className="px-2 py-2 font-extrabold"
+              >
                 Paciente
               </th>
 
-              <th scope="col" className="px-2 py-2 font-extrabold">
+              <th
+                scope="col"
+                className="px-2 py-2 font-extrabold"
+              >
                 Medicamento
               </th>
 
-              <th scope="col" className="px-2 py-2 font-extrabold">
+              <th
+                scope="col"
+                className="px-2 py-2 font-extrabold"
+              >
                 Tiempo
               </th>
 
-              <th scope="col" className="px-2 py-2 font-extrabold">
+              <th
+                scope="col"
+                className="px-2 py-2 font-extrabold"
+              >
                 SLA
               </th>
 
-              <th scope="col" className="rounded-r-lg px-2 py-2 text-center font-extrabold">
+              <th
+                scope="col"
+                className="rounded-r-lg px-2 py-2 text-center font-extrabold"
+              >
                 Acción
               </th>
             </tr>
@@ -545,6 +550,7 @@ function SolicitudesPendientes() {
                         ${estilosSla[fila.sla].punto}
                       `}
                     />
+
                     {fila.sla}
                   </span>
                 </td>
@@ -562,7 +568,11 @@ function SolicitudesPendientes() {
                       ${FOCO}
                     `}
                   >
-                    <Package size={14} aria-hidden="true" />
+                    <Package
+                      size={14}
+                      aria-hidden="true"
+                    />
+
                     Alistar
                   </Link>
                 </td>
@@ -593,7 +603,10 @@ function EntregaVentanilla() {
         className="mt-2.5 flex flex-col gap-2 sm:flex-row"
       >
         <div className="relative min-w-0 flex-1">
-          <label htmlFor="codigo-reserva" className="sr-only">
+          <label
+            htmlFor="codigo-reserva"
+            className="sr-only"
+          >
             Código de reserva
           </label>
 
@@ -632,6 +645,7 @@ function EntregaVentanilla() {
           `}
         >
           <QrCode size={17} aria-hidden="true" />
+
           Escanear QR
         </Link>
       </form>
@@ -642,6 +656,7 @@ function EntregaVentanilla() {
           className="shrink-0 text-[#0755D8]"
           aria-hidden="true"
         />
+
         Confirma la entrega después de validar la fórmula.
       </p>
     </Panel>
@@ -679,6 +694,7 @@ function AlistamientoEtiquetado() {
             className="shrink-0"
             aria-hidden="true"
           />
+
           <span>Imprimir tirilla POS</span>
         </Link>
 
@@ -700,6 +716,7 @@ function AlistamientoEtiquetado() {
             className="shrink-0"
             aria-hidden="true"
           />
+
           <span>Etiquetado manual</span>
         </Link>
       </div>
@@ -733,6 +750,7 @@ function IngresoInventario() {
         `}
       >
         <span>Gestionar inventario</span>
+
         <ArrowRight size={17} aria-hidden="true" />
       </Link>
     </Panel>
@@ -771,6 +789,7 @@ export default function FarmaceuticoDashboardPage() {
 
         <div className="flex min-h-0 min-w-0 flex-col gap-3">
           <SemaforoSla />
+
           <SolicitudesPendientes />
         </div>
 
@@ -778,7 +797,9 @@ export default function FarmaceuticoDashboardPage() {
 
         <div className="grid min-h-0 min-w-0 grid-rows-3 gap-3">
           <EntregaVentanilla />
+
           <AlistamientoEtiquetado />
+
           <IngresoInventario />
         </div>
       </div>

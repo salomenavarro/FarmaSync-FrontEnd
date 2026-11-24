@@ -1,7 +1,8 @@
-
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
 import {
   ArrowLeft,
   ClipboardList,
@@ -28,7 +29,18 @@ import type { FiltrosMedicamentos } from "@/features/catalogo/components/Medicam
 import SedesAlternativas from "@/features/catalogo/components/SedesAlternativas";
 import AlertaReabastecimiento from "@/features/catalogo/components/AlertaReabastecimiento";
 
-export default function MedicinesPage() {
+import BannerWaves from "@/components/layout/BannerWaves";
+
+// ========================================
+// CONTENIDO DEL CATÁLOGO
+// ========================================
+
+function MedicinesContent() {
+  const searchParams = useSearchParams();
+
+  const mostrarGuardados =
+    searchParams.get("vista") === "guardados";
+
   const [busqueda, setBusqueda] = useState("");
 
   const [filtros, setFiltros] = useState<FiltrosMedicamentos>({
@@ -43,7 +55,10 @@ export default function MedicinesPage() {
   const [sedeDetalle, setSedeDetalle] =
     useState<SedeFarmacia | null>(null);
 
-  // Filtrar y ordenar sedes.
+  // ========================================
+  // FILTRAR Y ORDENAR SEDES
+  // ========================================
+
   const sedesFiltradas = useMemo(() => {
     const resultado = sedesFarmacias.filter((sede) => {
       const coincideSede =
@@ -63,21 +78,30 @@ export default function MedicinesPage() {
     );
   }, [filtros]);
 
-  // Buscar medicamentos por nombre genérico o código.
+  // ========================================
+  // BÚSQUEDA POR NOMBRE O CÓDIGO
+  // ========================================
+
   const medicamentosFiltrados = useMemo(() => {
     const texto = busqueda.trim().toLocaleLowerCase("es");
 
     if (!texto) return medicamentosMock;
 
     return medicamentosMock.filter((medicamento) => {
-      const nombre = medicamento.nombreGenerico.toLocaleLowerCase("es");
-      const codigo = medicamento.codigo.toLocaleLowerCase("es");
+      const nombre =
+        medicamento.nombreGenerico.toLocaleLowerCase("es");
+
+      const codigo =
+        medicamento.codigo.toLocaleLowerCase("es");
 
       return nombre.includes(texto) || codigo.includes(texto);
     });
   }, [busqueda]);
 
-  // Crear una tarjeta por medicamento y sede coincidente.
+  // ========================================
+  // RESULTADOS POR MEDICAMENTO Y SEDE
+  // ========================================
+
   const resultados = useMemo(() => {
     return medicamentosFiltrados.flatMap((medicamento) =>
       sedesFiltradas.map((sede) => ({
@@ -110,31 +134,28 @@ export default function MedicinesPage() {
       (item) => item.cantidad === 0
     ) ?? false;
 
-  const mostrarGuardados =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("vista") ===
-      "guardados";
-
   return (
     <div className="min-h-full bg-[#F5F9FF] p-4 md:p-6">
       <div className="mx-auto max-w-[1450px] space-y-5">
-        {/* ENCABEZADO */}
+
+        {/* ========================================
+            ENCABEZADO PRINCIPAL
+        ======================================== */}
+
         <header
           className="
-            relative overflow-hidden rounded-[24px]
-            bg-gradient-to-r from-[#0B1F5C]
-            via-[#0755D8] to-[#0876E9]
+            relative isolate overflow-hidden
+            rounded-[24px]
+            bg-gradient-to-r
+            from-[#0B1F5C]
+            via-[#0755D8]
+            to-[#0876E9]
             p-5 text-white md:p-7
           "
         >
-          <div
-            className="
-              pointer-events-none absolute -right-10 -top-16
-              h-48 w-48 rounded-full bg-white/10 blur-2xl
-            "
-          />
+          <BannerWaves />
 
-          <div className="relative flex items-center gap-4">
+          <div className="relative z-10 flex items-center gap-4">
             <div
               className="
                 flex h-12 w-12 shrink-0 items-center
@@ -163,7 +184,10 @@ export default function MedicinesPage() {
           </div>
         </header>
 
-        {/* VISTA DE MIS MEDICAMENTOS */}
+        {/* ========================================
+            VISTA DE MIS MEDICAMENTOS
+        ======================================== */}
+
         {mostrarGuardados ? (
           <section
             className="
@@ -187,7 +211,10 @@ export default function MedicinesPage() {
           </section>
         ) : (
           <>
-            {/* BÚSQUEDA */}
+            {/* ========================================
+                BUSCADOR
+            ======================================== */}
+
             <section
               className="
                 rounded-[20px] border border-[#DFE9F6]
@@ -203,7 +230,10 @@ export default function MedicinesPage() {
               />
             </section>
 
-            {/* FILTROS */}
+            {/* ========================================
+                FILTROS
+            ======================================== */}
+
             <MedicamentoFilters
               sedes={sedesFarmacias}
               filtros={filtros}
@@ -213,7 +243,10 @@ export default function MedicinesPage() {
               }}
             />
 
-            {/* DETALLE DEL MEDICAMENTO */}
+            {/* ========================================
+                DETALLE DEL MEDICAMENTO
+            ======================================== */}
+
             {medicamentoSeleccionado && sedeDetalle ? (
               <section className="space-y-4">
                 <button
@@ -226,6 +259,7 @@ export default function MedicinesPage() {
                   "
                 >
                   <ArrowLeft size={16} />
+
                   Volver a los resultados
                 </button>
 
@@ -263,6 +297,8 @@ export default function MedicinesPage() {
                     </div>
                   </div>
 
+                  {/* INFORMACIÓN DE LA SEDE */}
+
                   <div
                     className="
                       mt-4 rounded-[14px]
@@ -271,7 +307,10 @@ export default function MedicinesPage() {
                     "
                   >
                     <div className="flex items-center gap-2">
-                      <Store size={17} className="text-[#0755D8]" />
+                      <Store
+                        size={17}
+                        className="text-[#0755D8]"
+                      />
 
                       <span className="text-[13px] font-bold text-[#14285B]">
                         {sedeDetalle.nombre}
@@ -284,14 +323,21 @@ export default function MedicinesPage() {
 
                     <p className="mt-2 text-[12px] font-bold text-[#14285B]">
                       Stock: {cantidadDetalle}{" "}
-                      {cantidadDetalle === 1 ? "unidad" : "unidades"}
+                      {cantidadDetalle === 1
+                        ? "unidad"
+                        : "unidades"}
                     </p>
 
-                    {cantidadDetalle > 0 && cantidadDetalle <= 15 && (
-                      <p className="mt-2 text-[12px] font-semibold text-[#A96508]">
-                        Quedan pocas unidades en esta sede. ¡Reserva pronto!
-                      </p>
-                    )}
+                    {/* DISPONIBILIDAD LIMITADA */}
+
+                    {cantidadDetalle > 0 &&
+                      cantidadDetalle <= 15 && (
+                        <p className="mt-2 text-[12px] font-semibold text-[#A96508]">
+                          Quedan pocas unidades en esta sede. ¡Reserva pronto!
+                        </p>
+                      )}
+
+                    {/* MEDICAMENTO AGOTADO */}
 
                     {cantidadDetalle === 0 && (
                       <p className="mt-2 text-[12px] font-semibold text-[#D13438]">
@@ -301,17 +347,25 @@ export default function MedicinesPage() {
                   </div>
                 </div>
 
-                {/* ALTERNATIVAS CUANDO NO HAY STOCK */}
+                {/* ========================================
+                    SEDES ALTERNATIVAS
+                ======================================== */}
+
                 {cantidadDetalle === 0 && (
                   <SedesAlternativas
                     medicamento={medicamentoSeleccionado}
                     sedeActual={sedeDetalle}
                     sedes={sedesFarmacias}
-                    onSeleccionarSede={(sede) => setSedeDetalle(sede)}
+                    onSeleccionarSede={(sede) =>
+                      setSedeDetalle(sede)
+                    }
                   />
                 )}
 
-                {/* ALERTA SI ESTÁ AGOTADO EN TODAS LAS SEDES */}
+                {/* ========================================
+                    ALERTA DE REABASTECIMIENTO
+                ======================================== */}
+
                 {agotadoEnTodas && (
                   <AlertaReabastecimiento
                     key={medicamentoSeleccionado.id}
@@ -321,7 +375,10 @@ export default function MedicinesPage() {
               </section>
             ) : (
               <>
-                {/* RESUMEN DE RESULTADOS */}
+                {/* ========================================
+                    RESUMEN DE RESULTADOS
+                ======================================== */}
+
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="text-[16px] font-extrabold text-[#14285B]">
@@ -344,12 +401,19 @@ export default function MedicinesPage() {
                       text-[11px] font-semibold text-[#62748E]
                     "
                   >
-                    <Store size={14} className="text-[#0755D8]" />
+                    <Store
+                      size={14}
+                      className="text-[#0755D8]"
+                    />
+
                     {sedesFiltradas.length} sedes
                   </span>
                 </div>
 
-                {/* TARJETAS */}
+                {/* ========================================
+                    TARJETAS DE MEDICAMENTOS
+                ======================================== */}
+
                 {resultados.length > 0 ? (
                   <div
                     className="
@@ -392,6 +456,7 @@ export default function MedicinesPage() {
                       type="button"
                       onClick={() => {
                         setBusqueda("");
+
                         setFiltros({
                           sedeId: "",
                           ubicacion: "",
@@ -407,12 +472,15 @@ export default function MedicinesPage() {
                       "
                     >
                       <Search size={15} />
+
                       Mostrar todos
                     </button>
                   </div>
                 )}
               </>
             )}
+
+            {/* NOTA DE DATOS SIMULADOS */}
 
             <p className="pb-2 text-[11px] text-[#71829B]">
               Los medicamentos, existencias y distancias mostrados
@@ -423,5 +491,35 @@ export default function MedicinesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// ========================================
+// PÁGINA PRINCIPAL
+// ========================================
+
+export default function MedicinesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-full items-center justify-center bg-[#F5F9FF] p-6">
+          <div className="flex flex-col items-center gap-3">
+            <div
+              className="
+                h-9 w-9 animate-spin rounded-full
+                border-4 border-[#DCE8F7]
+                border-t-[#0755D8]
+              "
+            />
+
+            <p className="text-sm font-semibold text-[#62748E]">
+              Cargando medicamentos...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <MedicinesContent />
+    </Suspense>
   );
 }

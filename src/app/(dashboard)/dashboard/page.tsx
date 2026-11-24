@@ -141,7 +141,7 @@ function Banner({ nombre }: { nombre: string }) {
   return (
     <section
       aria-labelledby="bienvenida"
-      className="relative isolate flex min-h-[150px] shrink-0 items-center overflow-hidden rounded-[24px] bg-gradient-to-r from-[#0649D8] via-[#0876E9] to-[#24B9E8] px-5 py-4 text-white shadow-[0_10px_25px_rgba(5,91,210,0.18)] sm:px-8"
+      className="relative isolate flex min-h-[150px] shrink-0 items-center overflow-hidden rounded-[24px] bg-gradient-to-r from-[#0B1F5C] via-[#0755D8] to-[#0876E9] px-5 py-4 text-white shadow-[0_10px_25px_rgba(5,91,210,0.18)] sm:px-8"
     >
       {/* Ondas decorativas de fondo */}
       <svg aria-hidden="true" viewBox="0 0 1200 240" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 -z-10 h-full w-full">
