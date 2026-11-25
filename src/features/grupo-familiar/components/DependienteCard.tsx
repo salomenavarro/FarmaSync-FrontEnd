@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -12,6 +11,10 @@ import {
   UserRound,
 } from "lucide-react";
 
+import {
+  PARENTESCO_LABELS,
+  TIPO_DOCUMENTO_LABELS,
+} from "../schemas/dependiente.constants";
 import type { Dependiente } from "../types";
 import { formatearFecha, ocultarDocumento } from "../utils";
 
@@ -21,22 +24,19 @@ interface DependienteCardProps {
   onDelete: (dependiente: Dependiente) => void;
 }
 
-const nombresDocumentos = {
-  RC: "Registro Civil",
-  TI: "Tarjeta de Identidad",
-  CC: "Cédula de Ciudadanía",
-};
-
-
 export default function DependienteCard({
   dependiente,
   onEdit,
   onDelete,
 }: DependienteCardProps) {
-  const nombreCompleto =
-    `${dependiente.nombres} ${dependiente.apellidos}`;
+  const nombreCompleto = `${dependiente.nombres} ${dependiente.apellidos}`;
 
   const estaActivo = dependiente.estado === "Activo";
+  const parentescoTexto =
+    PARENTESCO_LABELS[dependiente.parentesco] ?? dependiente.parentesco;
+  const documentoTexto =
+    TIPO_DOCUMENTO_LABELS[dependiente.tipoDocumento] ??
+    dependiente.tipoDocumento;
 
   return (
     <article className="flex min-w-0 flex-col rounded-[22px] border border-[#D9E7F9] bg-white p-4 shadow-[0_5px_18px_rgba(24,71,135,0.04)] transition hover:border-[#B6D4FA] hover:shadow-md">
@@ -52,9 +52,7 @@ export default function DependienteCard({
             {nombreCompleto}
           </h3>
 
-          <p className="mt-1 text-[12px] text-[#526783]">
-            {dependiente.parentesco}
-          </p>
+          <p className="mt-1 text-[12px] text-[#526783]">{parentescoTexto}</p>
         </div>
 
         <span
@@ -83,12 +81,10 @@ export default function DependienteCard({
           />
 
           <div className="min-w-0">
-            <p className="text-[11px] text-[#71829C]">
-              Documento
-            </p>
+            <p className="text-[11px] text-[#71829C]">Documento</p>
 
             <p className="text-[12px] font-bold text-[#14285B]">
-              {nombresDocumentos[dependiente.tipoDocumento]}
+              {documentoTexto}
             </p>
 
             <p className="text-[12px] text-[#526783]">
@@ -104,9 +100,7 @@ export default function DependienteCard({
           />
 
           <div className="min-w-0">
-            <p className="text-[11px] text-[#71829C]">
-              Fecha de nacimiento
-            </p>
+            <p className="text-[11px] text-[#71829C]">Fecha de nacimiento</p>
 
             <p className="text-[12px] font-bold text-[#14285B]">
               {formatearFecha(dependiente.fechaNacimiento)}

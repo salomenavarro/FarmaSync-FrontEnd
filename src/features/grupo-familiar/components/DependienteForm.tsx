@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
@@ -6,22 +5,30 @@ import { CalendarDays, UserRoundPlus, X } from "lucide-react";
 
 import {
   PARENTESCOS,
+  PARENTESCO_LABELS,
+  TIPO_DOCUMENTO_LABELS,
   TIPOS_DOCUMENTO,
-  type DependienteFormData,
-  type TipoDocumento,
-} from "../types";
+} from "../schemas/dependiente.constants";
+import { dependienteFormSchema } from "../schemas/dependiente.schema";
+import type { DependienteFormData, TipoDocumento } from "../types";
 
 interface DependienteFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (dependiente: DependienteFormData) => void;
+  // Permite guardar de forma síncrona o asíncrona (mutation) para que el modal
+  // solo se cierre cuando el servidor confirme el guardado y conserve errores 409/400.
+  onSave: (dependiente: DependienteFormData) => Promise<void> | void;
   initialData?: DependienteFormData;
+  isSubmitting?: boolean;
+  serverError?: string | null;
 }
 
+// Estado inicial tipado con códigos estables de parentesco y documento para
+// mantener sincronía con el schema de validación y el contrato del backend.
 const formularioInicial: DependienteFormData = {
   nombres: "",
   apellidos: "",
-  parentesco: "Hijo / Hija",
+  parentesco: "HIJO",
   tipoDocumento: "RC",
   numeroDocumento: "",
   fechaNacimiento: "",
@@ -31,14 +38,15 @@ const formularioInicial: DependienteFormData = {
 const inputClass =
   "w-full rounded-xl border border-[#D6E3F4] bg-white px-3.5 py-2.5 text-sm text-[#14285B] outline-none transition placeholder:text-[#94A3B8] focus:border-[#0755D8] focus:ring-2 focus:ring-[#0755D8]/15";
 
-const labelClass =
-  "mb-1.5 block text-sm font-semibold text-[#263D65]";
+const labelClass = "mb-1.5 block text-sm font-semibold text-[#263D65]";
 
 export default function DependienteForm({
   isOpen,
   onClose,
   onSave,
   initialData,
+  isSubmitting = false,
+  serverError = null,
 }: DependienteFormProps) {
   const [formData, setFormData] =
     useState<DependienteFormData>(formularioInicial);
@@ -47,7 +55,7 @@ export default function DependienteForm({
 
   useEffect(() => {
     if (isOpen) {
-      setFormData(initialData ?? { ...formularioInicial });
+      setFormData(initialData ? { ...formularioInicial, ...initialData } : { ...formularioInicial });
       setError("");
     }
   }, [isOpen, initialData]);
@@ -56,7 +64,7 @@ export default function DependienteForm({
     if (!isOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && !isSubmitting) {
         onClose();
       }
     };
@@ -66,11 +74,12 @@ export default function DependienteForm({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isSubmitting]);
 
   if (!isOpen) return null;
 
   const mostrarCorreo = formData.tipoDocumento === "CC";
+  const mensajeErrorVisible = error || serverError || "";
 
   const actualizarCampo = <K extends keyof DependienteFormData>(
     campo: K,
@@ -88,59 +97,51 @@ export default function DependienteForm({
     setFormData((prev) => ({
       ...prev,
       tipoDocumento: tipo,
-      correoElectronico:
-        tipo === "CC" ? prev.correoElectronico : "",
+      correoElectronico: tipo === "CC" ? prev.correoElectronico : "",
     }));
 
     setError("");
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (
-      !formData.nombres.trim() ||
-      !formData.apellidos.trim() ||
-      !formData.numeroDocumento.trim() ||
-      !formData.fechaNacimiento
-    ) {
-      setError("Completa todos los campos obligatorios.");
+    if (isSubmitting) return;
+
+    // Delega la validación de campos, fecha no futura y regla de correo para CC
+    // al schema de Zod en la capa de schemas de la feature.
+    const parsed = dependienteFormSchema.safeParse(formData);
+
+    if (!parsed.success) {
+      const firstIssue = parsed.error.issues[0];
+      setError(firstIssue?.message ?? "Revisa los datos del formulario.");
       return;
     }
 
-    if (
-      formData.tipoDocumento === "CC" &&
-      !formData.correoElectronico?.trim()
-    ) {
-      setError(
-        "El correo electrónico es obligatorio para Cédula de Ciudadanía."
-      );
-      return;
+    const payloadLimpio: DependienteFormData = {
+      nombres: parsed.data.nombres,
+      apellidos: parsed.data.apellidos,
+      parentesco: parsed.data.parentesco,
+      tipoDocumento: parsed.data.tipoDocumento,
+      numeroDocumento: parsed.data.numeroDocumento,
+      fechaNacimiento: parsed.data.fechaNacimiento,
+      correoElectronico: parsed.data.correoElectronico ?? "",
+    };
+
+    try {
+      await onSave(payloadLimpio);
+      onClose();
+    } catch {
+      // El error de la mutación queda expuesto vía `serverError` en la vista
+      // y el modal permanece abierto para que el usuario pueda corregir.
     }
-
-    if (formData.fechaNacimiento > new Date().toISOString().slice(0, 10)) {
-      setError("La fecha de nacimiento no puede ser futura.");
-      return;
-    }
-
-    onSave({
-      ...formData,
-      nombres: formData.nombres.trim(),
-      apellidos: formData.apellidos.trim(),
-      numeroDocumento: formData.numeroDocumento.trim(),
-      correoElectronico: mostrarCorreo
-        ? formData.correoElectronico?.trim()
-        : "",
-    });
-
-    onClose();
   };
 
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071B42]/55 p-4 backdrop-blur-[3px]"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
+        if (event.target === event.currentTarget && !isSubmitting) {
           onClose();
         }
       }}
@@ -157,8 +158,9 @@ export default function DependienteForm({
           <button
             type="button"
             onClick={onClose}
+            disabled={isSubmitting}
             aria-label="Cerrar formulario"
-            className="absolute right-4 top-4 rounded-lg p-1.5 transition hover:bg-white/20"
+            className="absolute right-4 top-4 rounded-lg p-1.5 transition hover:bg-white/20 disabled:opacity-50"
           >
             <X size={20} />
           </button>
@@ -173,9 +175,7 @@ export default function DependienteForm({
                 id="dependiente-form-title"
                 className="text-xl font-extrabold"
               >
-                {initialData
-                  ? "Editar dependiente"
-                  : "Agregar dependiente"}
+                {initialData ? "Editar dependiente" : "Agregar dependiente"}
               </h2>
 
               <p className="mt-0.5 text-xs text-white/90">
@@ -190,6 +190,7 @@ export default function DependienteForm({
         <form
           id="dependiente-form"
           onSubmit={handleSubmit}
+          noValidate
           className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5"
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -208,6 +209,7 @@ export default function DependienteForm({
                 }
                 placeholder="Ej. María"
                 className={inputClass}
+                disabled={isSubmitting}
                 required
               />
             </div>
@@ -227,6 +229,7 @@ export default function DependienteForm({
                 }
                 placeholder="Ej. Gómez Pérez"
                 className={inputClass}
+                disabled={isSubmitting}
                 required
               />
             </div>
@@ -247,11 +250,12 @@ export default function DependienteForm({
                 )
               }
               className={inputClass}
+              disabled={isSubmitting}
               required
             >
               {PARENTESCOS.map((parentesco) => (
                 <option key={parentesco} value={parentesco}>
-                  {parentesco}
+                  {PARENTESCO_LABELS[parentesco]}
                 </option>
               ))}
             </select>
@@ -270,14 +274,12 @@ export default function DependienteForm({
                   cambiarDocumento(event.target.value as TipoDocumento)
                 }
                 className={inputClass}
+                disabled={isSubmitting}
                 required
               >
                 {TIPOS_DOCUMENTO.map((documento) => (
-                  <option
-                    key={documento.value}
-                    value={documento.value}
-                  >
-                    {documento.label}
+                  <option key={documento} value={documento}>
+                    {TIPO_DOCUMENTO_LABELS[documento]}
                   </option>
                 ))}
               </select>
@@ -301,6 +303,7 @@ export default function DependienteForm({
                 }
                 placeholder="Número de documento"
                 className={inputClass}
+                disabled={isSubmitting}
                 required
               />
             </div>
@@ -310,10 +313,7 @@ export default function DependienteForm({
 
           {mostrarCorreo && (
             <div className="rounded-2xl border border-[#C4DDFB] bg-[#F1F7FF] p-3.5">
-              <label
-                htmlFor="dep-correo"
-                className={labelClass}
-              >
+              <label htmlFor="dep-correo" className={labelClass}>
                 Correo electrónico *
               </label>
 
@@ -323,19 +323,17 @@ export default function DependienteForm({
                 autoComplete="email"
                 value={formData.correoElectronico ?? ""}
                 onChange={(event) =>
-                  actualizarCampo(
-                    "correoElectronico",
-                    event.target.value
-                  )
+                  actualizarCampo("correoElectronico", event.target.value)
                 }
                 placeholder="ejemplo@correo.com"
                 className={inputClass}
+                disabled={isSubmitting}
                 required
               />
 
               <p className="mt-2 text-xs leading-relaxed text-[#526783]">
-                Este campo es obligatorio cuando el
-                dependiente se registra con Cédula de Ciudadanía.
+                Este campo es obligatorio cuando el dependiente se registra con
+                Cédula de Ciudadanía.
               </p>
             </div>
           )}
@@ -358,29 +356,27 @@ export default function DependienteForm({
                 value={formData.fechaNacimiento}
                 max={new Date().toISOString().slice(0, 10)}
                 onChange={(event) =>
-                  actualizarCampo(
-                    "fechaNacimiento",
-                    event.target.value
-                  )
+                  actualizarCampo("fechaNacimiento", event.target.value)
                 }
                 className={`${inputClass} pl-10`}
+                disabled={isSubmitting}
                 required
               />
             </div>
           </div>
 
-          {error && (
+          {mensajeErrorVisible && (
             <p
               role="alert"
               className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
             >
-              {error}
+              {mensajeErrorVisible}
             </p>
           )}
 
           <p className="rounded-xl bg-[#F2F6FB] px-3 py-2.5 text-xs leading-relaxed text-[#526783]">
-            Los datos del dependiente se utilizarán para
-            gestionar sus reservas de medicamentos.
+            Los datos del dependiente se utilizarán para gestionar sus reservas
+            de medicamentos.
           </p>
         </form>
 
@@ -390,7 +386,8 @@ export default function DependienteForm({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[#CAD8E8] px-5 py-2.5 text-sm font-bold text-[#263D65] transition hover:bg-[#F3F7FC]"
+            disabled={isSubmitting}
+            className="rounded-xl border border-[#CAD8E8] px-5 py-2.5 text-sm font-bold text-[#263D65] transition hover:bg-[#F3F7FC] disabled:opacity-50"
           >
             Cancelar
           </button>
@@ -398,11 +395,14 @@ export default function DependienteForm({
           <button
             type="submit"
             form="dependiente-form"
-            className="rounded-xl bg-[#0755D8] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#0646B7]"
+            disabled={isSubmitting}
+            className="rounded-xl bg-[#0755D8] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#0646B7] disabled:opacity-60"
           >
-            {initialData
-              ? "Guardar cambios"
-              : "Guardar dependiente"}
+            {isSubmitting
+              ? "Guardando..."
+              : initialData
+                ? "Guardar cambios"
+                : "Guardar dependiente"}
           </button>
         </div>
       </div>

@@ -1,11 +1,12 @@
-
 export type TipoDocumento = "RC" | "TI" | "CC";
 
+// Códigos estables alineados con el backend para evitar que la API dependa de
+// textos con tildes o barras; las etiquetas visibles viven en presentation/constants.
 export type Parentesco =
-  | "Hijo / Hija"
-  | "Padre / Madre"
-  | "Abuelo / Abuela"
-  | "Otro";
+  | "HIJO"
+  | "PADRE_MADRE"
+  | "ABUELO"
+  | "OTRO";
 
 export type EstadoDependiente = "Activo" | "Inactivo";
 
@@ -45,8 +46,8 @@ export const TIPOS_DOCUMENTO: {
 ];
 
 export const PARENTESCOS: Parentesco[] = [
-  "Hijo / Hija",
-  "Padre / Madre",
-  "Abuelo / Abuela",
-  "Otro",
+  "HIJO",
+  "PADRE_MADRE",
+  "ABUELO",
+  "OTRO",
 ];

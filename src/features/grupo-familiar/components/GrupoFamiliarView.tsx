@@ -3,99 +3,132 @@
 import Image from "next/image";
 import { useState } from "react";
 import {
+  AlertCircle,
   HeartHandshake,
   Info,
   Plus,
+  RefreshCw,
   ShieldCheck,
   UserRoundPlus,
   UsersRound,
 } from "lucide-react";
 
+import { useActualizarDependiente } from "../hooks/useActualizarDependiente";
+import { useCrearDependiente } from "../hooks/useCrearDependiente";
+import { useDependientes } from "../hooks/useDependientes";
+import { useEliminarDependiente } from "../hooks/useEliminarDependiente";
+import type { Dependiente, DependienteFormData } from "../types";
+import { getGrupoFamiliarErrorMessage } from "../utils";
 import DeleteDependienteDialog from "./DeleteDependienteDialog";
 import DependienteCard from "./DependienteCard";
 import DependienteForm from "./DependienteForm";
-import type { Dependiente, DependienteFormData } from "../types";
 
-const dependientesIniciales: Dependiente[] = [
-  {
-    id: "1",
-    nombres: "María",
-    apellidos: "Gómez Pérez",
-    parentesco: "Hijo / Hija",
-    tipoDocumento: "RC",
-    numeroDocumento: "1023456789",
-    fechaNacimiento: "2018-05-12",
-    estado: "Activo",
-  },
-  {
-    id: "2",
-    nombres: "Carlos",
-    apellidos: "Ramírez Gómez",
-    parentesco: "Padre / Madre",
-    tipoDocumento: "CC",
-    numeroDocumento: "9876543210",
-    fechaNacimiento: "1962-08-20",
-    correoElectronico: "carlos@example.com",
-    estado: "Activo",
-  },
-];
-
+// Vista principal del feature grupo-familiar: coordina la consulta de
+// dependientes, los estados de carga/error y los modales de crear/editar/eliminar,
+// manteniendo la composición visual separada de la ruta en `app/`.
 export default function GrupoFamiliarView() {
-  const [dependientes, setDependientes] = useState<Dependiente[]>(
-    dependientesIniciales
-  );
+  const {
+    data: dependientes = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useDependientes();
+
+  const crearMutation = useCrearDependiente();
+  const actualizarMutation = useActualizarDependiente();
+  const eliminarMutation = useEliminarDependiente();
+
+  // Estados locales exclusivos de interfaz (apertura de modales y selección actual)
   const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [dependienteEditar, setDependienteEditar] =
     useState<Dependiente | null>(null);
   const [dependienteEliminar, setDependienteEliminar] =
     useState<Dependiente | null>(null);
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(
+    null
+  );
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(
+    null
+  );
 
   const abrirFormulario = () => {
     setDependienteEditar(null);
+    setFormErrorMessage(null);
     setFormularioAbierto(true);
   };
 
   const cerrarFormulario = () => {
     setFormularioAbierto(false);
     setDependienteEditar(null);
+    setFormErrorMessage(null);
   };
 
   const editarDependiente = (dependiente: Dependiente) => {
     setDependienteEditar(dependiente);
+    setFormErrorMessage(null);
     setFormularioAbierto(true);
   };
 
-  const guardarDependiente = (datos: DependienteFormData) => {
-    if (dependienteEditar) {
-      setDependientes((actuales) =>
-        actuales.map((dependiente) =>
-          dependiente.id === dependienteEditar.id
-            ? { ...dependiente, ...datos }
-            : dependiente
-        )
-      );
-      return;
-    }
-
-    const nuevoDependiente: Dependiente = {
-      ...datos,
-      id: crypto.randomUUID(),
-      estado: "Activo",
-    };
-
-    setDependientes((actuales) => [...actuales, nuevoDependiente]);
+  const abrirConfirmacionEliminar = (dependiente: Dependiente) => {
+    setDeleteErrorMessage(null);
+    setDependienteEliminar(dependiente);
   };
 
-  const confirmarEliminacion = () => {
+  const cerrarConfirmacionEliminar = () => {
+    setDependienteEliminar(null);
+    setDeleteErrorMessage(null);
+  };
+
+  // Ejecuta crear o editar según haya un dependiente seleccionado; propaga el
+  // error para que DependienteForm muestre el mensaje y no se cierre si falla.
+  const guardarDependiente = async (datos: DependienteFormData) => {
+    setFormErrorMessage(null);
+
+    try {
+      if (dependienteEditar) {
+        await actualizarMutation.mutateAsync({
+          id: dependienteEditar.id,
+          data: datos,
+        });
+        return;
+      }
+
+      await crearMutation.mutateAsync(datos);
+    } catch (err) {
+      const mensaje = getGrupoFamiliarErrorMessage(
+        err,
+        dependienteEditar
+          ? "No se pudieron guardar los cambios del dependiente."
+          : "No se pudo registrar el dependiente."
+      );
+      setFormErrorMessage(mensaje);
+      throw err;
+    }
+  };
+
+  // Confirma la eliminación/desactivación en el backend y refresca la lista
+  // mediante la invalidación configurada en el hook.
+  const confirmarEliminacion = async () => {
     if (!dependienteEliminar) return;
 
-    setDependientes((actuales) =>
-      actuales.filter(
-        (dependiente) => dependiente.id !== dependienteEliminar.id
-      )
-    );
-    setDependienteEliminar(null);
+    setDeleteErrorMessage(null);
+
+    try {
+      await eliminarMutation.mutateAsync(dependienteEliminar.id);
+    } catch (err) {
+      const mensaje = getGrupoFamiliarErrorMessage(
+        err,
+        "No se pudo eliminar el dependiente."
+      );
+      setDeleteErrorMessage(mensaje);
+      throw err;
+    }
   };
+
+  const isGuardando =
+    crearMutation.isPending || actualizarMutation.isPending;
+  const isEliminando = eliminarMutation.isPending;
 
   const totalDependientes = dependientes.length;
   const dependientesActivos = dependientes.filter(
@@ -150,7 +183,7 @@ export default function GrupoFamiliarView() {
                 Familiares registrados
               </p>
               <p className="mt-0.5 text-[25px] font-extrabold leading-none text-[#14285B]">
-                {totalDependientes}
+                {isLoading ? "—" : totalDependientes}
               </p>
             </div>
           </div>
@@ -165,7 +198,7 @@ export default function GrupoFamiliarView() {
                 Dependientes activos
               </p>
               <p className="mt-0.5 text-[25px] font-extrabold leading-none text-[#14285B]">
-                {dependientesActivos}
+                {isLoading ? "—" : dependientesActivos}
               </p>
             </div>
           </div>
@@ -200,7 +233,42 @@ export default function GrupoFamiliarView() {
             </div>
           </div>
 
-          {dependientes.length > 0 ? (
+          {isLoading ? (
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto pr-1 xl:grid-cols-2">
+              {[0, 1].map((skeleton) => (
+                <div
+                  key={skeleton}
+                  className="h-[190px] animate-pulse rounded-[22px] border border-[#D9E7F9] bg-[#F8FBFF] p-4"
+                />
+              ))}
+            </div>
+          ) : isError ? (
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-2xl border border-[#F5D2D2] bg-[#FFF8F8] px-5 py-8 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#FFF0F0] text-[#D92D20]">
+                <AlertCircle size={28} />
+              </div>
+
+              <h3 className="mt-4 text-[17px] font-extrabold text-[#14285B]">
+                No pudimos cargar tu grupo familiar
+              </h3>
+
+              <p className="mt-2 max-w-[420px] text-[12px] leading-relaxed text-[#526783]">
+                {getGrupoFamiliarErrorMessage(
+                  error,
+                  "Ocurrió un error al consultar tus dependientes."
+                )}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => refetch()}
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#0755D8] px-4 py-2.5 text-[12px] font-bold text-white hover:bg-[#0646B7]"
+              >
+                <RefreshCw size={16} />
+                Reintentar
+              </button>
+            </div>
+          ) : dependientes.length > 0 ? (
             <div className="min-h-0 flex-1 overflow-y-auto pr-1">
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                 {dependientes.map((dependiente) => (
@@ -208,7 +276,7 @@ export default function GrupoFamiliarView() {
                     key={dependiente.id}
                     dependiente={dependiente}
                     onEdit={editarDependiente}
-                    onDelete={setDependienteEliminar}
+                    onDelete={abrirConfirmacionEliminar}
                   />
                 ))}
               </div>
@@ -245,8 +313,8 @@ export default function GrupoFamiliarView() {
           <Info size={19} className="shrink-0 text-[#0755D8]" />
           <p className="text-[11px] leading-relaxed text-[#526783]">
             <strong className="text-[#14285B]">Sobre tu grupo familiar:</strong>{" "}
-            Este módulo está en desarrollo. Los datos actuales son de
-            demostración.
+            Los dependientes registrados quedan asociados a tu cuenta para
+            facilitar la gestión de reservas.
           </p>
         </section>
       </div>
@@ -256,6 +324,8 @@ export default function GrupoFamiliarView() {
         isOpen={formularioAbierto}
         onClose={cerrarFormulario}
         onSave={guardarDependiente}
+        isSubmitting={isGuardando}
+        serverError={formErrorMessage}
         initialData={
           dependienteEditar
             ? {
@@ -275,8 +345,10 @@ export default function GrupoFamiliarView() {
       {/* CONFIRMACIÓN DE ELIMINACIÓN */}
       <DeleteDependienteDialog
         dependiente={dependienteEliminar}
-        onClose={() => setDependienteEliminar(null)}
+        onClose={cerrarConfirmacionEliminar}
         onConfirm={confirmarEliminacion}
+        isDeleting={isEliminando}
+        errorMessage={deleteErrorMessage}
       />
     </main>
   );

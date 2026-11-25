@@ -6,15 +6,33 @@ import type { Dependiente } from "../types";
 interface DeleteDependienteDialogProps {
   dependiente: Dependiente | null;
   onClose: () => void;
-  onConfirm: () => void;
+  // Permite confirmar de forma síncrona o asíncrona (mutation) para cerrar el
+  // diálogo solo cuando el backend responda sin error.
+  onConfirm: () => Promise<void> | void;
+  isDeleting?: boolean;
+  errorMessage?: string | null;
 }
 
 export default function DeleteDependienteDialog({
   dependiente,
   onClose,
   onConfirm,
+  isDeleting = false,
+  errorMessage = null,
 }: DeleteDependienteDialogProps) {
   if (!dependiente) return null;
+
+  const handleConfirmClick = async () => {
+    if (isDeleting) return;
+
+    try {
+      await onConfirm();
+      onClose();
+    } catch {
+      // El error queda visible en `errorMessage` y el modal sigue abierto
+      // para que el usuario pueda reintentar o cancelar.
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center bg-[#071B42]/60 p-4">
@@ -33,8 +51,9 @@ export default function DeleteDependienteDialog({
           <button
             type="button"
             onClick={onClose}
+            disabled={isDeleting}
             aria-label="Cerrar confirmación"
-            className="rounded-lg p-1.5 text-[#64748B] hover:bg-[#F1F5F9]"
+            className="rounded-lg p-1.5 text-[#64748B] hover:bg-[#F1F5F9] disabled:opacity-50"
           >
             <X size={20} />
           </button>
@@ -59,24 +78,36 @@ export default function DeleteDependienteDialog({
         </p>
 
         <p className="mt-2 text-xs text-[#64748B]">
-          Esta acción solo modificará los datos temporales de esta demostración.
+          Se actualizará tu grupo familiar y se conservará el historial de sus
+          reservas cuando aplique.
         </p>
+
+        {errorMessage && (
+          <p
+            role="alert"
+            className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700"
+          >
+            {errorMessage}
+          </p>
+        )}
 
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[#D6E3F4] px-4 py-2.5 text-sm font-bold text-[#263D65] hover:bg-[#F5F9FF]"
+            disabled={isDeleting}
+            className="rounded-xl border border-[#D6E3F4] px-4 py-2.5 text-sm font-bold text-[#263D65] hover:bg-[#F5F9FF] disabled:opacity-50"
           >
             Cancelar
           </button>
 
           <button
             type="button"
-            onClick={onConfirm}
-            className="rounded-xl bg-[#D92D20] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#B42318]"
+            onClick={handleConfirmClick}
+            disabled={isDeleting}
+            className="rounded-xl bg-[#D92D20] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#B42318] disabled:opacity-60"
           >
-            Sí, eliminar
+            {isDeleting ? "Eliminando..." : "Sí, eliminar"}
           </button>
         </div>
       </div>
