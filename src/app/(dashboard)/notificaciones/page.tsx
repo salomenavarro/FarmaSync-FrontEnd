@@ -1,5 +1,19 @@
-import { FeaturePlaceholder } from "@/components/layout/feature-placeholder";
+import NotificacionesView from "@/features/notificaciones/components/NotificacionesView";
 
-export default function NotificationsPage() {
-  return <FeaturePlaceholder title="Notificaciones" description="Las notificaciones se implementarán después de aprobar sus canales y SLA." />;
+import { generarNotificacionesMock } from "@/features/notificaciones/data/notificacionesMock";
+
+export const dynamic = "force-dynamic";
+
+export default function NotificacionesPage() {
+  const fechaInicial = Date.now();
+
+  const notificacionesIniciales =
+    generarNotificacionesMock(fechaInicial);
+
+  return (
+    <NotificacionesView
+      notificacionesIniciales={notificacionesIniciales}
+      fechaInicial={fechaInicial}
+    />
+  );
 }
