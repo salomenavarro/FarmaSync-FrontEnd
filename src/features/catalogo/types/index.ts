@@ -1,4 +1,3 @@
-
 export type EstadoStock =
   | "Disponible"
   | "Disponibilidad limitada"
@@ -10,12 +9,14 @@ export interface SedeFarmacia {
   ciudad: string;
   zona: string;
   direccion: string;
-  distanciaKm: number;
+  distanciaKm?: number;
 }
 
 export interface StockSede {
   sedeId: string;
   cantidad: number;
+  estadoInventario?: "ROJO" | "AMARILLO" | "VERDE";
+  distanciaKm?: number;
 }
 
 export interface Medicamento {
@@ -25,7 +26,15 @@ export interface Medicamento {
   concentracion: string;
   presentacion: string;
   descripcion: string;
+  requiereOrden?: boolean;
+  puedeActivarAlerta?: boolean;
   stockPorSede: StockSede[];
+}
+
+export interface FiltrosCatalogo {
+  sedeId: string;
+  ubicacion: string;
+  cercania: string;
 }
 
 export function obtenerEstadoStock(cantidad: number): EstadoStock {

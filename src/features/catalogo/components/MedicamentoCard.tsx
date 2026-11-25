@@ -1,4 +1,3 @@
-
 "use client";
 
 import { MapPin, Pill, ArrowRight, Package } from "lucide-react";

@@ -1,4 +1,3 @@
-
 import { ArrowRight, MapPin, MapPinned, Store } from "lucide-react";
 
 import type { Medicamento, SedeFarmacia } from "../types";
@@ -29,10 +28,18 @@ export default function SedesAlternativas({
       return {
         sede,
         cantidad: stock?.cantidad ?? 0,
+        distanciaKm: stock?.distanciaKm ?? sede.distanciaKm,
       };
     })
     .filter((item) => item.cantidad > 0)
-    .sort((a, b) => a.sede.distanciaKm - b.sede.distanciaKm);
+    .sort((a, b) => {
+      if (a.distanciaKm !== undefined && b.distanciaKm !== undefined) {
+        return a.distanciaKm - b.distanciaKm;
+      }
+      if (a.distanciaKm !== undefined) return -1;
+      if (b.distanciaKm !== undefined) return 1;
+      return a.sede.nombre.localeCompare(b.sede.nombre, "es");
+    });
 
   // No mostrar alternativas cuando no hay existencias
   // en ninguna de las otras sedes.
@@ -108,7 +115,7 @@ export default function SedesAlternativas({
 
       {/* LISTADO DE SEDES */}
       <div className="space-y-3">
-        {alternativas.map(({ sede, cantidad }) => (
+        {alternativas.map(({ sede, cantidad, distanciaKm }) => (
           <div
             key={sede.id}
             className="
@@ -134,9 +141,11 @@ export default function SedesAlternativas({
                 {sede.ciudad} · {sede.zona}
               </p>
 
-              <p className="mt-1 pl-6 text-[11px] text-[#71829B]">
-                Distancia de prueba: {sede.distanciaKm.toFixed(1)} km
-              </p>
+              {distanciaKm !== undefined && (
+                <p className="mt-1 pl-6 text-[11px] text-[#71829B]">
+                  Distancia aproximada: {distanciaKm.toFixed(1)} km
+                </p>
+              )}
             </div>
 
             <div className="flex items-center gap-3 sm:shrink-0">
@@ -171,10 +180,6 @@ export default function SedesAlternativas({
           </div>
         ))}
       </div>
-
-      <p className="mt-3 text-[11px] text-[#71829B]">
-        Las distancias y existencias mostradas son datos de demostración.
-      </p>
     </section>
   );
 }
