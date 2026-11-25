@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import type { Dependiente } from "../types";
+import { formatearFecha, ocultarDocumento } from "../utils";
 
 interface DependienteCardProps {
   dependiente: Dependiente;
@@ -26,21 +27,6 @@ const nombresDocumentos = {
   CC: "Cédula de Ciudadanía",
 };
 
-function ocultarDocumento(documento: string) {
-  return `****${documento.slice(-4)}`;
-}
-
-function formatearFecha(fecha: string) {
-  if (!fecha) return "No registrada";
-
-  const [anio, mes, dia] = fecha.split("-").map(Number);
-
-  return new Intl.DateTimeFormat("es-CO", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(anio, mes - 1, dia));
-}
 
 export default function DependienteCard({
   dependiente,
