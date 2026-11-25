@@ -1,9 +1,10 @@
-
 "use client";
 
 import { useState } from "react";
 import { Bell, BellRing, CheckCircle2 } from "lucide-react";
+import { useActivarAlertaStock } from "../hooks/useActivarAlertaStock";
 import type { Medicamento } from "../types";
+import { getCatalogoErrorMessage } from "../utils/get-catalogo-error-message";
 
 interface AlertaReabastecimientoProps {
   medicamento: Medicamento;
@@ -13,10 +14,26 @@ export default function AlertaReabastecimiento({
   medicamento,
 }: AlertaReabastecimientoProps) {
   const [alertaActivada, setAlertaActivada] = useState(false);
+  const [errorAlerta, setErrorAlerta] = useState<string | null>(null);
 
-  const activarAlerta = () => {
-    // Simulación local. No envía información al backend.
-    setAlertaActivada(true);
+  const activarAlertaMutation = useActivarAlertaStock();
+
+  const activarAlerta = async () => {
+    if (activarAlertaMutation.isPending || alertaActivada) return;
+
+    setErrorAlerta(null);
+
+    try {
+      await activarAlertaMutation.mutateAsync(medicamento.id);
+      setAlertaActivada(true);
+    } catch (error) {
+      setErrorAlerta(
+        getCatalogoErrorMessage(
+          error,
+          "No se pudo activar la alerta de reabastecimiento."
+        )
+      );
+    }
   };
 
   return (
@@ -46,19 +63,19 @@ export default function AlertaReabastecimiento({
         <div className="min-w-0 flex-1">
           <h3 className="text-[14px] font-extrabold text-[#14285B]">
             {alertaActivada
-              ? "Alerta de demostración activada"
+              ? "Alerta de reabastecimiento activada"
               : "¿Quieres saber cuándo vuelva a estar disponible?"}
           </h3>
 
           <p className="mt-2 text-[12px] leading-relaxed text-[#62748E]">
             {alertaActivada ? (
               <>
-                Activaste una alerta de prueba para{" "}
+                Activaste una alerta para{" "}
                 <strong>
                   {medicamento.nombreGenerico}{" "}
                   {medicamento.concentracion}
                 </strong>
-                . Esta acción no envía notificaciones reales.
+                . Te notificaremos cuando haya unidades disponibles.
               </>
             ) : (
               <>
@@ -67,7 +84,7 @@ export default function AlertaReabastecimiento({
                   {medicamento.concentracion}
                 </strong>{" "}
                 está agotado en todas las sedes consultadas.
-                Puedes activar una alerta de demostración.
+                Activa una alerta para recibir aviso cuando vuelva a tener stock.
               </>
             )}
           </p>
@@ -87,12 +104,13 @@ export default function AlertaReabastecimiento({
             "
           >
             <CheckCircle2 size={17} />
-            Alerta de prueba activada
+            Alerta activada
           </div>
         ) : (
           <button
             type="button"
             onClick={activarAlerta}
+            disabled={activarAlertaMutation.isPending}
             className="
               flex w-full items-center justify-center
               gap-2 rounded-[12px]
@@ -103,18 +121,26 @@ export default function AlertaReabastecimiento({
               focus-visible:outline-2
               focus-visible:outline-offset-2
               focus-visible:outline-[#0755D8]
+              disabled:cursor-not-allowed
+              disabled:opacity-60
             "
           >
             <Bell size={17} />
-            Notificarme cuando vuelva a estar disponible
+            {activarAlertaMutation.isPending
+              ? "Activando alerta..."
+              : "Notificarme cuando vuelva a estar disponible"}
           </button>
         )}
-      </div>
 
-      <p className="mt-3 text-[11px] text-[#71829B]">
-        Funcionalidad en demostración. Las notificaciones
-        reales estarán disponibles al integrar el backend.
-      </p>
+        {errorAlerta && (
+          <p
+            role="alert"
+            className="mt-2.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700"
+          >
+            {errorAlerta}
+          </p>
+        )}
+      </div>
     </section>
   );
 }

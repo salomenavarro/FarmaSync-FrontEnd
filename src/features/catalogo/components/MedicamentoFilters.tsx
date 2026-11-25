@@ -1,19 +1,14 @@
-
 "use client";
 
 import { MapPin, Navigation, RotateCcw, Store } from "lucide-react";
-import type { SedeFarmacia } from "../types";
+import type { FiltrosCatalogo, SedeFarmacia } from "../types";
 
-export interface FiltrosMedicamentos {
-  sedeId: string;
-  ubicacion: string;
-  cercania: string;
-}
+export type FiltrosMedicamentos = FiltrosCatalogo;
 
 interface MedicamentoFiltersProps {
   sedes: SedeFarmacia[];
-  filtros: FiltrosMedicamentos;
-  onChange: (filtros: FiltrosMedicamentos) => void;
+  filtros: FiltrosCatalogo;
+  onChange: (filtros: FiltrosCatalogo) => void;
 }
 
 export default function MedicamentoFilters({
@@ -26,7 +21,7 @@ export default function MedicamentoFilters({
   );
 
   const actualizarFiltro = (
-    campo: keyof FiltrosMedicamentos,
+    campo: keyof FiltrosCatalogo,
     valor: string
   ) => {
     onChange({
