@@ -82,7 +82,7 @@ const MAIN_NAV: NavItem[] = [
   },
   {
     href: "/notificaciones",
-    label: "Recordatorios",
+    label: "Notificaciones",
     icon: Bell,
   },
   {
