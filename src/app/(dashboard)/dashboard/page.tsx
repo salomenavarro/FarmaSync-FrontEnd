@@ -23,18 +23,26 @@ import type { ReactNode } from "react";
 import { getCurrentUserServer } from "@/lib/auth/get-current-user.server";
 import BannerWaves from "@/components/layout/BannerWaves";
 
-/* =========================================
-   FUENTE DE LOS TÍTULOS
-========================================= */
+import { generarNotificacionesMock } from "@/features/notificaciones/data/notificacionesMock";
+
+import type { Notificacion } from "@/features/notificaciones/types";
+
+import {
+  formatearTiempoRelativo,
+} from "@/features/notificaciones/utils";
+
+// =========================================
+// FUENTE DE LOS TÍTULOS
+// =========================================
 
 const fuenteTitulos = Inter({
   subsets: ["latin"],
   weight: ["700", "800"],
 });
 
-/* =========================================
-   DATOS DE EJEMPLO (MOCK)
-========================================= */
+// =========================================
+// DATOS DE EJEMPLO (MOCK)
+// =========================================
 
 const estadisticas = [
   {
@@ -57,13 +65,6 @@ const estadisticas = [
     icono: Pill,
     fondo: "from-[#F0E8FF] to-[#E7DFFF]",
     color: "text-[#8052E8]",
-  },
-  {
-    valor: 2,
-    etiqueta: "Recordatorios de retiro",
-    icono: Bell,
-    fondo: "from-[#FFF4D9] to-[#FFEBC2]",
-    color: "text-[#E58A00]",
   },
 ];
 
@@ -89,21 +90,6 @@ const pasosSeguimiento = [
     estado: "pendiente",
   },
 ] as const;
-
-const recordatorios = [
-  {
-    nombre: "Acetaminofén 500 mg",
-    hora: "Hoy, 3:00 p. m.",
-    insignia: "En 2 h",
-    estilo: "bg-[#FFF0CF] text-[#8A5A00]",
-  },
-  {
-    nombre: "Loratadina 10 mg",
-    hora: "Mañana, 10:00 a. m.",
-    insignia: "En 1 día",
-    estilo: "bg-[#ECE6FB] text-[#5B3FB5]",
-  },
-];
 
 const medicamentosRecientes = [
   {
@@ -146,9 +132,9 @@ const estilosEstado: Record<string, string> = {
   Cancelada: "bg-[#FFE0E2] text-[#C62828]",
 };
 
-/* =========================================
-   ESTILOS REUTILIZABLES
-========================================= */
+// =========================================
+// ESTILOS REUTILIZABLES
+// =========================================
 
 const FOCO =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0755D8]";
@@ -172,9 +158,9 @@ const BOTON_CONTORNO = `
   ${FOCO}
 `;
 
-/* =========================================
-   COMPONENTES BASE
-========================================= */
+// =========================================
+// COMPONENTES BASE
+// =========================================
 
 function Panel({
   icono: Icono,
@@ -277,9 +263,9 @@ function VerTodo({ href }: { href: string }) {
   );
 }
 
-/* =========================================
-   BANNER DE BIENVENIDA
-========================================= */
+// =========================================
+// BANNER DE BIENVENIDA
+// =========================================
 
 function Banner({ nombre }: { nombre: string }) {
   return (
@@ -488,14 +474,29 @@ function Banner({ nombre }: { nombre: string }) {
   );
 }
 
-/* =========================================
-   ESTADÍSTICAS
-========================================= */
+// =========================================
+// ESTADÍSTICAS
+// =========================================
 
-function Estadisticas() {
+function Estadisticas({
+  notificacionesSinLeer,
+}: {
+  notificacionesSinLeer: number;
+}) {
+  const indicadores = [
+    ...estadisticas,
+    {
+      valor: notificacionesSinLeer,
+      etiqueta: "Notificaciones sin leer",
+      icono: Bell,
+      fondo: "from-[#FFF4D9] to-[#FFEBC2]",
+      color: "text-[#E58A00]",
+    },
+  ];
+
   return (
     <ul className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-      {estadisticas.map(
+      {indicadores.map(
         ({ valor, etiqueta, icono: Icono, fondo, color }) => (
           <li
             key={etiqueta}
@@ -541,9 +542,9 @@ function Estadisticas() {
   );
 }
 
-/* =========================================
-   RESERVA EN SEGUIMIENTO
-========================================= */
+// =========================================
+// RESERVA EN SEGUIMIENTO
+// =========================================
 
 function Seguimiento() {
   return (
@@ -642,8 +643,8 @@ function Seguimiento() {
                       paso.estado === "hecho"
                         ? "bg-gradient-to-br from-[#079DEB] to-[#0755E8] text-white"
                         : paso.estado === "actual"
-                          ? "border-[3px] border-[#0875E8] bg-white ring-[3px] ring-[#E3F4FF]"
-                          : "bg-[#D3DDEB]"
+                        ? "border-[3px] border-[#0875E8] bg-white ring-[3px] ring-[#E3F4FF]"
+                        : "bg-[#D3DDEB]"
                     }
                   `}
                 >
@@ -672,8 +673,8 @@ function Seguimiento() {
                     {paso.estado === "hecho"
                       ? " (completado)"
                       : paso.estado === "actual"
-                        ? " (paso actual)"
-                        : " (pendiente)"}
+                      ? " (paso actual)"
+                      : " (pendiente)"}
                   </span>
                 </span>
 
@@ -722,53 +723,95 @@ function Seguimiento() {
   );
 }
 
-/* =========================================
-   RECORDATORIOS DE RETIRO
-========================================= */
+// =========================================
+// NOTIFICACIONES RECIENTES
+// =========================================
 
-function Recordatorios() {
+function NotificacionesRecientes({
+  notificaciones,
+  fechaInicial,
+}: {
+  notificaciones: Notificacion[];
+  fechaInicial: number;
+}) {
+  const recientes = [...notificaciones]
+    .sort(
+      (a, b) =>
+        new Date(b.fechaCreacion).getTime() -
+        new Date(a.fechaCreacion).getTime()
+    )
+    .slice(0, 2);
+
   return (
     <Panel
       icono={Bell}
-      titulo="Recordatorios de retiro"
+      titulo="Notificaciones recientes"
+      accion={<VerTodo href="/notificaciones" />}
     >
-      <ul className="mt-2 divide-y divide-[#E5EDF8]">
-        {recordatorios.map((recordatorio) => (
-          <li
-            key={recordatorio.nombre}
-            className="flex items-center gap-3 py-2"
-          >
-            <BurbujaIcono icono={Pill} />
+      {recientes.length > 0 ? (
+        <ul className="mt-2 divide-y divide-[#E5EDF8]">
+          {recientes.map((notificacion) => (
+            <li key={notificacion.id}>
+              <Link
+                href="/notificaciones"
+                className={`
+                  flex items-center gap-3
+                  rounded-xl py-2
+                  transition hover:bg-[#F2F8FF]
+                  ${FOCO}
+                `}
+              >
+                <BurbujaIcono icono={Bell} />
 
-            <span className="min-w-0 flex-1 leading-tight">
-              <span className="block text-xs font-extrabold text-[#14285B]">
-                {recordatorio.nombre}
-              </span>
+                <span className="min-w-0 flex-1 leading-tight">
+                  <span className="block truncate text-xs font-extrabold text-[#14285B]">
+                    {notificacion.titulo}
+                  </span>
 
-              <span className="mt-0.5 block text-[11px] text-[#526783]">
-                {recordatorio.hora}
-              </span>
-            </span>
+                  <span className="mt-0.5 block truncate text-[11px] text-[#526783]">
+                    {notificacion.medicamentoNombre ||
+                      notificacion.mensaje}
+                  </span>
 
-            <span
-              className={`
-                shrink-0 rounded-full px-2.5 py-1
-                text-[11px] font-extrabold
-                ${recordatorio.estilo}
-              `}
-            >
-              {recordatorio.insignia}
-            </span>
-          </li>
-        ))}
-      </ul>
+                  <time
+                    dateTime={notificacion.fechaCreacion}
+                    className="mt-1 block text-[10px] text-[#64748B]"
+                  >
+                    {formatearTiempoRelativo(
+                      notificacion.fechaCreacion,
+                      fechaInicial
+                    )}
+                  </time>
+                </span>
+
+                {!notificacion.leida && (
+                  <span
+                    aria-label="Sin leer"
+                    className="h-2 w-2 shrink-0 rounded-full bg-[#0755D8]"
+                  />
+                )}
+
+                <ChevronRight
+                  size={16}
+                  className="shrink-0 text-[#294B7D]"
+                  aria-hidden="true"
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="py-5 text-center text-xs text-[#64748B]">
+          No tienes notificaciones recientes.
+        </p>
+      )}
     </Panel>
   );
 }
 
-/* =========================================
-   FARMACIA DE TU RESERVA
-========================================= */
+// =========================================
+// FARMACIA DE TU RESERVA
+// =========================================
 
 function FarmaciaReserva() {
   return (
@@ -838,9 +881,9 @@ function FarmaciaReserva() {
   );
 }
 
-/* =========================================
-   MEDICAMENTOS CONSULTADOS RECIENTEMENTE
-========================================= */
+// =========================================
+// MEDICAMENTOS CONSULTADOS RECIENTEMENTE
+// =========================================
 
 function MedicamentosRecientes() {
   return (
@@ -886,9 +929,9 @@ function MedicamentosRecientes() {
   );
 }
 
-/* =========================================
-   HISTORIAL DE RESERVAS
-========================================= */
+// =========================================
+// HISTORIAL DE RESERVAS
+// =========================================
 
 function HistorialReservas() {
   return (
@@ -973,15 +1016,27 @@ function HistorialReservas() {
   );
 }
 
-/* =========================================
-   DASHBOARD DEL PACIENTE
-========================================= */
+// =========================================
+// DASHBOARD DEL PACIENTE
+// =========================================
 
 export default async function DashboardHomePage() {
   const usuario = await getCurrentUserServer();
 
   const primerNombre =
     usuario?.nombreCompleto.trim().split(/\s+/)[0] ?? "";
+
+  // DATOS SIMULADOS DEL MÓDULO DE NOTIFICACIONES
+
+  const fechaInicial = Date.now();
+
+  const notificaciones =
+    generarNotificacionesMock(fechaInicial);
+
+  const notificacionesSinLeer =
+    notificaciones.filter(
+      (notificacion) => !notificacion.leida
+    ).length;
 
   return (
     <div
@@ -998,7 +1053,9 @@ export default async function DashboardHomePage() {
 
       {/* ESTADÍSTICAS */}
 
-      <Estadisticas />
+      <Estadisticas
+        notificacionesSinLeer={notificacionesSinLeer}
+      />
 
       {/* CONTENIDO PRINCIPAL */}
 
@@ -1019,7 +1076,10 @@ export default async function DashboardHomePage() {
         {/* COLUMNA LATERAL */}
 
         <div className="flex min-w-0 flex-col gap-3">
-          <Recordatorios />
+          <NotificacionesRecientes
+            notificaciones={notificaciones}
+            fechaInicial={fechaInicial}
+          />
 
           <FarmaciaReserva />
         </div>
