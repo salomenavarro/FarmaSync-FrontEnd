@@ -13,6 +13,7 @@ import { loginSchema, LoginFormValues } from "../schemas/login.schema";
 import { useLogin, getLoginErrorMessage } from "../hooks/useLogin";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { loginWithGoogle } from "../services/auth.service";
+import { getRedirectPathByUser } from "../utils/role-redirect";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -60,7 +61,7 @@ export default function LoginForm() {
 
       console.log("Sesión iniciada con éxito en backend:", usuario);
 
-      window.location.href = "/dashboard";
+      window.location.href = getRedirectPathByUser(usuario);
     } catch (error: any) {
       console.error(
         "Error al autenticar con el backend:",

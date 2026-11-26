@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { login } from "../services/auth.service";
 import { LoginFormValues } from "../schemas/login.schema";
 import { getAuthErrorMessage } from "../utils/get-auth-error-message";
+import { getRedirectPathByUser } from "../utils/role-redirect";
 
 // Reemplaza el useState(loading)/useState(error) + try/catch a mano
 // del LoginPage viejo. TanStack Query da isPending/isError/error
@@ -15,8 +16,9 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: (data: LoginFormValues) => login(data),
-    onSuccess: () => {
-      router.push("/dashboard");
+    onSuccess: (usuario) => {
+      // Redirige según el rol del usuario autenticado (ADMINISTRADOR_EPS -> /administrador/dashboard)
+      router.push(getRedirectPathByUser(usuario));
     },
   });
 }

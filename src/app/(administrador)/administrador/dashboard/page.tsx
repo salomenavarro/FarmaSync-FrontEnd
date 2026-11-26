@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUserServer } from "@/lib/auth/get-current-user.server";
-
+import { isAdministradorEps } from "@/features/auth/utils/role-redirect";
 import AdminHeader from "@/features/administrador/components/AdminHeader";
-
 import AdminDashboardContent from "@/features/administrador/components/AdminDashboardContent";
+
+export const dynamic = "force-dynamic";
 
 // =========================================================
 // METADATOS
@@ -25,6 +26,11 @@ export default async function AdministradorDashboardPage() {
 
   if (!usuario) {
     redirect("/login");
+  }
+
+  // Doble verificación de rol para mantener coherencia con AdministradorLayout
+  if (!isAdministradorEps(usuario)) {
+    redirect("/dashboard");
   }
 
   return (

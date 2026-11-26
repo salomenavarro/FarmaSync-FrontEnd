@@ -11,6 +11,9 @@ import {
   Building2,
   Save,
   Info,
+  Lock,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 import type {
@@ -67,6 +70,8 @@ export default function FarmaceuticoModal({
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+
   const [formulario, setFormulario] =
     useState<FarmaceuticoFormData>({
       nombres: farmaceutico?.nombres ?? "",
@@ -74,6 +79,7 @@ export default function FarmaceuticoModal({
       numeroDocumento: farmaceutico?.numeroDocumento ?? "",
       correo: farmaceutico?.correo ?? "",
       telefono: farmaceutico?.telefono ?? "",
+      password: "",
       sedeId: farmaceutico?.sedeId ?? 0,
       estado: farmaceutico?.estado ?? "ACTIVO",
     });
@@ -164,6 +170,14 @@ export default function FarmaceuticoModal({
         "Ingresa un teléfono de 10 dígitos.";
     }
 
+    if (
+      !editando &&
+      (formulario.password ?? "").trim().length < 8
+    ) {
+      nuevosErrores.password =
+        "Ingresa una contraseña de mínimo 8 caracteres.";
+    }
+
     const sedeValida = sedesActivas.some(
       (sede) => sede.id === formulario.sedeId
     );
@@ -224,6 +238,7 @@ export default function FarmaceuticoModal({
       numeroDocumento: formulario.numeroDocumento.trim(),
       correo: formulario.correo.trim().toLowerCase(),
       telefono: formulario.telefono.trim(),
+      password: formulario.password?.trim(),
     });
   }
 
@@ -506,6 +521,71 @@ export default function FarmaceuticoModal({
 
                 {mostrarError("correo")}
               </div>
+
+              {/* CONTRASEÑA INICIAL (SOLO CREACIÓN) */}
+
+              {!editando && (
+                <div className="sm:col-span-2">
+                  <label
+                    htmlFor="password"
+                    className={LABEL_STYLE}
+                  >
+                    Contraseña inicial *
+                  </label>
+
+                  <div className="relative">
+                    <Lock
+                      size={18}
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#0755D8]"
+                    />
+
+                    <input
+                      id="password"
+                      type={mostrarPassword ? "text" : "password"}
+                      required
+                      minLength={8}
+                      maxLength={72}
+                      value={formulario.password ?? ""}
+                      onChange={(event) =>
+                        actualizarCampo(
+                          "password",
+                          event.target.value
+                        )
+                      }
+                      aria-invalid={Boolean(errores.password)}
+                      aria-describedby={
+                        errores.password
+                          ? "error-password"
+                          : undefined
+                      }
+                      placeholder="Mínimo 8 caracteres"
+                      className={`${INPUT_STYLE} pl-10 pr-10`}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMostrarPassword((prev) => !prev)
+                      }
+                      aria-label={
+                        mostrarPassword
+                          ? "Ocultar contraseña"
+                          : "Mostrar contraseña"
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#64748B] hover:text-[#0755D8]"
+                    >
+                      {mostrarPassword ? (
+                        <EyeOff size={17} aria-hidden="true" />
+                      ) : (
+                        <Eye size={17} aria-hidden="true" />
+                      )}
+                    </button>
+                  </div>
+
+                  {mostrarError("password")}
+                </div>
+              )}
 
             </div>
 

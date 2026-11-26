@@ -42,6 +42,7 @@ export interface FarmaceuticoFormData {
   numeroDocumento: string;
   correo: string;
   telefono: string;
+  password?: string;
   sedeId: number;
   estado: EstadoFarmaceutico;
 }
@@ -89,4 +90,16 @@ export interface EfectividadReservas {
   totalReservas: number;
   reservasEntregadas: number;
   reservasNoEfectuadas: number;
+}
+
+// =========================================================
+// RESPUESTA CONSOLIDADA DEL DASHBOARD EPS
+// =========================================================
+
+export interface AdminDashboardData {
+  sedes: SedeFarmacia[];
+  indicadores: IndicadoresDashboard;
+  alertasStock: AlertaStock[];
+  demanda: DemandaMedicamentos[];
+  efectividad: EfectividadReservas;
 }
