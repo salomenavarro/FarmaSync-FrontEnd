@@ -11,7 +11,16 @@ type ReservaStatusBadgeProps = {
   estado: EstadoReserva;
 };
 
-const configuracionEstados = {
+type EstadoUi = "ACTIVA" | "COMPLETADA" | "CANCELADA" | "VENCIDA";
+
+const configuracionEstados: Record<
+  EstadoUi,
+  {
+    etiqueta: string;
+    icono: typeof CalendarClock;
+    estilos: string;
+  }
+> = {
   ACTIVA: {
     etiqueta: "Activa",
     icono: CalendarClock,
@@ -41,10 +50,28 @@ const configuracionEstados = {
   },
 };
 
+function resolverEstadoUi(estado: EstadoReserva): EstadoUi {
+  switch (estado) {
+    case "PENDIENTE":
+    case "ACTIVA":
+      return "ACTIVA";
+    case "ENTREGADA":
+    case "COMPLETADA":
+      return "COMPLETADA";
+    case "CANCELADA_USUARIO":
+    case "CANCELADA":
+      return "CANCELADA";
+    case "EXPIRADA":
+    case "VENCIDA":
+      return "VENCIDA";
+  }
+}
+
 export default function ReservaStatusBadge({
   estado,
 }: ReservaStatusBadgeProps) {
-  const configuracion = configuracionEstados[estado];
+  const estadoUi = resolverEstadoUi(estado);
+  const configuracion = configuracionEstados[estadoUi];
 
   const Icono = configuracion.icono;
 
