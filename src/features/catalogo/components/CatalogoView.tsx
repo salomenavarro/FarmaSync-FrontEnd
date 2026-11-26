@@ -3,11 +3,14 @@
 import { Suspense, useMemo, useState,useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
+
 import {
   AlertCircle,
   ArrowLeft,
   BookmarkPlus,
   ClipboardList,
+  LayoutGrid,
+  Map as MapIcon,
   PackageSearch,
   Pill,
   RefreshCw,
@@ -28,6 +31,7 @@ import MedicamentoSearch from "./MedicamentoSearch";
 import MedicamentoFilters from "./MedicamentoFilters";
 import SedesAlternativas from "./SedesAlternativas";
 import AlertaReabastecimiento from "./AlertaReabastecimiento";
+import MapaSedes from "./MapaSedes";
 
 import BannerWaves from "@/components/layout/BannerWaves";
 import CrearReservaModal from "./CrearReservaModal";
@@ -55,6 +59,11 @@ function CatalogoContent() {
 
   const [sedeDetalle, setSedeDetalle] =
     useState<SedeFarmacia | null>(null);
+
+
+  const [vistaMapa, setVistaMapa] = useState(
+  searchParams.get("vista") === "mapa"
+  );
 
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
@@ -522,27 +531,39 @@ function CatalogoContent() {
                     </p>
                   </div>
 
-                  <span
-                    className="
-                      inline-flex items-center gap-2
-                      rounded-full border border-[#DCE8F7]
-                      bg-white px-3 py-2
-                      text-[11px] font-semibold text-[#62748E]
-                    "
-                  >
-                    <Store
-                      size={14}
-                      className="text-[#0755D8]"
-                    />
+                  <div className="inline-flex rounded-full border border-[#DCE8F7] bg-white p-1">
+                    <button
+                      type="button"
+                      onClick={() => setVistaMapa(false)}
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                        !vistaMapa
+                          ? "bg-[#0755D8] text-white"
+                          : "text-[#62748E] hover:text-[#14285B]"
+                      }`}
+                    >
+                      <LayoutGrid size={13} />
+                      Lista
+                    </button>
 
-                    {sedesFiltradas.length} sedes
-                  </span>
+                    <button
+                      type="button"
+                      onClick={() => setVistaMapa(true)}
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                        vistaMapa
+                          ? "bg-[#0755D8] text-white"
+                          : "text-[#62748E] hover:text-[#14285B]"
+                      }`}
+                    >
+                      <MapIcon size={13} />
+                      Mapa ({sedesFiltradas.length})
+                    </button>
+                  </div>
                 </div>
 
                 {/* ========================================
                     TARJETAS DE MEDICAMENTOS
                 ======================================== */}
-
+                
                 {isLoading ? (
                   <div
                     className="
@@ -594,24 +615,49 @@ function CatalogoContent() {
                   </div>
                 ) : resultados.length > 0 ? (
                   <div
-                    className="
-                      grid grid-cols-1 gap-4
-                      lg:grid-cols-2 2xl:grid-cols-3
-                    "
+                    className={
+                      vistaMapa
+                        ? "grid grid-cols-1 items-start gap-5 xl:grid-cols-12"
+                        : ""
+                    }
                   >
-                    {resultados.map(({ medicamento, sede }) => (
-                      <MedicamentoCard
-                        key={`${medicamento.id}-${sede.id}`}
-                        medicamento={medicamento}
-                        sede={sede}
-                        onVerDisponibilidad={() =>
-                          abrirDetalle(medicamento, sede)
-                        }
-                        onReservar={(med, sedeItem) =>
-                          abrirReserva(med, sedeItem)
-                        }
-                      />
-                    ))}
+                    <div
+                      className={
+                        vistaMapa
+                          ? "grid grid-cols-1 gap-4 md:grid-cols-2 xl:col-span-7"
+                          : "grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3"
+                      }
+                    >
+                      {resultados.map(({ medicamento, sede }) => (
+                        <MedicamentoCard
+                          key={`${medicamento.id}-${sede.id}`}
+                          medicamento={medicamento}
+                          sede={sede}
+                          onVerDisponibilidad={() =>
+                            abrirDetalle(medicamento, sede)
+                          }
+                          onReservar={(med, sedeItem) =>
+                            abrirReserva(med, sedeItem)
+                          }
+                        />
+                      ))}
+                    </div>
+
+                    {vistaMapa && (
+                      <div className="xl:sticky xl:top-4 xl:col-span-5">
+                        <MapaSedes
+                          sedes={sedesFiltradas}
+                          userCoords={coords}
+                          sedeActivaId={filtros.sedeId}
+                          onSeleccionarSede={(sede) =>
+                            setFiltros((prev) => ({
+                              ...prev,
+                              sedeId: prev.sedeId === sede.id ? "" : sede.id,
+                            }))
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div
