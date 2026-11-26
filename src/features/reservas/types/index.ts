@@ -1,42 +1,47 @@
-// Estados de una reserva
+// Estados que puede devolver el backend o manejar la vista de reservas.
 export type EstadoReserva =
+  | "PENDIENTE"
+  | "ENTREGADA"
+  | "CANCELADA_USUARIO"
+  | "EXPIRADA"
   | "ACTIVA"
   | "COMPLETADA"
   | "CANCELADA"
   | "VENCIDA";
 
-// Tipos de beneficiario
 export type TipoBeneficiario = "TITULAR" | "DEPENDIENTE";
 
-// Información del medicamento reservado
 export interface MedicamentoReserva {
   id: number;
   nombre: string;
   concentracion: string;
   presentacion: string;
   cantidad: number;
+  codigo?: string;
 }
 
-// Información de la sede de farmacia
 export interface SedeReserva {
   id: number;
   nombre: string;
   direccion: string;
   ciudad: string;
-  horario: string;
+  zona?: string;
+  horario?: string;
 }
 
-// Información del paciente beneficiario
 export interface BeneficiarioReserva {
   id: number;
   nombreCompleto: string;
+  numeroDocumento?: string;
   tipo: TipoBeneficiario;
 }
 
-// Información completa de una reserva
 export interface Reserva {
   id: number;
   codigo: string;
+  codigoQr?: string;
+  numeroOrdenMedica?: string;
+  prorrogaSolicitada?: boolean;
   medicamento: MedicamentoReserva;
   sede: SedeReserva;
   beneficiario: BeneficiarioReserva;
@@ -49,7 +54,6 @@ export interface Reserva {
   motivoCancelacion?: string;
 }
 
-// Indicadores generales de las reservas
 export interface IndicadoresReservas {
   total: number;
   activas: number;
@@ -58,16 +62,27 @@ export interface IndicadoresReservas {
   vencidas: number;
 }
 
-// Filtros disponibles
-export type FiltroEstadoReserva = "TODAS" | EstadoReserva;
+export type FiltroEstadoReserva =
+  | "TODAS"
+  | "ACTIVA"
+  | "COMPLETADA"
+  | "CANCELADA"
+  | "VENCIDA";
 
 export interface FiltrosReservas {
   busqueda: string;
   estado: FiltroEstadoReserva;
 }
 
-// Información para cancelar una reserva
+export interface CrearReservaPayload {
+  sedeId: number;
+  medicamentoId: number;
+  dependienteId?: number;
+  numeroOrdenMedica: string;
+  fechaRecogida: string;
+}
+
 export interface CancelarReservaData {
   reservaId: number;
-  motivo: string;
+  motivo?: string;
 }

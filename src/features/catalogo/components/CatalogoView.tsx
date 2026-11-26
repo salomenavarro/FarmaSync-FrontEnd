@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import {
   AlertCircle,
   ArrowLeft,
+  BookmarkPlus,
   ClipboardList,
   PackageSearch,
   Pill,
@@ -29,6 +30,7 @@ import SedesAlternativas from "./SedesAlternativas";
 import AlertaReabastecimiento from "./AlertaReabastecimiento";
 
 import BannerWaves from "@/components/layout/BannerWaves";
+import CrearReservaModal from "./CrearReservaModal";
 
 // ========================================
 // CONTENIDO DEL CATÁLOGO
@@ -53,6 +55,11 @@ function CatalogoContent() {
 
   const [sedeDetalle, setSedeDetalle] =
     useState<SedeFarmacia | null>(null);
+
+  const [reservaModal, setReservaModal] = useState<{
+    medicamento: Medicamento;
+    sede: SedeFarmacia;
+  } | null>(null);
 
   // Separar ubicación ("Ciudad - Zona") para enviar ciudad/zona al backend
   // cuando el usuario seleccione una ubicación específica.
@@ -165,6 +172,17 @@ function CatalogoContent() {
   const cerrarDetalle = () => {
     setMedicamentoSeleccionado(null);
     setSedeDetalle(null);
+  };
+
+  const abrirReserva = (
+    medicamento: Medicamento,
+    sede: SedeFarmacia
+  ) => {
+    setReservaModal({ medicamento, sede });
+  };
+
+  const cerrarReserva = () => {
+    setReservaModal(null);
   };
 
   const medicamentoActualDetalle = useMemo(() => {
@@ -401,6 +419,30 @@ function CatalogoContent() {
                         Medicamento agotado en esta sede.
                       </p>
                     )}
+
+                    {/* RESERVAR DESDE EL DETALLE */}
+
+                    {cantidadDetalle > 0 && (
+                      <div className="mt-4">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            abrirReserva(medicamentoActualDetalle, sedeDetalle)
+                          }
+                          className="
+                            inline-flex items-center justify-center gap-2
+                            rounded-[12px] bg-[#0755D8]
+                            px-4 py-2.5
+                            text-[12px] font-bold text-white
+                            transition-colors
+                            hover:bg-[#0647B6]
+                          "
+                        >
+                          <BookmarkPlus size={16} />
+                          Reservar medicamento
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -412,7 +454,7 @@ function CatalogoContent() {
                   <SedesAlternativas
                     medicamento={medicamentoActualDetalle}
                     sedeActual={sedeDetalle}
-                    sedes={sedesCatalogo}
+                    sedes={todasLasSedes}
                     onSeleccionarSede={(sede) =>
                       setSedeDetalle(sede)
                     }
@@ -538,6 +580,9 @@ function CatalogoContent() {
                         onVerDisponibilidad={() =>
                           abrirDetalle(medicamento, sede)
                         }
+                        onReservar={(med, sedeItem) =>
+                          abrirReserva(med, sedeItem)
+                        }
                       />
                     ))}
                   </div>
@@ -591,6 +636,20 @@ function CatalogoContent() {
           </>
         )}
       </div>
+
+      {/* ========================================
+          MODAL CREAR RESERVA
+      ======================================== */}
+
+      {reservaModal && (
+        <CrearReservaModal
+          isOpen={Boolean(reservaModal)}
+          medicamento={reservaModal.medicamento}
+          sedeInicial={reservaModal.sede}
+          sedes={todasLasSedes}
+          onCerrar={cerrarReserva}
+        />
+      )}
     </div>
   );
 }

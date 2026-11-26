@@ -9,7 +9,6 @@ import {
   MapPin,
   CalendarClock,
   CircleX,
-  Info,
 } from "lucide-react";
 
 import type {
@@ -20,6 +19,8 @@ import type {
 type CancelarReservaModalProps = {
   reserva: Reserva;
   ahora: number;
+  isSubmitting?: boolean;
+  errorExterno?: string | null;
   onCerrar: () => void;
   onConfirmar: (datos: CancelarReservaData) => void;
 };
@@ -36,6 +37,8 @@ const motivosCancelacion = [
 export default function CancelarReservaModal({
   reserva,
   ahora,
+  isSubmitting = false,
+  errorExterno = null,
   onCerrar,
   onConfirmar,
 }: CancelarReservaModalProps) {
@@ -45,19 +48,14 @@ export default function CancelarReservaModal({
   const [otroMotivo, setOtroMotivo] = useState("");
   const [error, setError] = useState("");
 
-  const fechaRetiro = new Date(
-    reserva.fechaRetiro
-  ).getTime();
-
   const fechaVencimiento = new Date(
     reserva.fechaVencimiento
   ).getTime();
 
-  // Validar el plazo permitido para cancelar
+  // Validar el plazo permitido para cancelar (mínimo 1 hora antes del vencimiento)
   const puedeCancelar =
     reserva.estado === "ACTIVA" &&
-    fechaVencimiento > ahora &&
-    fechaRetiro - ahora >= 60 * 60 * 1000;
+    fechaVencimiento - ahora >= 60 * 60 * 1000;
 
   // Abrir el modal
   useEffect(() => {
@@ -76,6 +74,7 @@ export default function CancelarReservaModal({
 
   // Confirmar la cancelación
   function confirmarCancelacion() {
+    if (isSubmitting) return;
     setError("");
 
     const momentoActual = Date.now();
@@ -83,8 +82,7 @@ export default function CancelarReservaModal({
     // Verificar nuevamente el plazo
     if (
       reserva.estado !== "ACTIVA" ||
-      fechaVencimiento <= momentoActual ||
-      fechaRetiro - momentoActual < 60 * 60 * 1000
+      fechaVencimiento - momentoActual < 60 * 60 * 1000
     ) {
       setError(
         "Esta reserva ya no se encuentra dentro del plazo permitido para cancelar."
@@ -119,6 +117,8 @@ export default function CancelarReservaModal({
       motivo: motivoFinal,
     });
   }
+
+  const mensajeErrorVisible = error || errorExterno || "";
 
   return (
     <dialog
@@ -159,8 +159,9 @@ export default function CancelarReservaModal({
         <button
           type="button"
           onClick={onCerrar}
+          disabled={isSubmitting}
           aria-label="Cerrar ventana"
-          className="cursor-pointer rounded-xl p-2 text-[#64748B] transition-colors hover:bg-[#F1F5F9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0755D8]"
+          className="cursor-pointer rounded-xl p-2 text-[#64748B] transition-colors hover:bg-[#F1F5F9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0755D8] disabled:cursor-not-allowed"
         >
           <X size={22} aria-hidden="true" />
         </button>
@@ -176,9 +177,8 @@ export default function CancelarReservaModal({
           </h3>
 
           <p className="mt-2 text-sm leading-relaxed text-[#64748B]">
-            Si cancelas tu reserva, perderás las unidades
-            apartadas del medicamento. Esta acción no
-            se puede deshacer.
+            Si cancelas tu reserva, se liberarán las unidades
+            apartadas del medicamento en el stock de la sede.
           </p>
         </div>
 
@@ -241,10 +241,10 @@ export default function CancelarReservaModal({
             id="motivo-cancelacion"
             value={motivo}
             required
-            disabled={!puedeCancelar}
-            aria-invalid={Boolean(error)}
+            disabled={!puedeCancelar || isSubmitting}
+            aria-invalid={Boolean(mensajeErrorVisible)}
             aria-describedby={
-              error ? "error-cancelacion" : undefined
+              mensajeErrorVisible ? "error-cancelacion" : undefined
             }
             onChange={(event) => {
               setMotivo(event.target.value);
@@ -283,7 +283,7 @@ export default function CancelarReservaModal({
               id="otro-motivo"
               value={otroMotivo}
               required
-              disabled={!puedeCancelar}
+              disabled={!puedeCancelar || isSubmitting}
               maxLength={250}
               rows={3}
               aria-describedby="contador-motivo"
@@ -320,8 +320,8 @@ export default function CancelarReservaModal({
 
             <p className="mt-1 text-xs leading-relaxed text-[#92400E]">
               Las reservas únicamente pueden cancelarse
-              con mínimo una hora de anticipación a la
-              fecha y hora programadas para el retiro.
+              con mínimo una hora de anticipación al
+              vencimiento del plazo de retiro.
             </p>
           </div>
         </section>
@@ -339,7 +339,7 @@ export default function CancelarReservaModal({
         )}
 
         {/* MENSAJES DE ERROR */}
-        {error && (
+        {mensajeErrorVisible && (
           <div
             id="error-cancelacion"
             role="alert"
@@ -352,25 +352,10 @@ export default function CancelarReservaModal({
             />
 
             <p className="text-xs font-medium text-[#B91C1C]">
-              {error}
+              {mensajeErrorVisible}
             </p>
           </div>
         )}
-
-        {/* AVISO DE SIMULACIÓN */}
-        <div className="flex items-start gap-2 text-xs leading-relaxed text-[#64748B]">
-
-          <Info
-            size={15}
-            className="mt-0.5 shrink-0"
-            aria-hidden="true"
-          />
-
-          <p>
-            Esta operación es simulada y no modifica
-            el inventario real de la farmacia.
-          </p>
-        </div>
       </div>
 
       {/* BOTONES */}
@@ -379,20 +364,21 @@ export default function CancelarReservaModal({
         <button
           type="button"
           onClick={onCerrar}
-          className="cursor-pointer rounded-xl border border-[#DCE4EF] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition-colors hover:bg-[#F1F5F9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0755D8]"
+          disabled={isSubmitting}
+          className="cursor-pointer rounded-xl border border-[#DCE4EF] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition-colors hover:bg-[#F1F5F9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0755D8] disabled:cursor-not-allowed"
         >
           Conservar reserva
         </button>
 
         <button
           type="button"
-          disabled={!puedeCancelar}
+          disabled={!puedeCancelar || isSubmitting}
           onClick={confirmarCancelacion}
           className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#B91C1C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#DC2626] disabled:cursor-not-allowed disabled:bg-[#CBD5E1]"
         >
           <CircleX size={18} aria-hidden="true" />
 
-          Confirmar cancelación
+          {isSubmitting ? "Cancelando..." : "Confirmar cancelación"}
         </button>
       </footer>
     </dialog>

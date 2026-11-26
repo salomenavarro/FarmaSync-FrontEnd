@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { LoaderCircle } from "lucide-react";
 
 import ReservasContent from "@/features/reservas/components/ReservasContent";
-import { reservasMock } from "@/features/reservas/data/reservasMock";
 
 export const dynamic = "force-dynamic";
 
@@ -44,10 +43,7 @@ export default function ReservasPage() {
 
   return (
     <Suspense fallback={<ReservasLoading />}>
-      <ReservasContent
-        reservasIniciales={reservasMock}
-        fechaInicial={fechaInicial}
-      />
+      <ReservasContent fechaInicial={fechaInicial} />
     </Suspense>
   );
 }

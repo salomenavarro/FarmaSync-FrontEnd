@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Pill, ArrowRight, Package } from "lucide-react";
+import { MapPin, Pill, ArrowRight, Package, BookmarkPlus } from "lucide-react";
 import type { Medicamento, SedeFarmacia } from "../types";
 import StockBadge from "./StockBadge";
 
@@ -8,12 +8,14 @@ interface MedicamentoCardProps {
   medicamento: Medicamento;
   sede: SedeFarmacia;
   onVerDisponibilidad?: (medicamento: Medicamento) => void;
+  onReservar?: (medicamento: Medicamento, sede: SedeFarmacia) => void;
 }
 
 export default function MedicamentoCard({
   medicamento,
   sede,
   onVerDisponibilidad,
+  onReservar,
 }: MedicamentoCardProps) {
   const stock = medicamento.stockPorSede.find(
     (item) => item.sedeId === sede.id
@@ -115,24 +117,48 @@ export default function MedicamentoCard({
       )}
 
       {/* ACCIÓN */}
-      <div className="mt-auto pt-4">
+      <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row">
+        {cantidad > 0 && onReservar && (
+          <button
+            type="button"
+            onClick={() => onReservar(medicamento, sede)}
+            className="
+              flex flex-1 items-center justify-center gap-2
+              rounded-[12px]
+              bg-[#0755D8] px-4 py-2.5
+              text-[12px] font-bold text-white
+              transition-colors
+              hover:bg-[#0647B6]
+              focus-visible:outline-2
+              focus-visible:outline-offset-2
+              focus-visible:outline-[#0755D8]
+            "
+          >
+            <BookmarkPlus size={15} />
+            Reservar
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => onVerDisponibilidad?.(medicamento)}
           disabled={!onVerDisponibilidad}
-          className="
-            flex w-full items-center justify-center gap-2
-            rounded-[12px]
-            bg-[#0755D8] px-4 py-2.5
-            text-[12px] font-bold text-white
+          className={`
+            flex items-center justify-center gap-2
+            rounded-[12px] px-4 py-2.5
+            text-[12px] font-bold
             transition-colors
-            hover:bg-[#0647B6]
             focus-visible:outline-2
             focus-visible:outline-offset-2
             focus-visible:outline-[#0755D8]
             disabled:cursor-not-allowed
             disabled:opacity-50
-          "
+            ${
+              cantidad > 0 && onReservar
+                ? "border border-[#C7DAF7] bg-white text-[#0755D8] hover:bg-[#EAF3FF]"
+                : "w-full bg-[#0755D8] text-white hover:bg-[#0647B6]"
+            }
+          `}
         >
           Ver disponibilidad
           <ArrowRight size={15} />

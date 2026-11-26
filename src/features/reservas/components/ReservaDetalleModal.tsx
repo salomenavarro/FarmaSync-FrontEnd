@@ -12,10 +12,10 @@ import {
   Clock,
   Copy,
   Check,
-  Info,
   ClipboardList,
   Ticket,
   CircleAlert,
+  FileText,
 } from "lucide-react";
 
 import ReservaStatusBadge from "./ReservaStatusBadge";
@@ -174,6 +174,13 @@ export default function ReservaDetalleModal({
               <p className="mt-1 text-sm font-semibold text-[#475569]">
                 Cantidad: {reserva.medicamento.cantidad}
               </p>
+
+              {reserva.numeroOrdenMedica && (
+                <p className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold text-[#0755D8]">
+                  <FileText size={14} aria-hidden="true" />
+                  Orden médica EPS: {reserva.numeroOrdenMedica}
+                </p>
+              )}
             </div>
 
             <ReservaStatusBadge estado={estado} />
@@ -201,9 +208,19 @@ export default function ReservaDetalleModal({
               {reserva.codigo}
             </p>
 
+            {reserva.codigoQr && (
+              <div className="mx-auto mt-3 max-w-full rounded-xl border border-[#D6E5FF] bg-white px-3 py-2 text-left">
+                <p className="text-[11px] font-bold text-[#475569]">
+                  Referencia QR
+                </p>
+                <p className="mt-0.5 break-all font-mono text-[11px] text-[#64748B]">
+                  {reserva.codigoQr}
+                </p>
+              </div>
+            )}
+
             <p className="mt-2 text-xs leading-relaxed text-[#64748B]">
-              Código de demostración para el retiro
-              del medicamento en la sede seleccionada.
+              Presenta este código al retirar tu medicamento en la sede seleccionada.
             </p>
 
             <button
@@ -267,26 +284,30 @@ export default function ReservaDetalleModal({
               </p>
             </div>
 
-            <div>
-              <p className="text-xs text-[#64748B]">
-                Dirección
-              </p>
+            {reserva.sede.direccion && (
+              <div>
+                <p className="text-xs text-[#64748B]">
+                  Dirección
+                </p>
 
-              <p className="mt-1 text-sm font-semibold">
-                {reserva.sede.direccion},{" "}
-                {reserva.sede.ciudad}
-              </p>
-            </div>
+                <p className="mt-1 text-sm font-semibold">
+                  {reserva.sede.direccion},{" "}
+                  {reserva.sede.ciudad}
+                </p>
+              </div>
+            )}
 
-            <div>
-              <p className="text-xs text-[#64748B]">
-                Horario de atención
-              </p>
+            {reserva.sede.horario && (
+              <div>
+                <p className="text-xs text-[#64748B]">
+                  Horario de atención
+                </p>
 
-              <p className="mt-1 text-sm font-semibold">
-                {reserva.sede.horario}
-              </p>
-            </div>
+                <p className="mt-1 text-sm font-semibold">
+                  {reserva.sede.horario}
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -367,6 +388,9 @@ export default function ReservaDetalleModal({
 
                 <p className="text-xs text-[#64748B]">
                   Fecha límite de retiro
+                  {reserva.prorrogaSolicitada
+                    ? " (con prórroga de 24h)"
+                    : ""}
                 </p>
               </div>
 
@@ -441,28 +465,13 @@ export default function ReservaDetalleModal({
 
               <p className="mt-1 text-xs leading-relaxed text-[#475569]">
                 Acude a la sede seleccionada antes de
-                que finalice el plazo de retiro.
-                Si necesitas cancelar tu reserva,
-                hazlo con mínimo una hora de
-                anticipación a la fecha y hora de retiro.
+                que finalice el plazo de retiro. Puedes solicitar
+                una prórroga única de 24 horas si lo necesitas o
+                cancelar con mínimo 1 hora de anticipación.
               </p>
             </div>
           </section>
         )}
-
-        {/* AVISO DE SIMULACIÓN */}
-        <div className="flex items-start gap-2 text-xs leading-relaxed text-[#64748B]">
-          <Info
-            size={15}
-            className="mt-0.5 shrink-0"
-            aria-hidden="true"
-          />
-
-          <p>
-            Información simulada para la demostración
-            del módulo de reservas de FarmaSync.
-          </p>
-        </div>
       </div>
 
       {/* PIE DEL MODAL */}

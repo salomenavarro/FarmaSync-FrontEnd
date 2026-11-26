@@ -2,14 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-
-import {
-  CalendarDays,
-  History,
-  CircleCheck,
-  Info,
-  X,
-} from "lucide-react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 import ReservasHeader from "./ReservasHeader";
 import ReservasStats from "./ReservasStats";
@@ -19,460 +12,343 @@ import ReservaDetalleModal from "./ReservaDetalleModal";
 import CancelarReservaModal from "./CancelarReservaModal";
 import ReservasEmptyState from "./ReservasEmptyState";
 
-import { calcularIndicadores } from "../data/reservasMock";
+import { useMisReservas } from "../hooks/useMisReservas";
+import { useSolicitarProrroga } from "../hooks/useSolicitarProrroga";
+import { useCancelarReserva } from "../hooks/useCancelarReserva";
+import { getReservasErrorMessage } from "../utils/get-reservas-error-message";
 
 import type {
   Reserva,
   FiltrosReservas,
   CancelarReservaData,
+  IndicadoresReservas,
 } from "../types";
 
 type ReservasContentProps = {
-  reservasIniciales: Reserva[];
-  fechaInicial: number;
+  reservasIniciales?: Reserva[];
+  fechaInicial?: number;
 };
 
-type ModalReserva = {
-  reservaId: number;
-  modo: "detalles" | "codigo" | "cancelar";
-} | null;
+// Calcular los indicadores según las reservas existentes
+function calcularIndicadores(
+  reservas: Reserva[],
+  ahora: number
+): IndicadoresReservas {
+  const resueltas = reservas.map((reserva) => {
+    const esActiva =
+      reserva.estado === "ACTIVA" || reserva.estado === "PENDIENTE";
+    if (
+      esActiva &&
+      new Date(reserva.fechaVencimiento).getTime() <= ahora
+    ) {
+      return "VENCIDA";
+    }
+    if (reserva.estado === "PENDIENTE") return "ACTIVA";
+    if (reserva.estado === "ENTREGADA") return "COMPLETADA";
+    if (reserva.estado === "CANCELADA_USUARIO") return "CANCELADA";
+    if (reserva.estado === "EXPIRADA") return "VENCIDA";
+    return reserva.estado;
+  });
 
-// Normalizar textos para facilitar las búsquedas
-function normalizarTexto(texto: string): string {
-  return texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
+  return {
+    total: resueltas.length,
+    activas: resueltas.filter((e) => e === "ACTIVA").length,
+    completadas: resueltas.filter((e) => e === "COMPLETADA").length,
+    canceladas: resueltas.filter((e) => e === "CANCELADA").length,
+    vencidas: resueltas.filter((e) => e === "VENCIDA").length,
+  };
 }
 
 export default function ReservasContent({
-  reservasIniciales,
   fechaInicial,
 }: ReservasContentProps) {
   const searchParams = useSearchParams();
+  const esHistorial = searchParams.get("vista") === "historial";
 
-  const esHistorial =
-    searchParams.get("vista") === "historial";
+  const [ahora, setAhora] = useState<number>(
+    () => fechaInicial ?? Date.now()
+  );
 
-  // ESTADOS PRINCIPALES
-  const [reservas, setReservas] =
-    useState<Reserva[]>(reservasIniciales);
+  const [filtros, setFiltros] = useState<FiltrosReservas>({
+    busqueda: "",
+    estado: esHistorial ? "COMPLETADA" : "TODAS",
+  });
 
-  const [ahora, setAhora] = useState(fechaInicial);
+  const [modalDetalle, setModalDetalle] = useState<{
+    reservaId: number;
+    modo: "detalles" | "codigo";
+  } | null>(null);
 
-  const [filtros, setFiltros] =
-    useState<FiltrosReservas>({
-      busqueda: "",
-      estado: "TODAS",
-    });
+  const [reservaACancelarId, setReservaACancelarId] = useState<
+    number | null
+  >(null);
 
-  const [modal, setModal] =
-    useState<ModalReserva>(null);
+  const [feedbackBanner, setFeedbackBanner] = useState<{
+    tipo: "exito" | "error";
+    mensaje: string;
+  } | null>(null);
 
-  const [mensaje, setMensaje] = useState("");
+  const {
+    data: reservas = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useMisReservas();
 
-  // ACTUALIZAR EL TIEMPO CADA 30 SEGUNDOS
+  const prorrogaMutation = useSolicitarProrroga();
+  const cancelarMutation = useCancelarReserva();
+
+  // Sincronizar pestaña cuando cambia el query param ?vista=historial
   useEffect(() => {
-    setAhora(Date.now());
+    setFiltros((prev) => ({
+      ...prev,
+      estado: esHistorial ? "COMPLETADA" : "TODAS",
+    }));
+  }, [esHistorial]);
 
+  // Actualizar referencia de tiempo periódicamente para vigilar vencimientos
+  useEffect(() => {
     const intervalo = window.setInterval(() => {
       setAhora(Date.now());
-    }, 30000);
+    }, 60_000);
 
     return () => window.clearInterval(intervalo);
   }, []);
 
-  // RESTABLECER LOS FILTROS AL CAMBIAR DE VISTA
-  useEffect(() => {
-    setFiltros({
-      busqueda: "",
-      estado: "TODAS",
-    });
+  const indicadores = useMemo(
+    () => calcularIndicadores(reservas, ahora),
+    [reservas, ahora]
+  );
 
-    setModal(null);
-    setMensaje("");
-  }, [esHistorial]);
+  const reservasResueltas = useMemo(() => {
+    return reservas.map((reserva) => {
+      const esActiva =
+        reserva.estado === "ACTIVA" || reserva.estado === "PENDIENTE";
+      const vencidaPorTiempo =
+        esActiva &&
+        new Date(reserva.fechaVencimiento).getTime() <= ahora;
 
-  // OCULTAR MENSAJES AUTOMÁTICAMENTE
-  useEffect(() => {
-    if (!mensaje) return;
+      let estadoEfectivo = reserva.estado;
+      if (vencidaPorTiempo) estadoEfectivo = "VENCIDA";
+      else if (reserva.estado === "PENDIENTE") estadoEfectivo = "ACTIVA";
+      else if (reserva.estado === "ENTREGADA") estadoEfectivo = "COMPLETADA";
+      else if (reserva.estado === "CANCELADA_USUARIO")
+        estadoEfectivo = "CANCELADA";
+      else if (reserva.estado === "EXPIRADA") estadoEfectivo = "VENCIDA";
 
-    const temporizador = window.setTimeout(() => {
-      setMensaje("");
-    }, 5000);
-
-    return () =>
-      window.clearTimeout(temporizador);
-  }, [mensaje]);
-
-  // ACTUALIZAR LOS ESTADOS SEGÚN EL VENCIMIENTO
-  const reservasActualizadas = useMemo(() => {
-    return reservas.map((reserva): Reserva => {
-      const vencimiento = new Date(
-        reserva.fechaVencimiento
-      ).getTime();
-
-      if (
-        reserva.estado === "ACTIVA" &&
-        vencimiento <= ahora
-      ) {
-        return {
-          ...reserva,
-          estado: "VENCIDA",
-        };
-      }
-
-      return reserva;
+      return {
+        ...reserva,
+        estado: estadoEfectivo,
+      };
     });
   }, [reservas, ahora]);
 
-  // INDICADORES GENERALES
-  const indicadores = useMemo(() => {
-    return calcularIndicadores(
-      reservasActualizadas
-    );
-  }, [reservasActualizadas]);
-
-  // RESERVAS SEGÚN LA VISTA ACTUAL
-  const reservasVista = useMemo(() => {
-    if (esHistorial) {
-      return reservasActualizadas.filter(
-        (reserva) => reserva.estado !== "ACTIVA"
-      );
-    }
-
-    return reservasActualizadas;
-  }, [reservasActualizadas, esHistorial]);
-
-  // INDICADORES DE LOS FILTROS
-  const indicadoresVista = useMemo(() => {
-    return calcularIndicadores(reservasVista);
-  }, [reservasVista]);
-
-  // BÚSQUEDA Y FILTRADO
   const reservasFiltradas = useMemo(() => {
-    const busqueda = normalizarTexto(
-      filtros.busqueda
+    const texto = filtros.busqueda.trim().toLocaleLowerCase("es");
+
+    return reservasResueltas.filter((reserva) => {
+      const coincideEstado =
+        filtros.estado === "TODAS" || reserva.estado === filtros.estado;
+
+      if (!coincideEstado) return false;
+      if (!texto) return true;
+
+      const nombreMed =
+        reserva.medicamento.nombre.toLocaleLowerCase("es");
+      const codigo = reserva.codigo.toLocaleLowerCase("es");
+      const beneficiario =
+        reserva.beneficiario.nombreCompleto.toLocaleLowerCase("es");
+
+      return (
+        nombreMed.includes(texto) ||
+        codigo.includes(texto) ||
+        beneficiario.includes(texto)
+      );
+    });
+  }, [reservasResueltas, filtros]);
+
+  const reservaDetalleActual: Reserva | null = useMemo(() => {
+    if (!modalDetalle) return null;
+    return (
+      reservasResueltas.find((r) => r.id === modalDetalle.reservaId) ?? null
     );
+  }, [modalDetalle, reservasResueltas]);
 
-    return reservasVista
-      .filter((reserva) => {
-        const informacion = normalizarTexto(
-          [
-            reserva.medicamento.nombre,
-            reserva.medicamento.concentracion,
-            reserva.codigo,
-            reserva.sede.nombre,
-            reserva.beneficiario.nombreCompleto,
-          ].join(" ")
-        );
+  const reservaCancelarActual: Reserva | null = useMemo(() => {
+    if (reservaACancelarId === null) return null;
+    return (
+      reservasResueltas.find((r) => r.id === reservaACancelarId) ?? null
+    );
+  }, [reservaACancelarId, reservasResueltas]);
 
-        const coincideBusqueda =
-          !busqueda ||
-          informacion.includes(busqueda);
+  async function manejarSolicitarProrroga(reserva: Reserva) {
+    setFeedbackBanner(null);
 
-        const coincideEstado =
-          filtros.estado === "TODAS" ||
-          reserva.estado === filtros.estado;
-
-        return (
-          coincideBusqueda &&
-          coincideEstado
-        );
-      })
-      .sort((a, b) => {
-        // Mostrar primero las reservas activas
-        if (
-          a.estado === "ACTIVA" &&
-          b.estado !== "ACTIVA"
-        ) {
-          return -1;
-        }
-
-        if (
-          a.estado !== "ACTIVA" &&
-          b.estado === "ACTIVA"
-        ) {
-          return 1;
-        }
-
-        // Ordenar de la más reciente a la más antigua
-        return (
-          new Date(b.fechaCreacion).getTime() -
-          new Date(a.fechaCreacion).getTime()
-        );
+    try {
+      await prorrogaMutation.mutateAsync(reserva.id);
+      setFeedbackBanner({
+        tipo: "exito",
+        mensaje: `Se aplicó una prórroga de 24 horas a la reserva ${reserva.codigo}.`,
       });
-  }, [reservasVista, filtros]);
-
-  // IDENTIFICAR SI HAY FILTROS ACTIVOS
-  const hayFiltros =
-    filtros.busqueda.trim() !== "" ||
-    filtros.estado !== "TODAS";
-
-  // OBTENER LA RESERVA SELECCIONADA
-  const reservaSeleccionada = modal
-    ? reservasActualizadas.find(
-        (reserva) =>
-          reserva.id === modal.reservaId
-      )
-    : undefined;
-
-  // LIMPIAR FILTROS
-  function limpiarFiltros() {
-    setFiltros({
-      busqueda: "",
-      estado: "TODAS",
-    });
-  }
-
-  // ABRIR MODAL DE DETALLES
-  function verDetalles(reserva: Reserva) {
-    setModal({
-      reservaId: reserva.id,
-      modo: "detalles",
-    });
-  }
-
-  // ABRIR MODAL DEL CÓDIGO
-  function verCodigo(reserva: Reserva) {
-    setModal({
-      reservaId: reserva.id,
-      modo: "codigo",
-    });
-  }
-
-  // ABRIR MODAL DE CANCELACIÓN
-  function cancelarReserva(reserva: Reserva) {
-    setModal({
-      reservaId: reserva.id,
-      modo: "cancelar",
-    });
-  }
-
-  // CERRAR MODALES
-  function cerrarModal() {
-    setModal(null);
-  }
-
-  // CONFIRMAR CANCELACIÓN SIMULADA
-  function confirmarCancelacion(
-    datos: CancelarReservaData
-  ) {
-    const momentoActual = Date.now();
-
-    const reserva = reservas.find(
-      (item) => item.id === datos.reservaId
-    );
-
-    if (!reserva) return;
-
-    const fechaRetiro = new Date(
-      reserva.fechaRetiro
-    ).getTime();
-
-    const fechaVencimiento = new Date(
-      reserva.fechaVencimiento
-    ).getTime();
-
-    // Validar nuevamente las reglas de negocio
-    const puedeCancelar =
-      reserva.estado === "ACTIVA" &&
-      fechaVencimiento > momentoActual &&
-      fechaRetiro - momentoActual >=
-        60 * 60 * 1000;
-
-    if (!puedeCancelar) {
-      setAhora(momentoActual);
-      return;
+    } catch (err) {
+      setFeedbackBanner({
+        tipo: "error",
+        mensaje: getReservasErrorMessage(
+          err,
+          "No se pudo solicitar la prórroga para esta reserva."
+        ),
+      });
     }
-
-    // Actualizar la reserva
-    setReservas((anteriores) =>
-      anteriores.map((item): Reserva =>
-        item.id === datos.reservaId
-          ? {
-              ...item,
-              estado: "CANCELADA",
-              fechaCancelacion:
-                new Date(
-                  momentoActual
-                ).toISOString(),
-              motivoCancelacion: datos.motivo,
-            }
-          : item
-      )
-    );
-
-    setAhora(momentoActual);
-
-    // Mostrar todas las reservas después de cancelar
-    limpiarFiltros();
-
-    cerrarModal();
-
-    setMensaje(
-      `La reserva ${reserva.codigo} fue cancelada correctamente en la demostración.`
-    );
   }
+
+  async function manejarConfirmarCancelacion(datos: CancelarReservaData) {
+    setFeedbackBanner(null);
+
+    try {
+      await cancelarMutation.mutateAsync(datos.reservaId);
+      setReservaACancelarId(null);
+      setFeedbackBanner({
+        tipo: "exito",
+        mensaje:
+          "Reserva cancelada correctamente. La unidad volvió al stock disponible.",
+      });
+    } catch {
+      // El error también queda disponible dentro del modal mediante cancelarMutation.error
+    }
+  }
+
+  const hayFiltros =
+    filtros.busqueda.trim() !== "" || filtros.estado !== "TODAS";
 
   return (
-<div className="min-w-0 space-y-3 p-3">
-      {/* ENCABEZADO PRINCIPAL */}
+    <div className="space-y-5">
       <ReservasHeader />
 
-      {/* INDICADORES GENERALES */}
-      <ReservasStats
-        indicadores={indicadores}
-      />
-
-      {/* MENSAJE DE CONFIRMACIÓN */}
-      {mensaje && (
+      {feedbackBanner && (
         <div
-          role="status"
-          className="flex items-start gap-3 rounded-2xl border border-[#CDEDDD] bg-[#E6F7EF] p-4"
+          role={feedbackBanner.tipo === "error" ? "alert" : "status"}
+          className={`rounded-2xl border px-4 py-3 text-xs font-semibold ${
+            feedbackBanner.tipo === "error"
+              ? "border-[#FADADA] bg-[#FEECEC] text-[#B91C1C]"
+              : "border-[#CDEDDD] bg-[#E6F7EF] text-[#047857]"
+          }`}
         >
-          <CircleCheck
-            size={23}
-            className="mt-0.5 shrink-0 text-[#059669]"
-            aria-hidden="true"
-          />
-
-          <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-bold text-[#047857]">
-              Cancelación exitosa
-            </h3>
-
-            <p className="mt-1 text-sm text-[#047857]">
-              {mensaje}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setMensaje("")}
-            aria-label="Cerrar notificación"
-            className="cursor-pointer rounded-lg p-1 text-[#047857] transition-colors hover:bg-[#CDEDDD]"
-          >
-            <X size={19} aria-hidden="true" />
-          </button>
+          {feedbackBanner.mensaje}
         </div>
       )}
 
-      {/* BÚSQUEDA Y FILTROS */}
+      <ReservasStats indicadores={indicadores} />
+
       <ReservasFilters
         filtros={filtros}
-        indicadores={indicadoresVista}
+        indicadores={indicadores}
         onChange={setFiltros}
       />
 
-      {/* ENCABEZADO DE RESULTADOS */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-
-        <div className="flex items-center gap-2.5">
-
-          {esHistorial ? (
-            <History
-              size={21}
-              className="text-[#0755D8]"
-              aria-hidden="true"
+      {isLoading ? (
+        <div className="space-y-4">
+          {[0, 1, 2].map((item) => (
+            <div
+              key={item}
+              className="h-[150px] animate-pulse rounded-[20px] border border-[#E0E8F3] bg-white p-5"
             />
-          ) : (
-            <CalendarDays
-              size={21}
-              className="text-[#0755D8]"
-              aria-hidden="true"
-            />
-          )}
-
-          <h2 className="text-base font-bold text-[#14285B]">
-            {esHistorial
-              ? "Historial de reservas"
-              : "Listado de reservas"}
-          </h2>
+          ))}
         </div>
-
-        <p
-          aria-live="polite"
-          className="text-xs font-medium text-[#64748B]"
-        >
-          Mostrando {reservasFiltradas.length} de{" "}
-          {reservasVista.length} reservas
-        </p>
-      </div>
-
-      {/* LISTADO DE RESERVAS */}
-      {reservasFiltradas.length > 0 ? (
-        <section
-          aria-label={
-            esHistorial
-              ? "Historial de reservas"
-              : "Listado de reservas"
+      ) : isError ? (
+        <div className="rounded-[20px] border border-[#FADADA] bg-[#FFF8F8] px-5 py-10 text-center">
+          <AlertCircle
+            size={34}
+            className="mx-auto text-[#DC2626]"
+            aria-hidden="true"
+          />
+          <h2 className="mt-3 text-base font-bold text-[#14285B]">
+            No pudimos cargar tus reservas
+          </h2>
+          <p className="mx-auto mt-1.5 max-w-md text-xs text-[#64748B]">
+            {getReservasErrorMessage(error)}
+          </p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#0755D8] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#0646B3]"
+          >
+            <RefreshCw size={15} aria-hidden="true" />
+            Reintentar
+          </button>
+        </div>
+      ) : reservasFiltradas.length === 0 ? (
+        <ReservasEmptyState
+          hayFiltros={hayFiltros}
+          esHistorial={esHistorial}
+          onLimpiarFiltros={() =>
+            setFiltros({
+              busqueda: "",
+              estado: "TODAS",
+            })
           }
-          className="space-y-3"
+        />
+      ) : (
+        <section
+          aria-label="Listado de reservas"
+          className="space-y-4"
         >
           {reservasFiltradas.map((reserva) => (
             <ReservaCard
               key={reserva.id}
               reserva={reserva}
               ahora={ahora}
-              onVerDetalles={verDetalles}
-              onVerCodigo={verCodigo}
-              onCancelar={cancelarReserva}
+              onVerDetalles={(item) =>
+                setModalDetalle({ reservaId: item.id, modo: "detalles" })
+              }
+              onVerCodigo={(item) =>
+                setModalDetalle({ reservaId: item.id, modo: "codigo" })
+              }
+              onSolicitarProrroga={manejarSolicitarProrroga}
+              prorrogaEnCursoId={
+                prorrogaMutation.isPending
+                  ? (prorrogaMutation.variables ?? null)
+                  : null
+              }
+              onCancelar={(item) => {
+                cancelarMutation.reset();
+                setReservaACancelarId(item.id);
+              }}
             />
           ))}
         </section>
-      ) : (
-        <ReservasEmptyState
-          hayFiltros={hayFiltros}
-          esHistorial={esHistorial}
-          onLimpiarFiltros={limpiarFiltros}
+      )}
+
+      {modalDetalle && reservaDetalleActual && (
+        <ReservaDetalleModal
+          reserva={reservaDetalleActual}
+          modo={modalDetalle.modo}
+          ahora={ahora}
+          onCerrar={() => setModalDetalle(null)}
         />
       )}
 
-      {/* AVISO INFORMATIVO */}
-      <div className="flex items-start gap-2.5 rounded-xl border border-[#D6E5FF] bg-[#F0F6FF] p-3.5">
-
-        <Info
-          size={18}
-          className="mt-0.5 shrink-0 text-[#0755D8]"
-          aria-hidden="true"
+      {reservaCancelarActual && (
+        <CancelarReservaModal
+          reserva={reservaCancelarActual}
+          ahora={ahora}
+          isSubmitting={cancelarMutation.isPending}
+          errorExterno={
+            cancelarMutation.isError
+              ? getReservasErrorMessage(
+                  cancelarMutation.error,
+                  "No se pudo cancelar la reserva."
+                )
+              : null
+          }
+          onCerrar={() => {
+            if (!cancelarMutation.isPending) {
+              setReservaACancelarId(null);
+            }
+          }}
+          onConfirmar={manejarConfirmarCancelacion}
         />
-
-        <p className="text-xs leading-relaxed text-[#475569]">
-          Recuerda que las reservas tienen un plazo
-          máximo de cinco días hábiles y únicamente
-          pueden cancelarse con mínimo una hora de
-          anticipación al retiro programado.
-          Actualmente estás visualizando datos
-          simulados.
-        </p>
-      </div>
-
-      {/* MODAL DE DETALLES O CÓDIGO */}
-      {modal &&
-        reservaSeleccionada &&
-        modal.modo !== "cancelar" && (
-          <ReservaDetalleModal
-            key={`${modal.reservaId}-${modal.modo}`}
-            reserva={reservaSeleccionada}
-            modo={modal.modo}
-            ahora={ahora}
-            onCerrar={cerrarModal}
-          />
-        )}
-
-      {/* MODAL DE CANCELACIÓN */}
-      {modal?.modo === "cancelar" &&
-        reservaSeleccionada && (
-          <CancelarReservaModal
-            key={modal.reservaId}
-            reserva={reservaSeleccionada}
-            ahora={ahora}
-            onCerrar={cerrarModal}
-            onConfirmar={confirmarCancelacion}
-          />
-        )}
+      )}
     </div>
   );
 }

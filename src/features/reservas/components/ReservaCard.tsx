@@ -11,6 +11,7 @@ import {
   CircleX,
   PackageCheck,
   Hash,
+  CalendarPlus,
 } from "lucide-react";
 
 import ReservaStatusBadge from "./ReservaStatusBadge";
@@ -21,6 +22,8 @@ type ReservaCardProps = {
   ahora: number;
   onVerDetalles: (reserva: Reserva) => void;
   onVerCodigo: (reserva: Reserva) => void;
+  onSolicitarProrroga?: (reserva: Reserva) => void;
+  prorrogaEnCursoId?: number | null;
   onCancelar: (reserva: Reserva) => void;
 };
 
@@ -70,14 +73,12 @@ export default function ReservaCard({
   ahora,
   onVerDetalles,
   onVerCodigo,
+  onSolicitarProrroga,
+  prorrogaEnCursoId,
   onCancelar,
 }: ReservaCardProps) {
   const fechaVencimiento = new Date(
     reserva.fechaVencimiento
-  ).getTime();
-
-  const fechaRetiro = new Date(
-    reserva.fechaRetiro
   ).getTime();
 
   const estado =
@@ -88,9 +89,18 @@ export default function ReservaCard({
 
   const esActiva = estado === "ACTIVA";
 
-  // Permitir cancelar con mínimo una hora de anticipación
+  // Permitir cancelar con mínimo una hora de anticipación al vencimiento del plazo
   const puedeCancelar =
-    esActiva && fechaRetiro - ahora >= 60 * 60 * 1000;
+    esActiva && fechaVencimiento - ahora >= 60 * 60 * 1000;
+
+  // Permitir prórroga de 24h si está activa, no ha vencido y no se ha usado antes
+  const puedeSolicitarProrroga =
+    esActiva &&
+    !reserva.prorrogaSolicitada &&
+    fechaVencimiento > ahora &&
+    Boolean(onSolicitarProrroga);
+
+  const solicitandoProrroga = prorrogaEnCursoId === reserva.id;
 
   const tiempoRestante = calcularTiempoRestante(
     reserva.fechaVencimiento,
@@ -201,11 +211,11 @@ export default function ReservaCard({
 
                 <div>
                   <p className="text-[11px] text-[#64748B]">
-                    Fecha de retiro
+                    Fecha límite de retiro
                   </p>
 
                   <p className="text-xs font-semibold text-[#14285B]">
-                    {formatearFecha(reserva.fechaRetiro)}
+                    {formatearFecha(reserva.fechaVencimiento)}
                   </p>
                 </div>
               </div>
@@ -221,6 +231,12 @@ export default function ReservaCard({
 
                 {tiempoRestante}
               </div>
+
+              {reserva.prorrogaSolicitada && (
+                <p className="text-[11px] font-semibold text-[#0755D8]">
+                  Prórroga de 24h aplicada
+                </p>
+              )}
             </>
           )}
 
@@ -293,7 +309,7 @@ export default function ReservaCard({
         </div>
 
         {/* BOTONES DE ACCIÓN */}
-        <div className="flex flex-wrap gap-2 border-t border-[#E8EDF5] pt-3 xl:min-w-[135px] xl:flex-col xl:border-t-0 xl:pt-0">
+        <div className="flex flex-wrap gap-2 border-t border-[#E8EDF5] pt-3 xl:min-w-[155px] xl:flex-col xl:border-t-0 xl:pt-0">
 
           {/* Ver código */}
           {esActiva && (
@@ -305,6 +321,29 @@ export default function ReservaCard({
               <QrCode size={16} aria-hidden="true" />
 
               Ver código
+            </button>
+          )}
+
+          {/* Solicitar prórroga (24h, máximo 1 vez) */}
+          {esActiva && onSolicitarProrroga && (
+            <button
+              type="button"
+              disabled={!puedeSolicitarProrroga || solicitandoProrroga}
+              onClick={() => onSolicitarProrroga(reserva)}
+              title={
+                reserva.prorrogaSolicitada
+                  ? "Ya utilizaste la prórroga única de 24 horas"
+                  : "Extender plazo de retiro por 24 horas"
+              }
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#C7DAF7] bg-[#F5F9FF] px-3.5 py-2.5 text-xs font-semibold text-[#0755D8] transition-colors hover:bg-[#E8F1FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0755D8] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <CalendarPlus size={16} aria-hidden="true" />
+
+              {solicitandoProrroga
+                ? "Solicitando..."
+                : reserva.prorrogaSolicitada
+                  ? "Prórroga usada"
+                  : "Solicitar prórroga"}
             </button>
           )}
 
@@ -328,7 +367,7 @@ export default function ReservaCard({
               title={
                 puedeCancelar
                   ? "Cancelar esta reserva"
-                  : "Solo puedes cancelar con mínimo una hora de anticipación al retiro"
+                  : "Solo puedes cancelar con mínimo una hora de anticipación al vencimiento"
               }
               className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-[#DC2626] transition-colors hover:bg-[#FEECEC] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#DC2626] disabled:cursor-not-allowed disabled:text-[#94A3B8] disabled:hover:bg-transparent"
             >
