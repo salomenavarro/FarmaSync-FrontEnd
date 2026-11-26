@@ -65,6 +65,8 @@ function mapearMedicamentoYStock(raw: MedicamentoApiResponse): {
         ciudad: inv.sede.ciudad ?? "Medellín",
         zona: inv.sede.zona ?? "General",
         direccion: inv.sede.direccion ?? "",
+        latitud: inv.sede.latitud ?? null,
+        longitud: inv.sede.longitud ?? null,
         distanciaKm: inv.distanciaKm,
       });
     }
