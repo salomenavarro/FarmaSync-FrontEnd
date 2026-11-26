@@ -39,6 +39,8 @@ export interface ConsultaCatalogoParams {
   sedeId?: string;
   ciudad?: string;
   zona?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface CatalogoConsultaResultado {
@@ -116,6 +118,12 @@ export const catalogoService = {
     }
     if (params?.zona?.trim()) {
       queryParams.zona = params.zona.trim();
+    }
+    if (params?.lat !== undefined) {
+      queryParams.lat = String(params.lat);
+    }
+    if (params?.lng !== undefined) {
+      queryParams.lng = String(params.lng);
     }
 
     const response = await apiClient.get<MedicamentoApiResponse[]>(

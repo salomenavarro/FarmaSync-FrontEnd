@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useMemo, useState,useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 import {
@@ -56,6 +56,29 @@ function CatalogoContent() {
   const [sedeDetalle, setSedeDetalle] =
     useState<SedeFarmacia | null>(null);
 
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("geolocation" in navigator)) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoords({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      () => {
+        setCoords(null);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 8000,
+        maximumAge: 300000,
+      },
+    );
+  }, []);
+
   const [reservaModal, setReservaModal] = useState<{
     medicamento: Medicamento;
     sede: SedeFarmacia;
@@ -76,6 +99,8 @@ function CatalogoContent() {
   // disponibles todas las opciones en los selectores de Sede y Ciudad/Zona.
   const { data: catalogoBase } = useMedicamentos({
     search: busqueda.trim() || undefined,
+    lat: coords?.lat,
+    lng: coords?.lng,
   });
 
   const {
@@ -89,6 +114,8 @@ function CatalogoContent() {
     sedeId: filtros.sedeId || undefined,
     ciudad: ciudadFiltro,
     zona: zonaFiltro,
+    lat: coords?.lat,
+    lng: coords?.lng,
   });
 
   const todasLasSedes = catalogoBase?.sedes?.length
@@ -153,14 +180,14 @@ function CatalogoContent() {
   // ========================================
 
   const resultados = useMemo(() => {
-    return medicamentosFiltrados.flatMap((medicamento) =>
-      sedesFiltradas.map((sede) => ({
+    return sedesFiltradas.flatMap((sede) =>
+      medicamentosFiltrados.map((medicamento) => ({
         medicamento,
         sede,
       }))
     );
   }, [medicamentosFiltrados, sedesFiltradas]);
-
+  
   const abrirDetalle = (
     medicamento: Medicamento,
     sede: SedeFarmacia
