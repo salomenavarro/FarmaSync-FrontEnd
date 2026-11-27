@@ -1,8 +1,17 @@
 "use client";
 
-import { MapPin, Pill, ArrowRight, Package, BookmarkPlus } from "lucide-react";
+import {
+  MapPin,
+  Pill,
+  ArrowRight,
+  Package,
+  Heart,
+} from "lucide-react";
+
 import type { Medicamento, SedeFarmacia } from "../types";
 import StockBadge from "./StockBadge";
+
+import { useMedicamentosGuardados } from "@/features/mis-medicamentos/hooks/useMedicamentosGuardados";
 
 interface MedicamentoCardProps {
   medicamento: Medicamento;
@@ -17,6 +26,21 @@ export default function MedicamentoCard({
   onVerDisponibilidad,
   onReservar,
 }: MedicamentoCardProps) {
+
+  // FAVORITOS POR MEDICAMENTO Y SEDE
+
+  const {
+    estaGuardado,
+    alternarMedicamento,
+  } = useMedicamentosGuardados();
+
+  const guardado = estaGuardado(
+    medicamento.id,
+    sede.id
+  );
+
+  // DISPONIBILIDAD DE STOCK
+
   const stock = medicamento.stockPorSede.find(
     (item) => item.sedeId === sede.id
   );
@@ -36,6 +60,7 @@ export default function MedicamentoCard({
       "
     >
       {/* ENCABEZADO */}
+
       <div className="flex items-start gap-3">
         <div
           className="
@@ -59,15 +84,62 @@ export default function MedicamentoCard({
           </p>
         </div>
 
+        {/* BOTÓN DE FAVORITOS POR SEDE */}
+
+        <button
+          type="button"
+          onClick={() =>
+            alternarMedicamento(
+              medicamento.id,
+              sede.id
+            )
+          }
+          aria-pressed={guardado}
+          aria-label={`Favorito: ${medicamento.nombreGenerico}, ${medicamento.concentracion}, ${sede.nombre}`}
+          title={
+            guardado
+              ? "Eliminar de favoritos"
+              : "Guardar en favoritos"
+          }
+          className={`
+            flex h-9 w-9 shrink-0
+            items-center justify-center
+            rounded-[12px]
+            transition-all duration-200
+            active:scale-95
+            focus-visible:outline-2
+            focus-visible:outline-offset-2
+            focus-visible:outline-[#0755D8]
+            ${
+              guardado
+                ? "bg-[#FEECEC] text-[#DC2626] hover:bg-[#FADADA]"
+                : "bg-[#F5F9FF] text-[#71829B] hover:bg-[#FEECEC] hover:text-[#DC2626]"
+            }
+          `}
+        >
+          <Heart
+            size={19}
+            strokeWidth={1.8}
+            fill={guardado ? "currentColor" : "none"}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+
+      {/* ESTADO DE DISPONIBILIDAD */}
+
+      <div className="mt-3">
         <StockBadge cantidad={cantidad} />
       </div>
 
       {/* DESCRIPCIÓN */}
+
       <p className="mt-3 text-[12px] leading-relaxed text-[#62748E]">
         {medicamento.descripcion}
       </p>
 
       {/* INFORMACIÓN DE LA SEDE */}
+
       <div
         className="
           mt-4 rounded-[14px]
@@ -76,7 +148,10 @@ export default function MedicamentoCard({
         "
       >
         <div className="flex items-center gap-2">
-          <MapPin size={15} className="shrink-0 text-[#0876E9]" />
+          <MapPin
+            size={15}
+            className="shrink-0 text-[#0876E9]"
+          />
 
           <span className="text-[12px] font-bold text-[#14285B]">
             {sede.nombre}
@@ -89,7 +164,10 @@ export default function MedicamentoCard({
 
         <div className="mt-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Package size={15} className="text-[#0876E9]" />
+            <Package
+              size={15}
+              className="text-[#0876E9]"
+            />
 
             <span className="text-[11px] text-[#62748E]">
               Stock disponible
@@ -103,6 +181,7 @@ export default function MedicamentoCard({
       </div>
 
       {/* MENSAJE DE DISPONIBILIDAD LIMITADA */}
+
       {cantidad > 0 && cantidad <= 15 && (
         <p className="mt-3 text-[11px] font-semibold text-[#A96508]">
           Quedan pocas unidades en esta sede. ¡Reserva pronto!
@@ -110,6 +189,7 @@ export default function MedicamentoCard({
       )}
 
       {/* MENSAJE DE AGOTADO */}
+
       {cantidad === 0 && (
         <p className="mt-3 text-[11px] font-semibold text-[#D13438]">
           No hay unidades disponibles en esta sede.
@@ -117,28 +197,8 @@ export default function MedicamentoCard({
       )}
 
       {/* ACCIÓN */}
-      <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row">
-        {cantidad > 0 && onReservar && (
-          <button
-            type="button"
-            onClick={() => onReservar(medicamento, sede)}
-            className="
-              flex flex-1 items-center justify-center gap-2
-              rounded-[12px]
-              bg-[#0755D8] px-4 py-2.5
-              text-[12px] font-bold text-white
-              transition-colors
-              hover:bg-[#0647B6]
-              focus-visible:outline-2
-              focus-visible:outline-offset-2
-              focus-visible:outline-[#0755D8]
-            "
-          >
-            <BookmarkPlus size={15} />
-            Reservar
-          </button>
-        )}
 
+      <div className="mt-auto pt-4">
         <button
           type="button"
           onClick={() => onVerDisponibilidad?.(medicamento)}
@@ -161,6 +221,7 @@ export default function MedicamentoCard({
           `}
         >
           Ver disponibilidad
+
           <ArrowRight size={15} />
         </button>
       </div>

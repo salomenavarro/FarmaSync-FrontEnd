@@ -8,7 +8,6 @@ import { Inter } from "next/font/google";
 import {
   Bell,
   CalendarDays,
-  Clock,
   Headphones,
   Home,
   Pill,
@@ -71,18 +70,13 @@ const MAIN_NAV: NavItem[] = [
     icon: CalendarDays,
   },
   {
-    href: "/reservas?vista=historial",
-    label: "Historial de reservas",
-    icon: Clock,
-  },
-  {
     href: "/medicamentos?vista=guardados",
     label: "Mis medicamentos",
     icon: Pill,
   },
   {
     href: "/notificaciones",
-    label: "Recordatorios",
+    label: "Notificaciones",
     icon: Bell,
   },
   {
@@ -434,12 +428,7 @@ function Sidebar({ name }: { name: string }) {
 // ========================================
 
 function MobileBar() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const currentUrl = searchParams.toString()
-    ? `${pathname}?${searchParams.toString()}`
-    : pathname;
+  const { isActive } = useActiveNavigation();
 
   return (
     <header
@@ -482,12 +471,7 @@ function MobileBar() {
         <ul className="flex gap-2 overflow-x-auto pb-1">
           {[...MAIN_NAV, ...ACCOUNT_NAV].map(
             ({ href, label, icon: Icon }) => {
-              const active =
-                currentUrl === href ||
-                (href === "/dashboard/grupo-familiar" &&
-                  pathname.startsWith(
-                    "/dashboard/grupo-familiar/"
-                  ));
+              const active = isActive(href);
 
               return (
                 <li key={href} className="shrink-0">
