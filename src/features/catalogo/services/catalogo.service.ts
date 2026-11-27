@@ -39,6 +39,8 @@ export interface ConsultaCatalogoParams {
   sedeId?: string;
   ciudad?: string;
   zona?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface CatalogoConsultaResultado {
@@ -63,6 +65,8 @@ function mapearMedicamentoYStock(raw: MedicamentoApiResponse): {
         ciudad: inv.sede.ciudad ?? "Medellín",
         zona: inv.sede.zona ?? "General",
         direccion: inv.sede.direccion ?? "",
+        latitud: inv.sede.latitud ?? null,
+        longitud: inv.sede.longitud ?? null,
         distanciaKm: inv.distanciaKm,
       });
     }
@@ -116,6 +120,12 @@ export const catalogoService = {
     }
     if (params?.zona?.trim()) {
       queryParams.zona = params.zona.trim();
+    }
+    if (params?.lat !== undefined) {
+      queryParams.lat = String(params.lat);
+    }
+    if (params?.lng !== undefined) {
+      queryParams.lng = String(params.lng);
     }
 
     const response = await apiClient.get<MedicamentoApiResponse[]>(

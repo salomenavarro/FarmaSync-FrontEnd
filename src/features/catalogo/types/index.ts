@@ -9,6 +9,8 @@ export interface SedeFarmacia {
   ciudad: string;
   zona: string;
   direccion: string;
+  latitud?: number | null;
+  longitud?: number | null;
   distanciaKm?: number;
 }
 

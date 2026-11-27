@@ -8,6 +8,8 @@ export const catalogoKeys = {
     sedeId?: string;
     ciudad?: string;
     zona?: string;
+    lat?: number;
+    lng?: number;
   }) => [...catalogoKeys.all, "medicamentos", params ?? {}] as const,
   alertas: () => [...catalogoKeys.all, "alertas"] as const,
 };
