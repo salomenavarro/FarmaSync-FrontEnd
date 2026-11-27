@@ -4,15 +4,44 @@ import { useCallback, useSyncExternalStore } from "react";
 import type { MedicamentoGuardado } from "../types";
 
 // =========================================================
-// ESTADO COMPARTIDO
+// ESTADO COMPARTIDO Y PERSISTENCIA LOCAL
 // =========================================================
 
+const STORAGE_KEY = "farmasync_medicamentos_guardados";
 const ESTADO_INICIAL: MedicamentoGuardado[] = [];
 
 let medicamentosGuardados: MedicamentoGuardado[] =
-  ESTADO_INICIAL;
+  leerDesdeStorage();
 
 const listeners = new Set<() => void>();
+
+function leerDesdeStorage(): MedicamentoGuardado[] {
+  if (typeof window === "undefined") {
+    return ESTADO_INICIAL;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return ESTADO_INICIAL;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : ESTADO_INICIAL;
+  } catch {
+    return ESTADO_INICIAL;
+  }
+}
+
+function guardarEnStorage(items: MedicamentoGuardado[]) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(items)
+    );
+  } catch {
+    // Evita fallos si el almacenamiento está lleno o bloqueado
+  }
+}
 
 // =========================================================
 // SUSCRIPCIÓN AL ESTADO
@@ -38,6 +67,7 @@ function actualizarEstado(
   nuevoEstado: MedicamentoGuardado[]
 ) {
   medicamentosGuardados = nuevoEstado;
+  guardarEnStorage(nuevoEstado);
 
   listeners.forEach((listener) => listener());
 }
@@ -47,20 +77,14 @@ function actualizarEstado(
 // =========================================================
 
 export function useMedicamentosGuardados() {
-
   const guardados = useSyncExternalStore(
     suscribir,
     obtenerEstado,
     obtenerEstadoServidor
   );
 
-  // =======================================================
-  // GUARDAR MEDICAMENTO POR SEDE
-  // =======================================================
-
   const guardarMedicamento = useCallback(
     (medicamentoId: string, sedeId: string) => {
-
       const existe = medicamentosGuardados.some(
         (item) =>
           item.medicamentoId === medicamentoId &&
@@ -83,13 +107,8 @@ export function useMedicamentosGuardados() {
     []
   );
 
-  // =======================================================
-  // ELIMINAR MEDICAMENTO POR SEDE
-  // =======================================================
-
   const eliminarMedicamento = useCallback(
     (medicamentoId: string, sedeId: string) => {
-
       actualizarEstado(
         medicamentosGuardados.filter(
           (item) =>
@@ -103,13 +122,8 @@ export function useMedicamentosGuardados() {
     []
   );
 
-  // =======================================================
-  // VERIFICAR SI ESTÁ GUARDADO
-  // =======================================================
-
   const estaGuardado = useCallback(
     (medicamentoId: string, sedeId: string) => {
-
       return guardados.some(
         (item) =>
           item.medicamentoId === medicamentoId &&
@@ -119,13 +133,8 @@ export function useMedicamentosGuardados() {
     [guardados]
   );
 
-  // =======================================================
-  // ALTERNAR FAVORITO
-  // =======================================================
-
   const alternarMedicamento = useCallback(
     (medicamentoId: string, sedeId: string) => {
-
       const existe = medicamentosGuardados.some(
         (item) =>
           item.medicamentoId === medicamentoId &&
@@ -140,10 +149,6 @@ export function useMedicamentosGuardados() {
     },
     [eliminarMedicamento, guardarMedicamento]
   );
-
-  // =======================================================
-  // RETORNAR FUNCIONALIDADES
-  // =======================================================
 
   return {
     guardados,

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleCheck, Info, X } from "lucide-react";
-
+import { catalogoService } from "@/features/catalogo/services/catalogo.service";
 import { obtenerEstadoStock } from "@/features/catalogo/types";
 
 import type {
@@ -93,7 +93,7 @@ export default function MisMedicamentosContent({
   const [mensaje, setMensaje] =
     useState<string | null>(null);
 
-  // =======================================================
+// =======================================================
   // OBTENER MEDICAMENTOS GUARDADOS POR SEDE
   // =======================================================
 
@@ -123,36 +123,12 @@ export default function MisMedicamentosContent({
       const estadoGeneral =
         obtenerEstadoStock(cantidad);
 
-      // DISPONIBILIDAD EN TODAS LAS SEDES
-
-      const disponibilidad = sedes
-        .map((sedeDisponible) => {
-
-          const cantidadDisponible =
-            medicamento.stockPorSede.find(
-              (stock) =>
-                stock.sedeId === sedeDisponible.id
-            )?.cantidad ?? 0;
-
-          return {
-            sede: sedeDisponible,
-            cantidad: cantidadDisponible,
-            estado: obtenerEstadoStock(
-              cantidadDisponible
-            ),
-          };
-        })
-        .sort(
-          (a, b) =>
-            a.sede.distanciaKm - b.sede.distanciaKm
-        );
-
       resultado.push({
         medicamento,
         sede,
         cantidad,
         fechaGuardado: guardado.fechaGuardado,
-        disponibilidad,
+        disponibilidad: [],
         estadoGeneral,
       });
     });
@@ -304,7 +280,7 @@ export default function MisMedicamentosContent({
   // ALERTA DE REABASTECIMIENTO POR SEDE
   // =======================================================
 
-  function manejarNotificar(
+  async function manejarNotificar(
     medicamentoId: string,
     sedeId: string
   ) {
@@ -328,17 +304,24 @@ export default function MisMedicamentosContent({
       return;
     }
 
-    setAlertasActivas((anteriores) =>
-      anteriores.includes(clave)
-        ? anteriores
-        : [...anteriores, clave]
-    );
+    try {
+      await catalogoService.activarAlertaStock(medicamentoId);
 
-    setMensaje(
-      `Alerta simulada registrada para ${detalle.medicamento.nombreGenerico} en ${detalle.sede.nombre}.`
-    );
+      setAlertasActivas((anteriores) =>
+        anteriores.includes(clave)
+          ? anteriores
+          : [...anteriores, clave]
+      );
+
+      setMensaje(
+        `Alerta de reabastecimiento activada para ${detalle.medicamento.nombreGenerico} en ${detalle.sede.nombre}.`
+      );
+    } catch {
+      setMensaje(
+        `No se pudo registrar la alerta para ${detalle.medicamento.nombreGenerico}. Intenta nuevamente.`
+      );
+    }
   }
-
   // =======================================================
   // INTERFAZ
   // =======================================================

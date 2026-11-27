@@ -1,14 +1,12 @@
 "use client";
 
-import { Suspense, useMemo, useState,useEffect } from "react";
+import { Suspense, useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-
 
 import {
   AlertCircle,
   ArrowLeft,
   BookmarkPlus,
-  ClipboardList,
   LayoutGrid,
   Map as MapIcon,
   PackageSearch,
@@ -32,6 +30,7 @@ import MedicamentoFilters from "./MedicamentoFilters";
 import SedesAlternativas from "./SedesAlternativas";
 import AlertaReabastecimiento from "./AlertaReabastecimiento";
 import MapaSedes from "./MapaSedes";
+import MisMedicamentosContent from "@/features/mis-medicamentos/components/MisMedicamentosContent";
 
 import BannerWaves from "@/components/layout/BannerWaves";
 import CrearReservaModal from "./CrearReservaModal";
@@ -46,13 +45,26 @@ function CatalogoContent() {
   const mostrarGuardados =
     searchParams.get("vista") === "guardados";
 
-  const [busqueda, setBusqueda] = useState("");
+  // Inicializa búsqueda y sede desde la URL (ej. al volver desde Mis medicamentos)
+  const busquedaInicial = searchParams.get("busqueda") ?? "";
+  const sedeInicial = searchParams.get("sedeId") ?? "";
+
+  const [busqueda, setBusqueda] = useState(busquedaInicial);
 
   const [filtros, setFiltros] = useState<FiltrosCatalogo>({
-    sedeId: "",
+    sedeId: sedeInicial,
     ubicacion: "",
     cercania: "cercanas",
   });
+
+  // Sincroniza si cambian los query params en la navegación
+  useEffect(() => {
+    setBusqueda(searchParams.get("busqueda") ?? "");
+    setFiltros((prev) => ({
+      ...prev,
+      sedeId: searchParams.get("sedeId") ?? "",
+    }));
+  }, [searchParams]);
 
   const [medicamentoSeleccionado, setMedicamentoSeleccionado] =
     useState<Medicamento | null>(null);
@@ -60,9 +72,8 @@ function CatalogoContent() {
   const [sedeDetalle, setSedeDetalle] =
     useState<SedeFarmacia | null>(null);
 
-
   const [vistaMapa, setVistaMapa] = useState(
-  searchParams.get("vista") === "mapa"
+    searchParams.get("vista") === "mapa"
   );
 
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -196,7 +207,7 @@ function CatalogoContent() {
       }))
     );
   }, [medicamentosFiltrados, sedesFiltradas]);
-  
+
   const abrirDetalle = (
     medicamento: Medicamento,
     sede: SedeFarmacia
@@ -245,6 +256,32 @@ function CatalogoContent() {
           (item) => item.cantidad === 0
         )));
 
+  // ========================================
+  // VISTA DE MIS MEDICAMENTOS (?vista=guardados)
+  // ========================================
+
+  if (mostrarGuardados) {
+    if (isLoading && medicamentosCatalogo.length === 0) {
+      return (
+        <div className="flex min-h-[400px] items-center justify-center bg-[#F5F9FF] p-6">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#DCE8F7] border-t-[#0755D8]" />
+            <p className="text-xs font-medium text-[#62748E]">
+              Cargando tus medicamentos guardados...
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <MisMedicamentosContent
+        medicamentos={medicamentosCatalogo}
+        sedes={todasLasSedes}
+      />
+    );
+  }
+
   return (
     <div className="min-h-full bg-[#F5F9FF] p-4 md:p-6">
       <div className="mx-auto max-w-[1450px] space-y-5">
@@ -283,9 +320,7 @@ function CatalogoContent() {
               </p>
 
               <h1 className="mt-1 text-xl font-extrabold md:text-2xl">
-                {mostrarGuardados
-                  ? "Mis medicamentos"
-                  : "Buscar medicamentos"}
+                Buscar medicamentos
               </h1>
 
               <p className="mt-1 text-[12px] text-blue-100">
@@ -296,415 +331,386 @@ function CatalogoContent() {
         </header>
 
         {/* ========================================
-            VISTA DE MIS MEDICAMENTOS
+            BUSCADOR
         ======================================== */}
 
-        {mostrarGuardados ? (
-          <section
-            className="
-              rounded-[20px] border border-[#DFE9F6]
-              bg-white p-8 text-center
-            "
-          >
-            <ClipboardList
-              size={34}
-              className="mx-auto text-[#0755D8]"
-            />
+        <section
+          className="
+            rounded-[20px] border border-[#DFE9F6]
+            bg-white p-4
+          "
+        >
+          <MedicamentoSearch
+            value={busqueda}
+            onChange={(valor) => {
+              setBusqueda(valor);
+              cerrarDetalle();
+            }}
+          />
+        </section>
 
-            <h2 className="mt-3 text-[16px] font-bold text-[#14285B]">
-              Mis medicamentos
-            </h2>
+        {/* ========================================
+            FILTROS
+        ======================================== */}
 
-            <p className="mx-auto mt-2 max-w-md text-[12px] text-[#71829B]">
-              Aquí aparecerán tus medicamentos guardados cuando
-              implementemos esa funcionalidad.
-            </p>
+        <MedicamentoFilters
+          sedes={todasLasSedes}
+          filtros={filtros}
+          onChange={(nuevosFiltros) => {
+            setFiltros(nuevosFiltros);
+            cerrarDetalle();
+          }}
+        />
+
+        {/* ========================================
+            DETALLE DEL MEDICAMENTO
+        ======================================== */}
+
+        {medicamentoActualDetalle && sedeDetalle ? (
+          <section className="space-y-4">
+            <button
+              type="button"
+              onClick={cerrarDetalle}
+              className="
+                inline-flex items-center gap-2
+                text-[12px] font-bold text-[#0755D8]
+                hover:text-[#043C9E]
+              "
+            >
+              <ArrowLeft size={16} />
+
+              Volver a los resultados
+            </button>
+
+            <div
+              className="
+                rounded-[20px] border border-[#DFE9F6]
+                bg-white p-5
+              "
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className="
+                    flex h-12 w-12 shrink-0 items-center
+                    justify-center rounded-[14px]
+                    bg-[#EAF3FF] text-[#0755D8]
+                  "
+                >
+                  <Pill size={24} />
+                </div>
+
+                <div>
+                  <h2 className="text-lg font-extrabold text-[#14285B]">
+                    {medicamentoActualDetalle.nombreGenerico}{" "}
+                    {medicamentoActualDetalle.concentracion}
+                  </h2>
+
+                  <p className="mt-1 text-[12px] text-[#71829B]">
+                    {medicamentoActualDetalle.codigo} ·{" "}
+                    {medicamentoActualDetalle.presentacion}
+                  </p>
+
+                  <p className="mt-2 text-[12px] text-[#62748E]">
+                    {medicamentoActualDetalle.descripcion}
+                  </p>
+                </div>
+              </div>
+
+              {/* INFORMACIÓN DE LA SEDE */}
+
+              <div
+                className="
+                  mt-4 rounded-[14px]
+                  border border-[#E4EDF9]
+                  bg-[#F7FAFF] p-4
+                "
+              >
+                <div className="flex items-center gap-2">
+                  <Store
+                    size={17}
+                    className="text-[#0755D8]"
+                  />
+
+                  <span className="text-[13px] font-bold text-[#14285B]">
+                    {sedeDetalle.nombre}
+                  </span>
+                </div>
+
+                <p className="mt-2 text-[12px] text-[#62748E]">
+                  {sedeDetalle.ciudad} · {sedeDetalle.zona}
+                </p>
+
+                <p className="mt-2 text-[12px] font-bold text-[#14285B]">
+                  Stock: {cantidadDetalle}{" "}
+                  {cantidadDetalle === 1
+                    ? "unidad"
+                    : "unidades"}
+                </p>
+
+                {/* DISPONIBILIDAD LIMITADA */}
+
+                {cantidadDetalle > 0 &&
+                  cantidadDetalle <= 15 && (
+                    <p className="mt-2 text-[12px] font-semibold text-[#A96508]">
+                      Quedan pocas unidades en esta sede. ¡Reserva pronto!
+                    </p>
+                  )}
+
+                {/* MEDICAMENTO AGOTADO */}
+
+                {cantidadDetalle === 0 && (
+                  <p className="mt-2 text-[12px] font-semibold text-[#D13438]">
+                    Medicamento agotado en esta sede.
+                  </p>
+                )}
+
+                {/* RESERVAR DESDE EL DETALLE */}
+
+                {cantidadDetalle > 0 && (
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        abrirReserva(medicamentoActualDetalle, sedeDetalle)
+                      }
+                      className="
+                        inline-flex items-center justify-center gap-2
+                        rounded-[12px] bg-[#0755D8]
+                        px-4 py-2.5
+                        text-[12px] font-bold text-white
+                        transition-colors
+                        hover:bg-[#0647B6]
+                      "
+                    >
+                      <BookmarkPlus size={16} />
+                      Reservar medicamento
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ========================================
+                SEDES ALTERNATIVAS
+            ======================================== */}
+
+            {cantidadDetalle === 0 && (
+              <SedesAlternativas
+                medicamento={medicamentoActualDetalle}
+                sedeActual={sedeDetalle}
+                sedes={todasLasSedes}
+                onSeleccionarSede={(sede) =>
+                  setSedeDetalle(sede)
+                }
+              />
+            )}
+
+            {/* ========================================
+                ALERTA DE REABASTECIMIENTO
+            ======================================== */}
+
+            {agotadoEnTodas && (
+              <AlertaReabastecimiento
+                key={medicamentoActualDetalle.id}
+                medicamento={medicamentoActualDetalle}
+              />
+            )}
           </section>
         ) : (
           <>
             {/* ========================================
-                BUSCADOR
+                RESUMEN DE RESULTADOS
             ======================================== */}
 
-            <section
-              className="
-                rounded-[20px] border border-[#DFE9F6]
-                bg-white p-4
-              "
-            >
-              <MedicamentoSearch
-                value={busqueda}
-                onChange={(valor) => {
-                  setBusqueda(valor);
-                  cerrarDetalle();
-                }}
-              />
-            </section>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-[16px] font-extrabold text-[#14285B]">
+                  Medicamentos disponibles para consulta
+                </h2>
 
-            {/* ========================================
-                FILTROS
-            ======================================== */}
+                <p className="mt-1 text-[12px] text-[#71829B]">
+                  {isLoading
+                    ? "Consultando disponibilidad..."
+                    : `${resultados.length} ${
+                        resultados.length === 1
+                          ? "resultado encontrado"
+                          : "resultados encontrados"
+                      }`}
+                </p>
+              </div>
 
-            <MedicamentoFilters
-              sedes={todasLasSedes}
-              filtros={filtros}
-              onChange={(nuevosFiltros) => {
-                setFiltros(nuevosFiltros);
-                cerrarDetalle();
-              }}
-            />
-
-            {/* ========================================
-                DETALLE DEL MEDICAMENTO
-            ======================================== */}
-
-            {medicamentoActualDetalle && sedeDetalle ? (
-              <section className="space-y-4">
+              <div className="inline-flex rounded-full border border-[#DCE8F7] bg-white p-1">
                 <button
                   type="button"
-                  onClick={cerrarDetalle}
-                  className="
-                    inline-flex items-center gap-2
-                    text-[12px] font-bold text-[#0755D8]
-                    hover:text-[#043C9E]
-                  "
+                  onClick={() => setVistaMapa(false)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                    !vistaMapa
+                      ? "bg-[#0755D8] text-white"
+                      : "text-[#62748E] hover:text-[#14285B]"
+                  }`}
                 >
-                  <ArrowLeft size={16} />
-
-                  Volver a los resultados
+                  <LayoutGrid size={13} />
+                  Lista
                 </button>
 
-                <div
+                <button
+                  type="button"
+                  onClick={() => setVistaMapa(true)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                    vistaMapa
+                      ? "bg-[#0755D8] text-white"
+                      : "text-[#62748E] hover:text-[#14285B]"
+                  }`}
+                >
+                  <MapIcon size={13} />
+                  Mapa ({sedesFiltradas.length})
+                </button>
+              </div>
+            </div>
+
+            {/* ========================================
+                TARJETAS DE MEDICAMENTOS
+            ======================================== */}
+
+            {isLoading ? (
+              <div
+                className="
+                  grid grid-cols-1 gap-4
+                  lg:grid-cols-2 2xl:grid-cols-3
+                "
+              >
+                {[0, 1, 2].map((skeleton) => (
+                  <div
+                    key={skeleton}
+                    className="h-[250px] animate-pulse rounded-[20px] border border-[#DFE9F6] bg-white p-4"
+                  />
+                ))}
+              </div>
+            ) : isError ? (
+              <div
+                className="
+                  rounded-[20px] border border-[#F5D2D2]
+                  bg-[#FFF8F8] px-5 py-10 text-center
+                "
+              >
+                <AlertCircle
+                  size={34}
+                  className="mx-auto text-[#D92D20]"
+                />
+
+                <h3 className="mt-3 text-[15px] font-bold text-[#14285B]">
+                  No pudimos cargar el catálogo de medicamentos
+                </h3>
+
+                <p className="mx-auto mt-2 max-w-md text-[12px] text-[#62748E]">
+                  {getCatalogoErrorMessage(error)}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => refetch()}
                   className="
-                    rounded-[20px] border border-[#DFE9F6]
-                    bg-white p-5
+                    mt-4 inline-flex items-center gap-2
+                    rounded-[12px] bg-[#0755D8]
+                    px-4 py-2.5
+                    text-[12px] font-bold text-white
+                    hover:bg-[#0647B6]
                   "
                 >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="
-                        flex h-12 w-12 shrink-0 items-center
-                        justify-center rounded-[14px]
-                        bg-[#EAF3FF] text-[#0755D8]
-                      "
-                    >
-                      <Pill size={24} />
-                    </div>
-
-                    <div>
-                      <h2 className="text-lg font-extrabold text-[#14285B]">
-                        {medicamentoActualDetalle.nombreGenerico}{" "}
-                        {medicamentoActualDetalle.concentracion}
-                      </h2>
-
-                      <p className="mt-1 text-[12px] text-[#71829B]">
-                        {medicamentoActualDetalle.codigo} ·{" "}
-                        {medicamentoActualDetalle.presentacion}
-                      </p>
-
-                      <p className="mt-2 text-[12px] text-[#62748E]">
-                        {medicamentoActualDetalle.descripcion}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* INFORMACIÓN DE LA SEDE */}
-
-                  <div
-                    className="
-                      mt-4 rounded-[14px]
-                      border border-[#E4EDF9]
-                      bg-[#F7FAFF] p-4
-                    "
-                  >
-                    <div className="flex items-center gap-2">
-                      <Store
-                        size={17}
-                        className="text-[#0755D8]"
-                      />
-
-                      <span className="text-[13px] font-bold text-[#14285B]">
-                        {sedeDetalle.nombre}
-                      </span>
-                    </div>
-
-                    <p className="mt-2 text-[12px] text-[#62748E]">
-                      {sedeDetalle.ciudad} · {sedeDetalle.zona}
-                    </p>
-
-                    <p className="mt-2 text-[12px] font-bold text-[#14285B]">
-                      Stock: {cantidadDetalle}{" "}
-                      {cantidadDetalle === 1
-                        ? "unidad"
-                        : "unidades"}
-                    </p>
-
-                    {/* DISPONIBILIDAD LIMITADA */}
-
-                    {cantidadDetalle > 0 &&
-                      cantidadDetalle <= 15 && (
-                        <p className="mt-2 text-[12px] font-semibold text-[#A96508]">
-                          Quedan pocas unidades en esta sede. ¡Reserva pronto!
-                        </p>
-                      )}
-
-                    {/* MEDICAMENTO AGOTADO */}
-
-                    {cantidadDetalle === 0 && (
-                      <p className="mt-2 text-[12px] font-semibold text-[#D13438]">
-                        Medicamento agotado en esta sede.
-                      </p>
-                    )}
-
-                    {/* RESERVAR DESDE EL DETALLE */}
-
-                    {cantidadDetalle > 0 && (
-                      <div className="mt-4">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            abrirReserva(medicamentoActualDetalle, sedeDetalle)
-                          }
-                          className="
-                            inline-flex items-center justify-center gap-2
-                            rounded-[12px] bg-[#0755D8]
-                            px-4 py-2.5
-                            text-[12px] font-bold text-white
-                            transition-colors
-                            hover:bg-[#0647B6]
-                          "
-                        >
-                          <BookmarkPlus size={16} />
-                          Reservar medicamento
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* ========================================
-                    SEDES ALTERNATIVAS
-                ======================================== */}
-
-                {cantidadDetalle === 0 && (
-                  <SedesAlternativas
-                    medicamento={medicamentoActualDetalle}
-                    sedeActual={sedeDetalle}
-                    sedes={todasLasSedes}
-                    onSeleccionarSede={(sede) =>
-                      setSedeDetalle(sede)
-                    }
-                  />
-                )}
-
-                {/* ========================================
-                    ALERTA DE REABASTECIMIENTO
-                ======================================== */}
-
-                {agotadoEnTodas && (
-                  <AlertaReabastecimiento
-                    key={medicamentoActualDetalle.id}
-                    medicamento={medicamentoActualDetalle}
-                  />
-                )}
-              </section>
-            ) : (
-              <>
-                {/* ========================================
-                    RESUMEN DE RESULTADOS
-                ======================================== */}
-
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-[16px] font-extrabold text-[#14285B]">
-                      Medicamentos disponibles para consulta
-                    </h2>
-
-                    <p className="mt-1 text-[12px] text-[#71829B]">
-                      {isLoading
-                        ? "Consultando disponibilidad..."
-                        : `${resultados.length} ${
-                            resultados.length === 1
-                              ? "resultado encontrado"
-                              : "resultados encontrados"
-                          }`}
-                    </p>
-                  </div>
-
-                  <div className="inline-flex rounded-full border border-[#DCE8F7] bg-white p-1">
-                    <button
-                      type="button"
-                      onClick={() => setVistaMapa(false)}
-                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors ${
-                        !vistaMapa
-                          ? "bg-[#0755D8] text-white"
-                          : "text-[#62748E] hover:text-[#14285B]"
-                      }`}
-                    >
-                      <LayoutGrid size={13} />
-                      Lista
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setVistaMapa(true)}
-                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors ${
-                        vistaMapa
-                          ? "bg-[#0755D8] text-white"
-                          : "text-[#62748E] hover:text-[#14285B]"
-                      }`}
-                    >
-                      <MapIcon size={13} />
-                      Mapa ({sedesFiltradas.length})
-                    </button>
-                  </div>
-                </div>
-
-                {/* ========================================
-                    TARJETAS DE MEDICAMENTOS
-                ======================================== */}
-                
-                {isLoading ? (
-                  <div
-                    className="
-                      grid grid-cols-1 gap-4
-                      lg:grid-cols-2 2xl:grid-cols-3
-                    "
-                  >
-                    {[0, 1, 2].map((skeleton) => (
-                      <div
-                        key={skeleton}
-                        className="h-[250px] animate-pulse rounded-[20px] border border-[#DFE9F6] bg-white p-4"
-                      />
-                    ))}
-                  </div>
-                ) : isError ? (
-                  <div
-                    className="
-                      rounded-[20px] border border-[#F5D2D2]
-                      bg-[#FFF8F8] px-5 py-10 text-center
-                    "
-                  >
-                    <AlertCircle
-                      size={34}
-                      className="mx-auto text-[#D92D20]"
-                    />
-
-                    <h3 className="mt-3 text-[15px] font-bold text-[#14285B]">
-                      No pudimos cargar el catálogo de medicamentos
-                    </h3>
-
-                    <p className="mx-auto mt-2 max-w-md text-[12px] text-[#62748E]">
-                      {getCatalogoErrorMessage(error)}
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={() => refetch()}
-                      className="
-                        mt-4 inline-flex items-center gap-2
-                        rounded-[12px] bg-[#0755D8]
-                        px-4 py-2.5
-                        text-[12px] font-bold text-white
-                        hover:bg-[#0647B6]
-                      "
-                    >
-                      <RefreshCw size={15} />
-                      Reintentar
-                    </button>
-                  </div>
-                ) : resultados.length > 0 ? (
-                  <div
-                    className={
-                      vistaMapa
-                        ? "grid grid-cols-1 items-start gap-5 xl:grid-cols-12"
-                        : ""
-                    }
-                  >
-                    <div
-                      className={
-                        vistaMapa
-                          ? "grid grid-cols-1 gap-4 md:grid-cols-2 xl:col-span-7"
-                          : "grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3"
+                  <RefreshCw size={15} />
+                  Reintentar
+                </button>
+              </div>
+            ) : resultados.length > 0 ? (
+              <div
+                className={
+                  vistaMapa
+                    ? "grid grid-cols-1 items-start gap-5 xl:grid-cols-12"
+                    : ""
+                }
+              >
+                <div
+                  className={
+                    vistaMapa
+                      ? "grid grid-cols-1 gap-4 md:grid-cols-2 xl:col-span-7"
+                      : "grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3"
+                  }
+                >
+                  {resultados.map(({ medicamento, sede }) => (
+                    <MedicamentoCard
+                      key={`${medicamento.id}-${sede.id}`}
+                      medicamento={medicamento}
+                      sede={sede}
+                      onVerDisponibilidad={() =>
+                        abrirDetalle(medicamento, sede)
                       }
-                    >
-                      {resultados.map(({ medicamento, sede }) => (
-                        <MedicamentoCard
-                          key={`${medicamento.id}-${sede.id}`}
-                          medicamento={medicamento}
-                          sede={sede}
-                          onVerDisponibilidad={() =>
-                            abrirDetalle(medicamento, sede)
-                          }
-                          onReservar={(med, sedeItem) =>
-                            abrirReserva(med, sedeItem)
-                          }
-                        />
-                      ))}
-                    </div>
-
-                    {vistaMapa && (
-                      <div className="xl:sticky xl:top-4 xl:col-span-5">
-                        <MapaSedes
-                          sedes={sedesFiltradas}
-                          userCoords={coords}
-                          sedeActivaId={filtros.sedeId}
-                          onSeleccionarSede={(sede) =>
-                            setFiltros((prev) => ({
-                              ...prev,
-                              sedeId: prev.sedeId === sede.id ? "" : sede.id,
-                            }))
-                          }
-                        />
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div
-                    className="
-                      rounded-[20px] border border-[#DFE9F6]
-                      bg-white px-5 py-12 text-center
-                    "
-                  >
-                    <PackageSearch
-                      size={36}
-                      className="mx-auto text-[#0876E9]"
+                      onReservar={(med, sedeItem) =>
+                        abrirReserva(med, sedeItem)
+                      }
                     />
+                  ))}
+                </div>
 
-                    <h3 className="mt-3 text-[15px] font-bold text-[#14285B]">
-                      No encontramos resultados
-                    </h3>
-
-                    <p className="mt-2 text-[12px] text-[#71829B]">
-                      Prueba con otro nombre, código o combinación de filtros.
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setBusqueda("");
-
-                        setFiltros({
-                          sedeId: "",
-                          ubicacion: "",
-                          cercania: "cercanas",
-                        });
-                      }}
-                      className="
-                        mt-4 inline-flex items-center gap-2
-                        rounded-[12px] bg-[#0755D8]
-                        px-4 py-2.5
-                        text-[12px] font-bold text-white
-                        hover:bg-[#0647B6]
-                      "
-                    >
-                      <Search size={15} />
-
-                      Mostrar todos
-                    </button>
+                {vistaMapa && (
+                  <div className="xl:sticky xl:top-4 xl:col-span-5">
+                    <MapaSedes
+                      sedes={sedesFiltradas}
+                      userCoords={coords}
+                      sedeActivaId={filtros.sedeId}
+                      onSeleccionarSede={(sede) =>
+                        setFiltros((prev) => ({
+                          ...prev,
+                          sedeId: prev.sedeId === sede.id ? "" : sede.id,
+                        }))
+                      }
+                    />
                   </div>
                 )}
-              </>
+              </div>
+            ) : (
+              <div
+                className="
+                  rounded-[20px] border border-[#DFE9F6]
+                  bg-white px-5 py-12 text-center
+                "
+              >
+                <PackageSearch
+                  size={36}
+                  className="mx-auto text-[#0876E9]"
+                />
+
+                <h3 className="mt-3 text-[15px] font-bold text-[#14285B]">
+                  No encontramos resultados
+                </h3>
+
+                <p className="mt-2 text-[12px] text-[#71829B]">
+                  Prueba con otro nombre, código o combinación de filtros.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBusqueda("");
+
+                    setFiltros({
+                      sedeId: "",
+                      ubicacion: "",
+                      cercania: "cercanas",
+                    });
+                  }}
+                  className="
+                    mt-4 inline-flex items-center gap-2
+                    rounded-[12px] bg-[#0755D8]
+                    px-4 py-2.5
+                    text-[12px] font-bold text-white
+                    hover:bg-[#0647B6]
+                  "
+                >
+                  <Search size={15} />
+
+                  Mostrar todos
+                </button>
+              </div>
             )}
           </>
         )}
