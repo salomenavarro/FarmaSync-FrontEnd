@@ -12,7 +12,6 @@ import {
   Home,
   Pill,
   Search,
-  ShieldCheck,
   User,
   UsersRound,
 } from "lucide-react";
@@ -95,11 +94,6 @@ const ACCOUNT_NAV: NavItem[] = [
     href: "/perfil",
     label: "Mi perfil",
     icon: User,
-  },
-  {
-    href: "/perfil?seccion=seguridad",
-    label: "Seguridad",
-    icon: ShieldCheck,
   },
 ];
 
