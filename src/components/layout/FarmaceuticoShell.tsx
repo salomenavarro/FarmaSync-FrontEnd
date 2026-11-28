@@ -49,7 +49,7 @@ const MAIN_NAV: NavItem[] = [
     icon: Home,
   },
   {
-    href: "/farmaceutico/reservas",
+    href: "/farmaceutico/solicitudes",
     label: "Solicitudes",
     icon: ClipboardList,
   },
