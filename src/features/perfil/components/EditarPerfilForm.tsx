@@ -28,13 +28,13 @@ interface EditarPerfilFormProps {
 }
 
 const INPUT_CLASS =
-  "w-full rounded-xl border border-[#DCE4EF] bg-white py-3 pl-11 pr-4 text-sm text-[#14285B] outline-none transition-colors placeholder:text-[#94A3B8] focus:border-[#0755D8] focus:ring-2 focus:ring-[#0755D8]/10";
+  "w-full rounded-xl border border-[#DCE4EF] bg-white py-2.5 pl-11 pr-4 text-sm text-[#14285B] outline-none transition-colors placeholder:text-[#94A3B8] focus:border-[#0755D8] focus:ring-2 focus:ring-[#0755D8]/10";
 
 const LABEL_CLASS =
-  "mb-2 block text-sm font-semibold text-[#14285B]";
+  "mb-1.5 block text-sm font-semibold text-[#14285B]";
 
 const ERROR_CLASS =
-  "mt-1.5 text-xs font-medium text-red-600";
+  "mt-1 text-xs font-medium text-red-600";
 
 export default function EditarPerfilForm({
   perfil,
@@ -71,16 +71,17 @@ export default function EditarPerfilForm({
   }
 
   return (
-    <section className="rounded-[20px] border border-[#DCE4EF] bg-white p-5 shadow-sm sm:p-6">
+    <section className="rounded-[20px] border border-[#DCE4EF] bg-white p-4 shadow-sm sm:p-5">
 
       {/* Encabezado del formulario */}
-      <div className="flex items-start justify-between gap-4">
+
+      <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-[#14285B]">
             Editar información personal
           </h2>
 
-          <p className="mt-1 text-sm text-[#64748B]">
+          <p className="mt-0.5 text-sm text-[#64748B]">
             Actualiza los datos personales de tu cuenta.
           </p>
         </div>
@@ -90,23 +91,24 @@ export default function EditarPerfilForm({
           onClick={onCancelar}
           disabled={isSubmitting}
           aria-label="Cancelar edición"
-          className="rounded-lg p-2 text-[#64748B] transition-colors hover:bg-[#F5F9FF] hover:text-[#0755D8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0755D8]"
+          className="shrink-0 rounded-lg p-2 text-[#64748B] transition-colors hover:bg-[#EFF6FF] hover:text-[#0755D8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0755D8] disabled:opacity-50"
         >
           <X size={20} />
         </button>
       </div>
 
-      <div className="my-5 border-t border-[#E8EDF4]" />
+      <div className="my-3 border-t border-[#E8EDF4]" />
 
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="space-y-5"
+        className="space-y-3"
       >
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-5 gap-y-3 sm:grid-cols-2">
 
           {/* Nombre completo */}
-          <div>
+
+          <div className="min-w-0">
             <label
               htmlFor="perfil-nombre"
               className={LABEL_CLASS}
@@ -148,7 +150,8 @@ export default function EditarPerfilForm({
           </div>
 
           {/* Teléfono */}
-          <div>
+
+          <div className="min-w-0">
             <label
               htmlFor="perfil-telefono"
               className={LABEL_CLASS}
@@ -190,7 +193,8 @@ export default function EditarPerfilForm({
           </div>
 
           {/* Documento de identidad */}
-          <div>
+
+          <div className="min-w-0">
             <label
               htmlFor="perfil-documento"
               className={LABEL_CLASS}
@@ -210,23 +214,24 @@ export default function EditarPerfilForm({
                 type="text"
                 value={perfil.numeroDocumento}
                 readOnly
-                className={`${INPUT_CLASS} cursor-default bg-[#F8FAFC] pr-10`}
+                className={`${INPUT_CLASS} cursor-default read-only:bg-[#F8FAFC] read-only:pr-10`}
               />
 
               <LockKeyhole
                 size={16}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8]"
+                className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8]"
                 aria-hidden="true"
               />
             </div>
 
-            <p className="mt-1.5 text-xs text-[#64748B]">
+            <p className="mt-1 text-xs text-[#64748B]">
               Este dato no se puede modificar desde aquí.
             </p>
           </div>
 
           {/* Correo electrónico */}
-          <div>
+
+          <div className="min-w-0">
             <label
               htmlFor="perfil-correo"
               className={LABEL_CLASS}
@@ -246,32 +251,33 @@ export default function EditarPerfilForm({
                 type="email"
                 value={perfil.correo}
                 readOnly
-                className={`${INPUT_CLASS} cursor-default bg-[#F8FAFC] pr-10`}
+                className={`${INPUT_CLASS} cursor-default read-only:bg-[#F8FAFC] read-only:pr-10`}
               />
 
               <LockKeyhole
                 size={16}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8]"
+                className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8]"
                 aria-hidden="true"
               />
             </div>
 
-            <p className="mt-1.5 text-xs text-[#64748B]">
+            <p className="mt-1 text-xs text-[#64748B]">
               Correo asociado a tu cuenta.
             </p>
           </div>
         </div>
 
         {/* Información sobre la conexión */}
+
         {!puedeGuardar && (
-          <div className="flex items-start gap-3 rounded-xl border border-[#D6E5FF] bg-[#EFF6FF] p-4">
+          <div className="flex items-center gap-2.5 rounded-xl border border-[#D6E5FF] bg-[#EFF6FF] px-3 py-2.5">
             <Info
-              size={20}
+              size={18}
               className="shrink-0 text-[#0755D8]"
               aria-hidden="true"
             />
 
-            <p className="text-xs leading-relaxed text-[#475569] sm:text-sm">
+            <p className="text-xs leading-relaxed text-[#475569]">
               La actualización de datos personales todavía
               no está disponible. Los cambios realizados
               en este formulario no se guardarán.
@@ -280,6 +286,7 @@ export default function EditarPerfilForm({
         )}
 
         {/* Error general */}
+
         {errors.root?.message && (
           <div
             role="alert"
@@ -290,12 +297,26 @@ export default function EditarPerfilForm({
         )}
 
         {/* Botones de acción */}
-        <div className="flex flex-col-reverse gap-3 border-t border-[#E8EDF4] pt-5 sm:flex-row sm:justify-end">
+
+        <div className="flex flex-col-reverse gap-3 border-t border-[#E8EDF4] pt-3 sm:flex-row sm:justify-end">
+
           <button
             type="button"
             onClick={onCancelar}
             disabled={isSubmitting}
-            className="rounded-xl border border-[#DCE4EF] px-5 py-3 text-sm font-semibold text-[#64748B] transition-colors hover:bg-[#F5F9FF] disabled:opacity-50"
+            className="
+              inline-flex items-center justify-center
+              rounded-xl border border-[#0755D8]
+              bg-white px-5 py-2.5
+              text-sm font-semibold text-[#0755D8]
+              transition-colors
+              hover:bg-[#EFF6FF]
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-[#0755D8]/30
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
           >
             Cancelar
           </button>
@@ -303,7 +324,19 @@ export default function EditarPerfilForm({
           <button
             type="submit"
             disabled={!puedeGuardar || isSubmitting}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0755D8] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0648B8] disabled:cursor-not-allowed disabled:opacity-50"
+            className="
+              inline-flex items-center justify-center gap-2
+              rounded-xl bg-[#0755D8]
+              px-5 py-2.5
+              text-sm font-semibold text-white
+              transition-colors
+              enabled:hover:bg-[#0648B8]
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-[#0755D8]/30
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
           >
             <Save size={17} aria-hidden="true" />
 

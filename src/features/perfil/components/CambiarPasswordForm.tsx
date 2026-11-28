@@ -123,25 +123,27 @@ export default function CambiarPasswordForm({
   }
 
   return (
-    <section className="rounded-[20px] border border-[#DCE4EF] bg-white p-5 shadow-sm sm:p-6">
+    <section className="rounded-[20px] border border-[#DCE4EF] bg-white p-4 shadow-sm sm:p-5">
 
       {/* Encabezado del formulario */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EAF2FF] text-[#0755D8]">
+
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF2FF] text-[#0755D8]">
             <LockKeyhole
-              size={25}
+              size={22}
               strokeWidth={1.8}
               aria-hidden="true"
             />
           </div>
 
-          <div>
+          <div className="min-w-0">
             <h2 className="text-base font-bold text-[#14285B] sm:text-lg">
               Cambiar contraseña
             </h2>
 
-            <p className="mt-1 text-xs text-[#64748B] sm:text-sm">
+            <p className="mt-0.5 text-xs text-[#64748B] sm:text-sm">
               Protege el acceso a tu cuenta de FarmaSync.
             </p>
           </div>
@@ -152,23 +154,24 @@ export default function CambiarPasswordForm({
           onClick={cancelarFormulario}
           disabled={isSubmitting}
           aria-label="Cerrar formulario"
-          className="rounded-lg p-2 text-[#64748B] transition-colors hover:bg-[#F5F9FF] hover:text-[#0755D8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0755D8]"
+          className="shrink-0 rounded-lg p-2 text-[#64748B] transition-colors hover:bg-[#EFF6FF] hover:text-[#0755D8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0755D8] disabled:opacity-50"
         >
           <X size={20} />
         </button>
       </div>
 
-      <div className="my-5 border-t border-[#E8EDF4]" />
+      <div className="my-3 border-t border-[#E8EDF4]" />
 
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="space-y-5"
+        className="space-y-3"
       >
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
           {/* Campos de contraseña */}
-          <div className="space-y-4">
+
+          <div className="min-w-0 space-y-3">
             {CAMPOS.map(
               ({ name, label, placeholder, autoComplete }) => {
                 const visible = visibilidad[name];
@@ -178,7 +181,7 @@ export default function CambiarPasswordForm({
                   <div key={name}>
                     <label
                       htmlFor={name}
-                      className="mb-2 block text-sm font-semibold text-[#14285B]"
+                      className="mb-1.5 block text-sm font-semibold text-[#14285B]"
                     >
                       {label}
                     </label>
@@ -200,7 +203,7 @@ export default function CambiarPasswordForm({
                         aria-describedby={
                           error ? `error-${name}` : undefined
                         }
-                        className={`w-full rounded-xl border bg-white py-3 pl-11 pr-12 text-sm text-[#14285B] outline-none transition-colors placeholder:text-[#94A3B8] focus:ring-2 focus:ring-[#0755D8]/10 disabled:cursor-not-allowed disabled:bg-[#F8FAFC] ${
+                        className={`w-full rounded-xl border bg-white py-2.5 pl-11 pr-12 text-sm text-[#14285B] outline-none transition-colors placeholder:text-[#94A3B8] focus:ring-2 focus:ring-[#0755D8]/10 disabled:cursor-not-allowed disabled:bg-[#F8FAFC] ${
                           error
                             ? "border-red-400"
                             : "border-[#DCE4EF] focus:border-[#0755D8]"
@@ -233,7 +236,7 @@ export default function CambiarPasswordForm({
                     {error && (
                       <p
                         id={`error-${name}`}
-                        className="mt-1.5 text-xs font-medium text-red-600"
+                        className="mt-1 text-xs font-medium text-red-600"
                       >
                         {error.message}
                       </p>
@@ -245,11 +248,13 @@ export default function CambiarPasswordForm({
           </div>
 
           {/* Requisitos de seguridad */}
-          <div className="h-fit rounded-[18px] border border-[#D6E5FF] bg-[#EFF6FF] p-5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#DCEAFF] text-[#0755D8]">
+
+          <div className="h-fit min-w-0 rounded-[18px] border border-[#D6E5FF] bg-[#EFF6FF] p-4">
+
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#DCEAFF] text-[#0755D8]">
                 <ShieldCheck
-                  size={23}
+                  size={21}
                   strokeWidth={1.8}
                   aria-hidden="true"
                 />
@@ -260,12 +265,12 @@ export default function CambiarPasswordForm({
               </h3>
             </div>
 
-            <p className="mt-3 text-xs leading-relaxed text-[#475569] sm:text-sm">
+            <p className="mt-2 text-xs leading-relaxed text-[#475569] sm:text-sm">
               Tu nueva contraseña debe cumplir las siguientes
               condiciones:
             </p>
 
-            <ul className="mt-4 space-y-3">
+            <ul className="mt-3 space-y-2">
               {requisitos.map(({ label, cumple }) => (
                 <li
                   key={label}
@@ -273,13 +278,13 @@ export default function CambiarPasswordForm({
                 >
                   {cumple ? (
                     <CircleCheck
-                      size={19}
+                      size={18}
                       className="shrink-0 text-[#059669]"
                       aria-hidden="true"
                     />
                   ) : (
                     <Circle
-                      size={19}
+                      size={18}
                       className="shrink-0 text-[#94A3B8]"
                       aria-hidden="true"
                     />
@@ -304,7 +309,7 @@ export default function CambiarPasswordForm({
               ))}
             </ul>
 
-            <div className="mt-5 border-t border-[#D6E5FF] pt-4">
+            <div className="mt-3 border-t border-[#D6E5FF] pt-3">
               <p className="text-xs leading-relaxed text-[#475569]">
                 Utiliza una contraseña diferente a la actual
                 y evita incluir información personal fácil
@@ -315,15 +320,16 @@ export default function CambiarPasswordForm({
         </div>
 
         {/* Estado de conexión con el backend */}
+
         {!puedeGuardar && (
-          <div className="flex items-start gap-3 rounded-xl border border-[#D6E5FF] bg-[#EFF6FF] p-4">
+          <div className="flex items-center gap-2.5 rounded-xl border border-[#D6E5FF] bg-[#EFF6FF] px-3 py-2.5">
             <Info
-              size={20}
+              size={18}
               className="shrink-0 text-[#0755D8]"
               aria-hidden="true"
             />
 
-            <p className="text-xs leading-relaxed text-[#475569] sm:text-sm">
+            <p className="text-xs leading-relaxed text-[#475569]">
               El cambio de contraseña todavía no está
               disponible. Esta funcionalidad se habilitará
               cuando esté conectada al servicio de
@@ -333,6 +339,7 @@ export default function CambiarPasswordForm({
         )}
 
         {/* Error general */}
+
         {errors.root?.message && (
           <div
             role="alert"
@@ -343,12 +350,26 @@ export default function CambiarPasswordForm({
         )}
 
         {/* Botones de acción */}
-        <div className="flex flex-col-reverse gap-3 border-t border-[#E8EDF4] pt-5 sm:flex-row sm:justify-end">
+
+        <div className="flex flex-col-reverse gap-3 border-t border-[#E8EDF4] pt-3 sm:flex-row sm:justify-end">
+
           <button
             type="button"
             onClick={cancelarFormulario}
             disabled={isSubmitting}
-            className="rounded-xl border border-[#DCE4EF] px-5 py-3 text-sm font-semibold text-[#64748B] transition-colors hover:bg-[#F5F9FF] disabled:opacity-50"
+            className="
+              inline-flex items-center justify-center
+              rounded-xl border border-[#0755D8]
+              bg-white px-5 py-2.5
+              text-sm font-semibold text-[#0755D8]
+              transition-colors
+              hover:bg-[#EFF6FF]
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-[#0755D8]/30
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
           >
             Cancelar
           </button>
@@ -356,7 +377,19 @@ export default function CambiarPasswordForm({
           <button
             type="submit"
             disabled={!puedeGuardar || isSubmitting}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0755D8] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0648B8] disabled:cursor-not-allowed disabled:opacity-50"
+            className="
+              inline-flex items-center justify-center gap-2
+              rounded-xl bg-[#0755D8]
+              px-5 py-2.5
+              text-sm font-semibold text-white
+              transition-colors
+              enabled:hover:bg-[#0648B8]
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-[#0755D8]/30
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
           >
             <Save size={17} aria-hidden="true" />
 
